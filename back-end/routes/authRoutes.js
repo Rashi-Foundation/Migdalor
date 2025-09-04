@@ -5,7 +5,6 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
-const { sendEmail } = require("../services/emailService");
 const { forgotLimiter } = require("../middleware/rateLimit");
 const {
   generateResetToken,
@@ -209,112 +208,6 @@ router.post("/register", requireAuth, requireAdmin, async (req, res) => {
       success: false,
       message: "Server error during registration",
     });
-  }
-});
-router.post("/forgot-password", async (req, res) => {
-  try {
-    const { email } = req.body || {};
-
-    if (!email || typeof email !== "string") {
-      return res.json({ success: false, message: "Invalid email address." });
-    }
-
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      return res.json({ success: false, message: "Invalid email address." });
-    }
-
-    const user = await User.findOne({ email: normalizedEmail });
-    if (!user) {
-      return res.json({
-        success: false,
-        message: "There is no account related to this email.",
-      });
-    }
-
-    // 1) Generate a temporary password
-    const temp = generateTempPassword(12);
-
-    // 2) Hash and update the password
-    user.password = await bcrypt.hash(temp, 10);
-    await user.save();
-
-    // 3) Send temporary password by email
-    await sendEmail({
-      subject: "Your Temporary Password",
-      to: {
-        email: user.email,
-        name:
-          `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-          user.username,
-      },
-      keyValues: {
-        username: user.username,
-        new_password: temp,
-        note: "Please log in and change your password immediately.",
-      },
-      title: "Migdalor",
-    }).catch((e) => {
-      console.error("sendEmail error:", e?.body || e);
-    });
-
-    return res.json({
-      success: true,
-      message: "An email has been sent with your new password.",
-    });
-  } catch (e) {
-    console.error("/forgot-password error:", e);
-    return res.json({
-      success: false,
-      message: "Something went wrong. Please try again later.",
-    });
-  }
-});
-/**
- * POST /auth/reset-password
- * body: { uid: string, token: string, newPassword: string }
- */
-router.post("/reset-password", async (req, res) => {
-  try {
-    const { uid, token, newPassword } = req.body || {};
-    if (!uid || !token || !newPassword) {
-      return res
-        .status(400)
-        .json({ message: "Missing uid, token or password" });
-    }
-    if (newPassword.length < 6) {
-      return res
-        .status(400)
-        .json({ message: "Password must be at least 6 characters long" });
-    }
-
-    const user = await User.findById(uid);
-    if (!user || !user.passwordResetTokenHash || !user.passwordResetExpires) {
-      return res.status(400).json({ message: "Invalid or expired token" });
-    }
-    if (user.passwordResetExpires.getTime() < Date.now()) {
-      return res.status(400).json({ message: "Invalid or expired token" });
-    }
-
-    const ok = await verifyResetToken(token, user.passwordResetTokenHash);
-    if (!ok) {
-      return res.status(400).json({ message: "Invalid or expired token" });
-    }
-
-    // Rotate: clear token so it can't be reused
-    user.password = await bcrypt.hash(newPassword, 10);
-    user.passwordChangedAt = new Date();
-    user.passwordResetTokenHash = undefined;
-    user.passwordResetExpires = undefined;
-    await user.save();
-
-    // (Optional) Invalidate server sessions / JWTs issued before passwordChangedAt
-    // You can add a JWT claim check: token.iat > passwordChangedAt
-
-    return res.json({ message: "Password updated successfully" });
-  } catch (e) {
-    console.error("reset-password error:", e);
-    return res.status(500).json({ message: "Server error" });
   }
 });
 
