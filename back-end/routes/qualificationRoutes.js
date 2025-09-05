@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Qualification = require("../models/qualification");
-const User = require("../models/User");
+const Employee = require("../models/Employee");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 // Get all qualifications
@@ -47,7 +47,7 @@ router.put("/qualifications", async (req, res) => {
     const { person_id, station_name, avg } = req.body;
 
     // First, find the person by their person_id
-    const person = await User.findOne({ person_id });
+    const person = await Employee.findOne({ person_id });
     if (!person) {
       return res.status(404).json({ message: "Person not found" });
     }

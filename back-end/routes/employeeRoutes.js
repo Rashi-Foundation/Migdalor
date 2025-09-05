@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { requireAuth, requireAdmin } = require("../middleware/auth");
-const User = require("../models/User");
 const Employee = require("../models/Employee");
 const Qualification = require("../models/qualification");
 
@@ -128,7 +127,7 @@ router.put(
       if (role !== undefined) updateObj.role = role;
       if (status !== undefined) updateObj.status = status;
 
-      const updated = await User.findOneAndUpdate(
+      const updated = await Employee.findOneAndUpdate(
         { person_id: req.params.employeeId },
         { $set: updateObj },
         { new: true }
@@ -151,7 +150,7 @@ router.get("/top-employees/:stationName/:count", async (req, res) => {
   try {
     const { stationName, count } = req.params;
     const station = await Station.findOne({ station_name: stationName });
-    const employees = await User.find({});
+    const employees = await Employee.find({});
     const qualifications = await Qualification.find({
       station_name: stationName,
     });
@@ -182,7 +181,7 @@ router.get("/sorted-employees/:stationName", async (req, res) => {
       return res.status(404).json({ message: "Station not found" });
     }
 
-    const employees = await User.find({});
+    const employees = await Employee.find({});
     const qualifications = await Qualification.find({
       station_name: stationName,
     });
@@ -217,7 +216,7 @@ router.get("/employees-with-qualifications/:stationName", async (req, res) => {
     const personIds = qualifications.map((qual) => qual.person_id);
 
     // Fetch the corresponding persons
-    const employees = await User.find({ person_id: { $in: personIds } });
+    const employees = await Employee.find({ person_id: { $in: personIds } });
 
     // Combine employee data with their qualification
     const employeesWithQualifications = employees.map((employee) => {
@@ -251,7 +250,7 @@ router.post("/assign-employees", async (req, res) => {
     const { selectedStations, selectedEmployees } = req.body;
 
     // Fetch full employee data
-    const employees = await User.find({ _id: { $in: selectedEmployees } });
+    const employees = await Employee.find({ _id: { $in: selectedEmployees } });
 
     // Fetch full station data
     const stations = await Station.find({ _id: { $in: selectedStations } });

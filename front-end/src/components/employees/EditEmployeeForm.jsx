@@ -16,11 +16,8 @@ const EditEmployeeForm = ({
   const { me } = useMe();
   const isAdmin = !!me?.isAdmin;
 
-  // Profile fields
+  // Profile fields (Employee schema only)
   const [person_id] = useState(employee.person_id);
-  const [username, setUsername] = useState(
-    employee.username || employee.person_id || ""
-  );
   const [first_name, setFirstName] = useState(employee.first_name || "");
   const [last_name, setLastName] = useState(employee.last_name || "");
   const [email, setEmail] = useState(employee.email || "");
@@ -28,11 +25,7 @@ const EditEmployeeForm = ({
   const [department, setDepartment] = useState(employee.department || "");
   const [role, setRole] = useState(employee.role || "Employee");
   const [status, setStatus] = useState(employee.status || "פעיל");
-  const [isAdminFlag, setIsAdminFlag] = useState(!!employee.isAdmin);
-
-  // Password (admin can set)
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  
 
   // Qualifications (init from props instead of fetching)
   const [stations, setStations] = useState(initialStations);
@@ -53,27 +46,12 @@ const EditEmployeeForm = ({
     e.preventDefault();
     if (!isAdmin) return;
 
-    if (newPassword) {
-      if (newPassword.length < 6) {
-        setMsg({
-          type: "error",
-          text: "הסיסמה חייבת להיות באורך 6 תווים לפחות.",
-        });
-        return;
-      }
-      if (newPassword !== confirmPassword) {
-        setMsg({ type: "error", text: "הסיסמאות אינן תואמות." });
-        return;
-      }
-    }
-
     setBusy(true);
     setMsg(null);
 
     try {
       // 1) Update profile
       const updatePayload = {
-        username,
         first_name,
         last_name,
         email,
@@ -81,7 +59,6 @@ const EditEmployeeForm = ({
         department,
         role,
         status,
-        isAdmin: isAdminFlag,
       };
       await http.put(`/employees/${person_id}`, updatePayload);
 
@@ -96,15 +73,9 @@ const EditEmployeeForm = ({
       );
       await Promise.all(qualOps);
 
-      // 3) Optional password set
-      if (newPassword) {
-        await http.put(`/employees/${person_id}/password`, { newPassword });
-      }
-
       setMsg({ type: "success", text: "עודכן בהצלחה" });
       onUpdateEmployee?.({
         ...employee,
-        username,
         first_name,
         last_name,
         email,
@@ -112,7 +83,6 @@ const EditEmployeeForm = ({
         department,
         role,
         status,
-        isAdmin: isAdminFlag,
       });
 
       setTimeout(() => onClose?.(), 1200);
@@ -162,15 +132,7 @@ const EditEmployeeForm = ({
             </label>
 
             {/* username */}
-            <label className="block">
-              <span className="block mb-1 text-sm font-medium">Username</span>
-              <input
-                className="w-full border p-2 rounded text-sm"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={!isAdmin}
-              />
-            </label>
+            {/* Username removed: Employees do not have usernames */}
 
             <label className="block">
               <span className="block mb-1 text-sm font-medium">First name</span>
@@ -243,16 +205,7 @@ const EditEmployeeForm = ({
               />
             </div>
 
-            <label className="inline-flex items-center gap-2 mt-6">
-              <input
-                type="checkbox"
-                className="h-4 w-4"
-                checked={isAdminFlag}
-                onChange={(e) => setIsAdminFlag(e.target.checked)}
-                disabled={!isAdmin}
-              />
-              <span className="text-sm">Admin</span>
-            </label>
+            {/* Admin flag removed: Employees are not auth users */}
 
             {/* Qualifications editor (still editable for admins) */}
             <div className="sm:col-span-2">
@@ -265,33 +218,7 @@ const EditEmployeeForm = ({
               />
             </div>
 
-            {/* Password (admin only) */}
-            {isAdmin && (
-              <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <span className="block mb-1 text-sm font-medium">
-                    New Password (admin)
-                  </span>
-                  <input
-                    type="password"
-                    className="w-full border p-2 rounded text-sm"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <span className="block mb-1 text-sm font-medium">
-                    Confirm Password
-                  </span>
-                  <input
-                    type="password"
-                    className="w-full border p-2 rounded text-sm"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
+            {/* Password fields removed: Employees do not have passwords */}
           </form>
         </div>
 

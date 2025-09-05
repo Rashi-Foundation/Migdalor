@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const { requireAuth } = require("../middleware/auth");
+const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 // GET /api/me
 router.get("/me", requireAuth, async (req, res) => {
@@ -51,6 +51,37 @@ router.put("/me/password", requireAuth, async (req, res) => {
   } catch (e) {
     console.error("PUT /me/password error", e);
     return res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Admin: list all users (minimal fields)
+router.get("/users", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const users = await User.find({}, "username isAdmin").sort({ isAdmin: -1, username: 1 }).lean();
+    // Map to a cleaner shape
+    const result = users.map((u) => ({ id: u._id, username: u.username, isAdmin: !!u.isAdmin }));
+    res.json(result);
+  } catch (e) {
+    console.error("GET /users error", e);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Admin: delete a user (prevent deleting admin accounts)
+router.delete("/users/:username", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    // Only protect the built-in 'admin' account from deletion
+    if (user.username === 'admin') {
+      return res.status(403).json({ message: "Cannot delete the 'admin' user" });
+    }
+
+    await User.deleteOne({ _id: user._id });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error("DELETE /users/:username error", e);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

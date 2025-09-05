@@ -4,6 +4,7 @@ import { useMe } from "@hooks/useMe";
 import { useState } from "react";
 import { http } from "../api/http";
 import CreateUserForm from "./users/CreateUserForm";
+import AdminUsersTable from "./users/AdminUsersTable";
 
 export default function Settings() {
   const { me, loading } = useMe();
@@ -117,8 +118,9 @@ export default function Settings() {
                 <p className="text-xs text-gray-500 mt-2">מינימום 6 תווים.</p>
               </div>
               {me.isAdmin && (
-                <div className="mt-8">
-                  <h2 className="text-xl font-semibold mb-3">ניהול משתמשים (מנהל)</h2>
+                <div className="mt-8 space-y-4">
+                  <h2 className="text-xl font-semibold">ניהול משתמשים (מנהל)</h2>
+                  <AdminUsersTable />
                   <CreateUserForm />
                 </div>
               )}
