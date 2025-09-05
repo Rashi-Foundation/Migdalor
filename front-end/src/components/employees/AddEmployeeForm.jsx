@@ -20,6 +20,7 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
   const [stationAverages, setStationAverages] = useState({});
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [msgType, setMsgType] = useState(null); // 'success' | 'error'
   const [createdEmployee, setCreatedEmployee] = useState(null);
 
   const onChange = (e) => {
@@ -30,6 +31,7 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
   const submit = async (e) => {
     e.preventDefault();
     setMsg("");
+    setMsgType(null);
     setBusy(true);
     try {
       const payload = {
@@ -60,10 +62,18 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
       }
 
       setMsg("נוצר בהצלחה");
+      setMsgType('success');
       setCreatedEmployee(created);
       onCreated?.(created);
     } catch (err) {
-      setMsg(err?.response?.data?.message || "שגיאה ביצירת עובד");
+      const status = err?.response?.status;
+      if (status === 409) {
+        setMsg("This ID already exists");
+        setMsgType('error');
+      } else {
+        setMsg(err?.response?.data?.message || "שגיאה ביצירת עובד");
+        setMsgType('error');
+      }
     } finally {
       setBusy(false);
     }
@@ -112,7 +122,7 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
               {msg && (
                 <div
                   className={`rounded px-3 py-2 text-sm ${
-                    msg.includes("שגיאה")
+                    msgType === 'error'
                       ? "bg-red-100 text-red-800"
                       : "bg-green-100 text-green-800"
                   }`}
@@ -224,7 +234,7 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
               {msg && (
                 <div
                   className={`sm:col-span-2 rounded px-3 py-2 text-sm ${
-                    msg.includes("שגיאה")
+                    msgType === 'error'
                       ? "bg-red-100 text-red-800"
                       : "bg-green-100 text-green-800"
                   }`}
@@ -271,4 +281,3 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
     </div>
   );
 }
-
