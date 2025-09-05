@@ -8,10 +8,12 @@ const Qualification = require("../models/qualification");
 const Product = require("../models/product");
 const Assignment = require("../models/assignment");
 const User = require("../models/User");
+const Employee = require("../models/Employee");
 const Department = require("../models/department");
 
 const {
   sampleUsers,
+  sampleEmployees,
   sampleStations,
   sampleWorkingStations,
   sampleProducts,
@@ -28,6 +30,7 @@ async function setupDatabase() {
     // Clear collections
     await Promise.all([
       User.deleteMany({}),
+      Employee.deleteMany({}),
       Station.deleteMany({}),
       WorkingStation.deleteMany({}),
       Qualification.deleteMany({}),
@@ -38,16 +41,18 @@ async function setupDatabase() {
     ]);
     console.log("🧹 Cleared existing data");
 
-    // Hash all user passwords before insert
+    // Insert employees first
+    await Employee.insertMany(sampleEmployees);
+    console.log("✅ Employees inserted");
+
+    // Hash all user passwords before insert and map to minimal User fields
     const hashedUsers = await Promise.all(
       sampleUsers.map(async (u) => {
-        // if already bcrypt ($2…) keep as is (allows pre-hashed values in seedData)
         if (typeof u.password === "string" && u.password.startsWith("$2")) {
-          return u;
+          return { username: u.username, password: u.password, isAdmin: !!u.isAdmin };
         }
-        const password = u.password;
-        const passwordHash = await bcrypt.hash(password, 10);
-        return { ...u, password: passwordHash };
+        const passwordHash = await bcrypt.hash(u.password, 10);
+        return { username: u.username, password: passwordHash, isAdmin: !!u.isAdmin };
       })
     );
 
@@ -83,6 +88,7 @@ async function setupDatabase() {
     // Count log
     const [
       usersCnt,
+      employeesCnt,
       stationsCnt,
       wssCnt,
       productsCnt,
@@ -92,6 +98,7 @@ async function setupDatabase() {
       mqttCnt,
     ] = await Promise.all([
       User.countDocuments(),
+      Employee.countDocuments(),
       Station.countDocuments(),
       WorkingStation.countDocuments(),
       Product.countDocuments(),
@@ -103,6 +110,7 @@ async function setupDatabase() {
 
     console.log("\n🎉 Database setup complete!");
     console.log(`- users (${usersCnt})`);
+    console.log(`- employees (${employeesCnt})`);
     console.log(`- stations (${stationsCnt})`);
     console.log(`- workingstations (${wssCnt})`);
     console.log(`- products (${productsCnt})`);

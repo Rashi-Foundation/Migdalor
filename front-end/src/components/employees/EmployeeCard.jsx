@@ -22,9 +22,8 @@ const EmployeeCard = ({ employee, onUpdateEmployee }) => {
   const { me, loading } = useMe();
   const isAdmin = !!me?.isAdmin;
 
-  // NEW: stations & averages for this employee
-  const [stations, setStations] = useState([]); // ["ישר-אסיפות", ...]
-  const [stationAverages, setStationAverages] = useState({}); // { "ישר-אסיפות": 92, ... }
+  const [stations, setStations] = useState([]);
+  const [stationAverages, setStationAverages] = useState({});
   const person_id = employee?.person_id;
 
   useEffect(() => {
@@ -70,7 +69,6 @@ const EmployeeCard = ({ employee, onUpdateEmployee }) => {
       {/* Details grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <Row label="Employee ID / person_id" value={employee.person_id} />
-        <Row label="Username" value={employee.username} />
         <Row label="First name / שם פרטי" value={employee.first_name} />
         <Row label="Last name / שם משפחה" value={employee.last_name} />
         <Row label="Email / מייל" value={employee.email} />
@@ -78,7 +76,6 @@ const EmployeeCard = ({ employee, onUpdateEmployee }) => {
         <Row label="Department / מחלקה" value={employee.department} />
         <Row label="Role / תפקיד" value={employee.role} />
         <Row label="Status / סטטוס" value={employee.status} />
-        <Row label="Admin / מנהל" value={employee.isAdmin ? "כן" : "לא"} />
 
         {/* NEW: Stations list (read-only display) */}
         <Row label="Stations / עמדות" full>

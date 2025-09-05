@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import EmployeeCard from "./EmployeeCard";
-import AddUserEmployeeForm from "./AddUserEmployeeForm";
+import AddEmployeeForm from "./AddEmployeeForm";
 import DepartmentDropdown from "../DepartmentDropdown";
 import StatusDropdown from "../StatusDropdown";
 import NameSearch from "../NameSearch";
@@ -29,6 +29,7 @@ const EmployeeItem = () => {
       try {
         setIsLoading(true);
         const { data } = await axios.get(`${serverUrl}/api/employees`);
+        console.log(data);
         setEmployees(data || []);
       } catch {
         setError("Failed to fetch employees");
@@ -212,11 +213,9 @@ const EmployeeItem = () => {
       )}
 
       {showAddForm && (
-        <AddUserEmployeeForm
+        <AddEmployeeForm
           onClose={() => setShowAddForm(false)}
-          onAddEmployee={(e) =>
-            setEmployees((prev) => [...prev, { ...e, id: prev.length + 1 }])
-          }
+          onCreated={(e) => setEmployees((prev) => [...prev, e])}
         />
       )}
     </div>

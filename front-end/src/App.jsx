@@ -4,7 +4,7 @@ import HomePage from "@pages/HomePage";
 import WorkersPage from "@pages/WorkersPage";
 import ProductivityPage from "@pages/ProductivityPage";
 import StationPage from "@pages/StationPage";
-import Profile from "@components/Profile";
+import Settings from "@components/Settings";
 function App() {
   return (
     <Routes>
@@ -13,7 +13,7 @@ function App() {
       <Route path="/employees" element={<WorkersPage />} />
       <Route path="/productivity" element={<ProductivityPage />} />
       <Route path="/station" element={<StationPage />} />
-      <Route path="/my-account" element={<Profile />} />
+      <Route path="/Settings" element={<Settings />} />
     </Routes>
   );
 }

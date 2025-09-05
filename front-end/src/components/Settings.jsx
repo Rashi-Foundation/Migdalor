@@ -3,8 +3,9 @@ import DateTime from "@components/DateTime";
 import { useMe } from "@hooks/useMe";
 import { useState } from "react";
 import { http } from "../api/http";
+import CreateUserForm from "./users/CreateUserForm";
 
-export default function Profile() {
+export default function Settings() {
   const { me, loading } = useMe();
 
   const [newPassword, setNewPassword] = useState("");
@@ -70,29 +71,9 @@ export default function Profile() {
             <div className="text-red-600">לא נטען משתמש.</div>
           ) : (
             <>
-              {/* Read-only profile info */}
+              {/* Minimal account info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <InfoCard
-                  label="Employee ID / מזהה עובד"
-                  value={me.person_id || "-"}
-                />
                 <InfoCard label="Username / שם משתמש" value={me.username} />
-                <InfoCard
-                  label="First name / שם פרטי"
-                  value={me.first_name || "-"}
-                />
-                <InfoCard
-                  label="Last name / שם משפחה"
-                  value={me.last_name || "-"}
-                />
-                <InfoCard label="Email / מייל" value={me.email || "-"} />
-                <InfoCard label="Phone / טלפון" value={me.phone || "-"} />
-                <InfoCard
-                  label="Department / מחלקה"
-                  value={me.department || "-"}
-                />
-                <InfoCard label="Role / תפקיד" value={me.role || "-"} />
-                <InfoCard label="Status / סטטוס" value={me.status || "-"} />
                 <InfoCard
                   label="Admin / מנהל"
                   value={me.isAdmin ? "Yes / כן" : "No / לא"}
@@ -135,6 +116,12 @@ export default function Profile() {
                 </div>
                 <p className="text-xs text-gray-500 mt-2">מינימום 6 תווים.</p>
               </div>
+              {me.isAdmin && (
+                <div className="mt-8">
+                  <h2 className="text-xl font-semibold mb-3">ניהול משתמשים (מנהל)</h2>
+                  <CreateUserForm />
+                </div>
+              )}
             </>
           )}
         </div>

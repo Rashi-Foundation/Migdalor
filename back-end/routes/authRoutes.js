@@ -5,17 +5,8 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
-const { forgotLimiter } = require("../middleware/rateLimit");
-const {
-  generateResetToken,
-  hashResetToken,
-  expiryDateFromNow,
-  verifyResetToken,
-  RESET_TOKEN_TTL_MINUTES,
-  generateTempPassword,
-} = require("../utils/password");
 
-// Login route
+// Login (User schema)
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body || {};
@@ -36,8 +27,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       {
         userId: user._id,
-        isAdmin: user.isAdmin,
-        department: user.department,
+        isAdmin: !!user.isAdmin,
         username: user.username,
       },
       process.env.JWT_SECRET,
@@ -50,8 +40,7 @@ router.post("/login", async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
-        isAdmin: user.isAdmin,
-        department: user.department,
+        isAdmin: !!user.isAdmin,
       },
     });
   } catch (err) {
@@ -60,146 +49,43 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// --- Admin-only Register ---
-// POST /api/register (admin only)
-// --- Admin-only Register ---
-// POST /api/register (admin only)
+// Register (User schema) - admin only
 router.post("/register", requireAuth, requireAdmin, async (req, res) => {
   try {
-    const {
-      username,
-      person_id,
-      first_name,
-      last_name,
-      password,
-      isAdmin = false,
-      department,
-      email,
-      phone_number,
-      role = "Employee",
-      status = "פעיל",
-    } = req.body || {};
+    const { username, password, isAdmin = false } = req.body || {};
 
-    // --- Normalize inputs ---
-    const finalPersonId = (person_id || "").trim() || null;
-    const finalUsername = (username || finalPersonId || "").trim();
-    const finalEmail = (email || "").trim().toLowerCase();
-    const finalPhone = (phone_number ?? "").trim();
-
-    // --- Required fields ---
-    if (!finalUsername) {
+    // Validate required fields for User schema
+    if (!username || !password) {
       return res.status(400).json({
         success: false,
-        message: "username or person_id is required",
-      });
-    }
-    if (!first_name || !last_name) {
-      return res.status(400).json({
-        success: false,
-        message: "first_name and last_name are required",
-      });
-    }
-    if (finalEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(finalEmail)) {
-      return res.status(400).json({
-        success: false,
-        message: "Email is not valid",
+        message: "username and password are required",
       });
     }
 
-    // --- Build OR query for duplicate checks (only for provided fields) ---
-    const orClauses = [];
-    if (finalUsername) orClauses.push({ username: finalUsername });
-    if (finalPersonId) orClauses.push({ person_id: finalPersonId });
-    if (finalEmail) orClauses.push({ email: finalEmail });
-
-    if (orClauses.length) {
-      const conflicts = await User.find({ $or: orClauses })
-        .select("username person_id email")
-        .lean();
-
-      if (conflicts.length) {
-        // Figure out exactly which fields conflict
-        const conflict = {
-          username: conflicts.some((u) => u.username === finalUsername),
-          person_id: finalPersonId
-            ? conflicts.some((u) => u.person_id === finalPersonId)
-            : false,
-          email: finalEmail
-            ? conflicts.some((u) => u.email === finalEmail)
-            : false,
-        };
-
-        return res.status(409).json({
-          success: false,
-          message: "One or more unique fields already exist.",
-          conflict, // { username: true/false, person_id: true/false, email: true/false }
-        });
-      }
+    // Check duplicates by username
+    const existing = await User.findOne({ username }).select("_id");
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: "Username already exists",
+      });
     }
 
-    // --- Decide password (provided or generated) ---
-    const providedOk = typeof password === "string" && password.length >= 6;
-    const tmp = require("crypto").randomBytes(9).toString("base64url"); // ~12 chars
-    const plainPassword = providedOk ? password : tmp;
-    const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
-    // --- Create user ---
+    // Hash and create
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
-      person_id: finalPersonId,
-      username: finalUsername,
+      username: username.trim(),
       password: hashedPassword,
-      first_name,
-      last_name,
       isAdmin: !!isAdmin,
-      department: department || "",
-      email: finalEmail || "",
-      phone: finalPhone || "",
-      role,
-      status,
     });
-
-    // --- Send welcome email (include the actual password used) ---
-    // NOTE: Emailing passwords is risky; prefer a reset link in production.
-    if (finalEmail) {
-      sendEmail({
-        subject: "Welcome to MigdalOr!",
-        to: {
-          email: finalEmail,
-          name: `${first_name} ${last_name}`.trim() || finalUsername,
-        },
-        keyValues: {
-          username: finalUsername,
-          password: plainPassword,
-          first_name,
-          last_name,
-          email: finalEmail,
-          department: department || "",
-          phone: finalPhone || "",
-          role,
-          status,
-          note: providedOk
-            ? "Your account has been created."
-            : "A temporary password was generated. Please log in and change it immediately.",
-        },
-        title: "Migdalor",
-      }).catch((err) => console.error("Email send error:", err));
-    }
 
     return res.status(201).json({
       success: true,
       message: "User created successfully",
       user: {
         id: newUser._id,
-        person_id: newUser.person_id,
         username: newUser.username,
-        first_name: newUser.first_name,
-        last_name: newUser.last_name,
-        isAdmin: newUser.isAdmin,
-        department: newUser.department,
-        email: newUser.email,
-        phone: newUser.phone,
-        role: newUser.role,
-        status: newUser.status,
+        isAdmin: !!newUser.isAdmin,
       },
     });
   } catch (err) {
@@ -210,5 +96,34 @@ router.post("/register", requireAuth, requireAdmin, async (req, res) => {
     });
   }
 });
+
+// Admin: change a user's password by username
+router.put(
+  "/users/:username/password",
+  requireAuth,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { newPassword } = req.body || {};
+      if (!newPassword || newPassword.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters long" });
+      }
+
+      const user = await User.findOne({ username: req.params.username });
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      user.password = await bcrypt.hash(newPassword, 10);
+      user.passwordChangedAt = new Date();
+      await user.save();
+
+      return res.json({ message: "Password updated" });
+    } catch (e) {
+      console.error("admin password update error:", e);
+      return res.status(500).json({ message: "Server error" });
+    }
+  }
+);
 
 module.exports = router;

@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 const User = require("../models/User");
+const Employee = require("../models/Employee");
 const Qualification = require("../models/qualification");
-const bcrypt = require("bcrypt");
 
 const {
   getTopEmployeesForStation,
@@ -12,10 +12,93 @@ const {
 } = require("../geneticAlgorithm.js");
 const Station = require("../models/station");
 
+// Register new employee (Employee schema) - admin only
+// POST /api/employees/register
+router.post(
+  "/employees/register",
+  requireAuth,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const {
+        person_id,
+        first_name,
+        last_name,
+        email,
+        phone,
+        department,
+        role,
+        status = "פעיל",
+      } = req.body || {};
+
+      // Basic validation
+      if (!person_id || !first_name || !last_name) {
+        return res.status(400).json({
+          success: false,
+          message: "person_id, first_name and last_name are required",
+        });
+      }
+
+      // Optional email format check
+      if (
+        email &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase())
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Email is not valid",
+        });
+      }
+
+      // Uniqueness: person_id must be unique
+      const exists = await Employee.findOne({ person_id }).select("_id");
+      if (exists) {
+        return res.status(409).json({
+          success: false,
+          message: "Employee with this person_id already exists",
+        });
+      }
+
+      const employee = await Employee.create({
+        person_id: String(person_id).trim(),
+        first_name: String(first_name).trim(),
+        last_name: String(last_name).trim(),
+        email: (email || "").trim().toLowerCase(),
+        phone: (phone || "").trim(),
+        department: (department || "").trim(),
+        role: (role || "").trim(),
+        status: (status || "").trim(),
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "Employee created successfully",
+        employee: {
+          id: employee._id,
+          person_id: employee.person_id,
+          first_name: employee.first_name,
+          last_name: employee.last_name,
+          email: employee.email,
+          phone: employee.phone,
+          department: employee.department,
+          role: employee.role,
+          status: employee.status,
+        },
+      });
+    } catch (error) {
+      console.error("Register employee error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error during employee registration",
+      });
+    }
+  }
+);
+
 // Get all employees
 router.get("/employees", async (req, res) => {
   try {
-    const employees = await User.find({}, "-password -__v");
+    const employees = await Employee.find({});
     res.json(employees);
   } catch (error) {
     console.error("Error fetching employees:", error);
@@ -33,20 +116,10 @@ router.put(
   requireAdmin,
   async (req, res) => {
     try {
-      const {
-        username,
-        first_name,
-        last_name,
-        email,
-        phone,
-        department,
-        role,
-        status,
-        isAdmin,
-      } = req.body;
+      const { first_name, last_name, email, phone, department, role, status } =
+        req.body;
 
       const updateObj = {};
-      if (username !== undefined) updateObj.username = username;
       if (first_name !== undefined) updateObj.first_name = first_name;
       if (last_name !== undefined) updateObj.last_name = last_name;
       if (email !== undefined) updateObj.email = email;
@@ -54,7 +127,6 @@ router.put(
       if (department !== undefined) updateObj.department = department;
       if (role !== undefined) updateObj.role = role;
       if (status !== undefined) updateObj.status = status;
-      if (isAdmin !== undefined) updateObj.isAdmin = !!isAdmin;
 
       const updated = await User.findOneAndUpdate(
         { person_id: req.params.employeeId },
@@ -73,37 +145,6 @@ router.put(
     }
   }
 );
-
-// Admin: change a user's password by person_id
-router.put(
-  "/employees/:personId/password",
-  requireAuth,
-  requireAdmin,
-  async (req, res) => {
-    try {
-      const { newPassword } = req.body || {};
-      if (!newPassword || newPassword.length < 6) {
-        return res
-          .status(400)
-          .json({ message: "Password must be at least 6 characters long" });
-      }
-
-      const user = await User.findOne({ person_id: req.params.personId });
-      if (!user) return res.status(404).json({ message: "User not found" });
-
-      user.password = await bcrypt.hash(newPassword, 10);
-      user.passwordChangedAt = new Date();
-      await user.save();
-
-      return res.json({ message: "Password updated" });
-    } catch (e) {
-      console.error("admin password update error:", e);
-      return res.status(500).json({ message: "Server error" });
-    }
-  }
-);
-
-module.exports = router;
 
 // Get top employees for a station
 router.get("/top-employees/:stationName/:count", async (req, res) => {

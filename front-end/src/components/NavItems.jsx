@@ -59,11 +59,11 @@ const NavItems = ({ isMobile, closeMenu }) => {
       <li className="hover:bg-[#246B35] rounded-[7px] hover:text-white">
         <Link
           className="px-3 py-2 rounded flex items-center space-x-2"
-          to="/my-account"
+          to="/settings"
           onClick={handleClick}
         >
           <LuSettings />
-          <span>החשבון שלי</span>
+          <span>הגדרות</span>
         </Link>
       </li>
       {isMobile && (

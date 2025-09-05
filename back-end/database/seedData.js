@@ -1,14 +1,7 @@
-// ---- USERS (unchanged) ------------------------------------------------------
-
-// seedData.js (users section)
-// All passwords are plain here and will be bcrypt-hashed in setupDatabase
-
-const sampleUsers = [
-  // ---- Admin (website admin only) ----
+// ---- EMPLOYEES (canonical profiles; no auth here) -------------------------
+const sampleEmployees = [
   {
     person_id: "EMP000",
-    username: "admin",
-    password: "admin",
     first_name: "System",
     last_name: "Admin",
     email: "admin@migdalor.local",
@@ -16,14 +9,9 @@ const sampleUsers = [
     department: "פלקס",
     role: "Admin",
     status: "פעיל",
-    isAdmin: true,
   },
-
-  // ---- Persons merged as users ----
   {
     person_id: "EMP001",
-    username: "EMP001",
-    password: "secret123",
     first_name: "ולדימיר",
     last_name: "סוריס",
     email: "emp001@migdalor.local",
@@ -31,12 +19,9 @@ const sampleUsers = [
     department: "פלקס",
     role: "Employee",
     status: "פעיל",
-    isAdmin: false,
   },
   {
     person_id: "EMP002",
-    username: "EMP002",
-    password: "secret123",
     first_name: "אלכסנדר",
     last_name: "ליבינסקי",
     email: "emp002@migdalor.local",
@@ -44,12 +29,9 @@ const sampleUsers = [
     department: "הרכבות 1",
     role: "Employee",
     status: "פעיל",
-    isAdmin: false,
   },
   {
     person_id: "EMP003",
-    username: "EMP003",
-    password: "secret123",
     first_name: "בוריס",
     last_name: "שטיינברג",
     email: "emp003@migdalor.local",
@@ -57,12 +39,9 @@ const sampleUsers = [
     department: "הרכבות 2",
     role: "Employee",
     status: "לא פעיל",
-    isAdmin: false,
   },
   {
     person_id: "EMP004",
-    username: "EMP004",
-    password: "secret123",
     first_name: "אור",
     last_name: "חיים",
     email: "emp004@migdalor.local",
@@ -70,12 +49,9 @@ const sampleUsers = [
     department: "פלקס",
     role: "TeamLead",
     status: "פעיל",
-    isAdmin: false, // set true if TLs should be admins
   },
   {
     person_id: "EMP005",
-    username: "EMP005",
-    password: "secret123",
     first_name: "אולה",
     last_name: "ארב",
     email: "emp005@migdalor.local",
@@ -83,12 +59,9 @@ const sampleUsers = [
     department: "פלקס",
     role: "Employee",
     status: "פעיל",
-    isAdmin: false,
   },
   {
     person_id: "EMP006",
-    username: "EMP006",
-    password: "secret123",
     first_name: "ישראל",
     last_name: "כהן",
     email: "emp006@migdalor.local",
@@ -96,12 +69,9 @@ const sampleUsers = [
     department: "פלקס",
     role: "Employee",
     status: "פעיל",
-    isAdmin: false,
   },
   {
     person_id: "EMP007",
-    username: "EMP007",
-    password: "secret123",
     first_name: "נועה",
     last_name: "שמואלי",
     email: "emp007@migdalor.local",
@@ -109,12 +79,9 @@ const sampleUsers = [
     department: "פרמהספט",
     role: "Employee",
     status: "פעיל",
-    isAdmin: false,
   },
   {
     person_id: "EMP008",
-    username: "EMP008",
-    password: "secret123",
     first_name: "יובל",
     last_name: "ברק",
     email: "emp008@migdalor.local",
@@ -122,12 +89,9 @@ const sampleUsers = [
     department: "טלפוניה",
     role: "Employee",
     status: "מוקפא",
-    isAdmin: false,
   },
   {
     person_id: "EMP009",
-    username: "EMP009",
-    password: "secret123",
     first_name: "דוד",
     last_name: "מזרחי",
     email: "emp009@migdalor.local",
@@ -135,12 +99,9 @@ const sampleUsers = [
     department: "פלקס",
     role: "Employee",
     status: "לא פעיל",
-    isAdmin: false,
   },
   {
     person_id: "EMP010",
-    username: "EMP010",
-    password: "secret123",
     first_name: "כבל",
     last_name: "תומס",
     email: "emp010@migdalor.local",
@@ -148,8 +109,14 @@ const sampleUsers = [
     department: "פלקס",
     role: "Employee",
     status: "פעיל",
-    isAdmin: false,
   },
+];
+
+// ---- USERS (minimal login accounts; only 2) --------------------------------
+// All passwords are plain here and will be bcrypt-hashed in setupDatabase
+const sampleUsers = [
+  { username: "admin", password: "admin", isAdmin: true },
+  { username: "EMP001", password: "secret123", isAdmin: false },
 ];
 
 // ---- CANONICAL DEPARTMENTS USED ACROSS DATA ---------------------------------
@@ -318,6 +285,7 @@ const sampleAssignments = [
 
 module.exports = {
   sampleUsers,
+  sampleEmployees,
   sampleStations,
   sampleWorkingStations,
   sampleProducts,
