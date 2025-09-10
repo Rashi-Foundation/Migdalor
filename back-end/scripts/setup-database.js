@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { connectToDatabase } = require("./atlas-connection");
+const { connectToDatabase } = require("../database/atlas-connection");
 const bcrypt = require("bcrypt");
 
 const Station = require("../models/station");
@@ -49,10 +49,18 @@ async function setupDatabase() {
     const hashedUsers = await Promise.all(
       sampleUsers.map(async (u) => {
         if (typeof u.password === "string" && u.password.startsWith("$2")) {
-          return { username: u.username, password: u.password, isAdmin: !!u.isAdmin };
+          return {
+            username: u.username,
+            password: u.password,
+            isAdmin: !!u.isAdmin,
+          };
         }
         const passwordHash = await bcrypt.hash(u.password, 10);
-        return { username: u.username, password: passwordHash, isAdmin: !!u.isAdmin };
+        return {
+          username: u.username,
+          password: passwordHash,
+          isAdmin: !!u.isAdmin,
+        };
       })
     );
 

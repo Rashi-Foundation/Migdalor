@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Employee profile (no auth secrets here)
 const employeeSchema = new mongoose.Schema(
   {
     person_id: { type: String, required: true, unique: true, index: true },
@@ -17,4 +16,3 @@ const employeeSchema = new mongoose.Schema(
 
 module.exports =
   mongoose.models.Employee || mongoose.model("Employee", employeeSchema);
-
