@@ -1,7 +1,6 @@
 import Navbar from "@components/Navbar";
 import DateTime from "@components/DateTime";
 import UpdatesCards from "@components/UpdatesCards";
-import ThemeDemo from "@components/ThemeDemo";
 
 const HomePage = () => {
   return (
@@ -9,7 +8,6 @@ const HomePage = () => {
       <Navbar />
       <DateTime />
       <UpdatesCards />
-      <ThemeDemo />
     </div>
   );
 };
