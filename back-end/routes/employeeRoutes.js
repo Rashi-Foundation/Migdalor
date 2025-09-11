@@ -3,6 +3,7 @@ const router = express.Router();
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 const Employee = require("../models/Employee");
 const Qualification = require("../models/qualification");
+const logger = require("../utils/logger");
 
 const {
   getTopEmployeesForStation,
@@ -32,6 +33,7 @@ router.post(
 
       // Basic validation
       if (!person_id || !first_name || !last_name) {
+        logger.error("Employee registration", "Missing required fields");
         return res.status(400).json({
           success: false,
           message: "person_id, first_name and last_name are required",
@@ -43,6 +45,7 @@ router.post(
         email &&
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase())
       ) {
+        logger.error("Employee registration", "Invalid email format");
         return res.status(400).json({
           success: false,
           message: "Email is not valid",
@@ -50,14 +53,20 @@ router.post(
       }
 
       // Uniqueness: person_id must be unique
+      logger.db("Check existing employee", "Employee");
       const exists = await Employee.findOne({ person_id }).select("_id");
       if (exists) {
+        logger.error(
+          "Employee registration",
+          `Person ID ${person_id} already exists`
+        );
         return res.status(409).json({
           success: false,
           message: "Employee with this person_id already exists",
         });
       }
 
+      logger.db("Create employee", "Employee");
       const employee = await Employee.create({
         person_id: String(person_id).trim(),
         first_name: String(first_name).trim(),
@@ -69,6 +78,10 @@ router.post(
         status: (status || "").trim(),
       });
 
+      logger.success(
+        "Employee registered",
+        `${first_name} ${last_name} (${person_id})`
+      );
       return res.status(201).json({
         success: true,
         message: "Employee created successfully",
@@ -85,7 +98,7 @@ router.post(
         },
       });
     } catch (error) {
-      console.error("Register employee error:", error);
+      logger.error("Register employee error", error);
       return res.status(500).json({
         success: false,
         message: "Server error during employee registration",
@@ -97,10 +110,12 @@ router.post(
 // Get all employees
 router.get("/employees", async (req, res) => {
   try {
+    logger.db("Fetch all employees", "Employee");
     const employees = await Employee.find({});
+    logger.success("Employees fetched", `${employees.length} employees`);
     res.json(employees);
   } catch (error) {
-    console.error("Error fetching employees:", error);
+    logger.error("Error fetching employees", error);
     res.status(500).json({
       message: "Error fetching employees",
       error: error.message,
@@ -127,17 +142,28 @@ router.put(
       if (role !== undefined) updateObj.role = role;
       if (status !== undefined) updateObj.status = status;
 
+      logger.db("Update employee", "Employee");
       const updated = await Employee.findOneAndUpdate(
         { person_id: req.params.employeeId },
         { $set: updateObj },
         { new: true }
       );
 
-      if (!updated)
+      if (!updated) {
+        logger.error(
+          "Employee update",
+          `Employee ${req.params.employeeId} not found`
+        );
         return res.status(404).json({ message: "Employee not found" });
+      }
+
+      logger.success(
+        "Employee updated",
+        `${updated.first_name} ${updated.last_name}`
+      );
       res.json(updated);
     } catch (error) {
-      console.error("Error updating employee:", error);
+      logger.error("Error updating employee", error);
       res
         .status(500)
         .json({ message: "Error updating employee", error: error.message });

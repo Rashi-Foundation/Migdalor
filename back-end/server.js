@@ -5,6 +5,7 @@ require("dotenv").config();
 const { connectToDatabase } = require("./database/atlas-connection.js");
 const { setupMQTT } = require("./services/mqttService.js");
 const { errorHandler } = require("./middleware/errorHandler.js");
+const requestLogger = require("./middleware/requestLogger.js");
 
 // Import routes
 const authRoutes = require("./routes/authRoutes.js");
@@ -22,6 +23,7 @@ const port = process.env.PORT;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(requestLogger);
 
 // Database connection
 async function startServer() {

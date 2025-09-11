@@ -1,21 +1,34 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
+const logger = require("../utils/logger");
 
 // Main report route
 router.get("/report", async (req, res) => {
   let { date, startDate, endDate, employee, stationId, station } = req.query;
-  console.log("Received report request:", {
-    date,
-    startDate,
-    endDate,
-    employee,
-  });
+
+  // Determine report type for logging
+  let reportType = "monthly production";
+  if (date || (startDate && endDate)) {
+    reportType = "date range";
+  } else if (employee) {
+    reportType = "employee monthly";
+  }
+
+  logger.report(
+    `Generating ${reportType} report`,
+    employee
+      ? `for employee ${employee}`
+      : station
+      ? `for station ${station}`
+      : ""
+  );
 
   try {
     let reportData;
     // If station name provided, try to translate to stationId
     if (!stationId && station) {
+      logger.db("Find station by name", "Station");
       const Station = require("../models/station");
       const stationDoc = await Station.findOne({ station_name: station });
       if (stationDoc && stationDoc.station_id) {
@@ -36,10 +49,14 @@ router.get("/report", async (req, res) => {
     } else {
       reportData = await generateMonthlyProductionReport(stationId);
     }
-    console.log("Report data generated:", reportData);
+
+    logger.report(
+      `${reportType} report completed`,
+      `Data points: ${Array.isArray(reportData) ? reportData.length : "N/A"}`
+    );
     res.json(reportData);
   } catch (error) {
-    console.error("Error generating report:", error);
+    logger.error("Error generating report", error);
     res.status(500).json({ error: "Error generating report" });
   }
 });
