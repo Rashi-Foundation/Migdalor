@@ -1,15 +1,14 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "proxy": "http://localhost:5001",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Braude College",
+  "license": "UNLICENSED",
+  "description": "Backend service for Migdalor app",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
