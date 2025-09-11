@@ -5,6 +5,7 @@ import { useState } from "react";
 import { http } from "../api/http";
 import CreateUserForm from "./users/CreateUserForm";
 import AdminUsersTable from "./users/AdminUsersTable";
+import ErrorMessage, { useErrorHandler, getErrorInfo } from "./ErrorMessage";
 
 export default function Settings() {
   const { me, loading } = useMe();
@@ -13,30 +14,45 @@ export default function Settings() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordBusy, setPasswordBusy] = useState(false);
 
-  const [message, setMessage] = useState(null);
-
-  const notify = (type, text) => {
-    setMessage({ type, text });
-    setTimeout(() => setMessage(null), 4000);
-  };
+  const {
+    error,
+    errorType,
+    clearError,
+    setValidationError,
+    setAuthError,
+    setServerError,
+    setSuccess,
+  } = useErrorHandler();
 
   const handleUpdatePassword = async () => {
-    if (newPassword.length < 6)
-      return notify("error", "הסיסמה חייבת להיות באורך 6 תווים לפחות.");
-    if (newPassword !== confirmPassword)
-      return notify("error", "הסיסמאות אינן תואמות.");
+    clearError();
+
+    if (newPassword.length < 6) {
+      setValidationError("הסיסמה חייבת להיות באורך 6 תווים לפחות");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setValidationError("הסיסמאות אינן תואמות");
+      return;
+    }
 
     try {
       setPasswordBusy(true);
       await http.put("/me/password", { newPassword });
-      notify("success", "הסיסמה עודכנה בהצלחה.");
+      setSuccess("הסיסמה עודכנה בהצלחה");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (e) {
-      if (e?.response?.status === 401) {
-        notify("error", "התחבר מחדש.");
+    } catch (err) {
+      const errorInfo = getErrorInfo(err);
+
+      if (errorInfo.type === "auth") {
+        setAuthError("התחבר מחדש");
+      } else if (errorInfo.type === "validation") {
+        setValidationError(errorInfo.message);
+      } else if (errorInfo.type === "server") {
+        setServerError(errorInfo.message);
       } else {
-        notify("error", e?.response?.data?.message || "שגיאה בעדכון סיסמה.");
+        setServerError("שגיאה בעדכון סיסמה - נסה שוב");
       }
     } finally {
       setPasswordBusy(false);
@@ -49,17 +65,13 @@ export default function Settings() {
       <DateTime />
 
       <div className="max-w-3xl mx-auto p-4">
-        {message && (
-          <div
-            className={`mb-4 rounded-lg px-4 py-3 text-sm ${
-              message.type === "success"
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
+        <ErrorMessage
+          message={error}
+          type={errorType}
+          show={!!error}
+          onClose={clearError}
+          className="mb-4"
+        />
 
         <div className="bg-white rounded-xl shadow p-6">
           <h1 className="text-2xl font-bold mb-4">
@@ -119,7 +131,9 @@ export default function Settings() {
               </div>
               {me.isAdmin && (
                 <div className="mt-8 space-y-4">
-                  <h2 className="text-xl font-semibold">ניהול משתמשים (מנהל)</h2>
+                  <h2 className="text-xl font-semibold">
+                    ניהול משתמשים (מנהל)
+                  </h2>
                   <AdminUsersTable />
                   <CreateUserForm />
                 </div>

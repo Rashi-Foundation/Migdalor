@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import serverUrl from "@config/api";
 import { useNavigate, createSearchParams, Link } from "react-router-dom";
+import ErrorMessage, { useErrorHandler, getErrorInfo } from "./ErrorMessage";
 
 // static meta
 const SECTIONS_META = [
@@ -44,7 +45,9 @@ const UpdatesSection = () => {
     dailyDefects: 0,
     inactiveStations: 0,
   });
-  const [error, setError] = useState(null);
+
+  const { error, errorType, clearError, setNetworkError, setServerError } =
+    useErrorHandler();
   const sections = useMemo(
     () =>
       SECTIONS_META.map((m) => ({
@@ -57,6 +60,7 @@ const UpdatesSection = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        clearError();
         const response = await fetch(`${serverUrl}/api/dashboard-data`);
         if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -69,14 +73,33 @@ const UpdatesSection = () => {
           inactiveStations: data.inactiveStations ?? 0,
         });
       } catch (err) {
-        setError(err.message);
+        const errorInfo = getErrorInfo(err);
+
+        if (errorInfo.type === "network") {
+          setNetworkError(errorInfo.message);
+        } else if (errorInfo.type === "server") {
+          setServerError(errorInfo.message);
+        } else {
+          setServerError("שגיאה בטעינת נתוני הלוח");
+        }
       }
     };
 
     fetchData();
   }, []);
 
-  if (error) return <div>Error: {error}</div>;
+  if (error) {
+    return (
+      <div className="p-5 font-sans">
+        <ErrorMessage
+          message={error}
+          type={errorType}
+          show={!!error}
+          onClose={clearError}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-5 font-sans">

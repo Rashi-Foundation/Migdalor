@@ -3,6 +3,7 @@ import { http } from "../../api/http";
 import DepartmentDropdown from "../DepartmentDropdown";
 import StationSelector from "../StationSelector";
 import StatusDropdown from "./StatusDropdown";
+import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
 
 export default function AddEmployeeForm({ onClose, onCreated }) {
   const [form, setForm] = useState({
@@ -19,9 +20,16 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
   const [stations, setStations] = useState([]);
   const [stationAverages, setStationAverages] = useState({});
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [msgType, setMsgType] = useState(null); // 'success' | 'error'
   const [createdEmployee, setCreatedEmployee] = useState(null);
+
+  const {
+    error,
+    errorType,
+    clearError,
+    setValidationError,
+    setServerError,
+    setSuccess,
+  } = useErrorHandler();
 
   const onChange = (e) => {
     const { id, value } = e.target;
@@ -30,10 +38,28 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
 
   const submit = async (e) => {
     e.preventDefault();
-    setMsg("");
-    setMsgType(null);
+    clearError();
     setBusy(true);
+
     try {
+      // Validate required fields
+      if (!form.person_id.trim()) {
+        setValidationError("נא להכניס תעודת זהות");
+        return;
+      }
+      if (!form.first_name.trim()) {
+        setValidationError("נא להכניס שם פרטי");
+        return;
+      }
+      if (!form.last_name.trim()) {
+        setValidationError("נא להכניס שם משפחה");
+        return;
+      }
+      if (!form.department) {
+        setValidationError("נא לבחור מחלקה");
+        return;
+      }
+
       const payload = {
         person_id: form.person_id.trim(),
         first_name: form.first_name.trim(),
@@ -61,18 +87,18 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
         await Promise.all(requests);
       }
 
-      setMsg("נוצר בהצלחה");
-      setMsgType('success');
+      setSuccess("העובד נוצר בהצלחה");
       setCreatedEmployee(created);
       onCreated?.(created);
     } catch (err) {
-      const status = err?.response?.status;
-      if (status === 409) {
-        setMsg("This ID already exists");
-        setMsgType('error');
+      const errorInfo = getErrorInfo(err);
+
+      if (errorInfo.type === "validation") {
+        setValidationError(errorInfo.message);
+      } else if (errorInfo.type === "server") {
+        setServerError(errorInfo.message);
       } else {
-        setMsg(err?.response?.data?.message || "שגיאה ביצירת עובד");
-        setMsgType('error');
+        setServerError("שגיאה ביצירת עובד - נסה שוב");
       }
     } finally {
       setBusy(false);
@@ -119,20 +145,19 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
                 </div>
               </div>
 
-              {msg && (
-                <div
-                  className={`rounded px-3 py-2 text-sm ${
-                    msgType === 'error'
-                      ? "bg-red-100 text-red-800"
-                      : "bg-green-100 text-green-800"
-                  }`}
-                >
-                  {msg}
-                </div>
-              )}
+              <ErrorMessage
+                message={error}
+                type={errorType}
+                show={!!error}
+                onClose={clearError}
+                className="mb-3"
+              />
             </div>
           ) : (
-            <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form
+              onSubmit={submit}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
               {/* Identity */}
               <label className="block">
                 <span className="block mb-1 text-sm font-medium">
@@ -231,17 +256,13 @@ export default function AddEmployeeForm({ onClose, onCreated }) {
                 />
               </div>
 
-              {msg && (
-                <div
-                  className={`sm:col-span-2 rounded px-3 py-2 text-sm ${
-                    msgType === 'error'
-                      ? "bg-red-100 text-red-800"
-                      : "bg-green-100 text-green-800"
-                  }`}
-                >
-                  {msg}
-                </div>
-              )}
+              <ErrorMessage
+                message={error}
+                type={errorType}
+                show={!!error}
+                onClose={clearError}
+                className="sm:col-span-2 mb-3"
+              />
             </form>
           )}
         </div>

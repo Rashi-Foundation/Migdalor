@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { http } from "../api/http";
+import ErrorMessage, {
+  useErrorHandler,
+  getErrorInfo,
+} from "../components/ErrorMessage";
 
 const LoginPage = () => {
   // login form
@@ -8,13 +12,20 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
 
   // UI state
-  const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
   const navigate = useNavigate();
+  const {
+    error,
+    errorType,
+    clearError,
+    setAuthError,
+    setNetworkError,
+    setServerError,
+  } = useErrorHandler();
 
   const resetMessages = () => {
-    setError(null);
+    clearError();
   };
 
   const handleSubmitLogin = async (e) => {
@@ -23,18 +34,37 @@ const LoginPage = () => {
     setBusy(true);
 
     try {
+      // Validate input
+      if (!username.trim()) {
+        setAuthError("נא להכניס שם משתמש");
+        return;
+      }
+      if (!password.trim()) {
+        setAuthError("נא להכניס סיסמה");
+        return;
+      }
+
       const { data } = await http.post("/login", { username, password });
+
       if (data?.success && data?.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user || {}));
         navigate("/home");
       } else {
-        setError("Login failed. Please try again.");
+        setAuthError("התחברות נכשלה - נסה שוב");
       }
     } catch (err) {
-      setError(
-        err?.response?.data?.message || "An error occurred during login"
-      );
+      const errorInfo = getErrorInfo(err);
+
+      if (errorInfo.type === "auth") {
+        setAuthError(errorInfo.message);
+      } else if (errorInfo.type === "network") {
+        setNetworkError(errorInfo.message);
+      } else if (errorInfo.type === "server") {
+        setServerError(errorInfo.message);
+      } else {
+        setServerError("שגיאה לא צפויה - נסה שוב");
+      }
     } finally {
       setBusy(false);
     }
@@ -52,13 +82,18 @@ const LoginPage = () => {
           התחברות
         </h2>
 
-        {error && (
-          <div className="mb-4 rounded-lg px-4 py-3 text-sm bg-red-100 text-red-800">
-            {error}
-          </div>
-        )}
+        <ErrorMessage
+          message={error}
+          type={errorType}
+          show={!!error}
+          onClose={clearError}
+          className="mb-4"
+        />
 
-        <form onSubmit={handleSubmitLogin} className="flex flex-col items-center">
+        <form
+          onSubmit={handleSubmitLogin}
+          className="flex flex-col items-center"
+        >
           <div className="mb-4 w-full">
             <label className="block text-gray-700 text-sm font-bold mb-2 text-center">
               שם משתמש
@@ -95,7 +130,9 @@ const LoginPage = () => {
             type="submit"
             disabled={busy}
             className={`w-full text-white font-bold py-2 px-4 rounded-lg mb-4 ${
-              busy ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-700"
+              busy
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-700"
             }`}
           >
             {busy ? "מתחבר…" : "התחברות"}

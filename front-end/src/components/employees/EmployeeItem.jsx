@@ -11,6 +11,7 @@ import axios from "axios";
 import serverUrl from "@config/api";
 import useFilterParams from "@hooks/useFilterParams";
 import { useMe } from "@hooks/useMe"; // add this if not already imported
+import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
 
 const EmployeeItem = () => {
   const [employees, setEmployees] = useState([]);
@@ -18,8 +19,10 @@ const EmployeeItem = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { me } = useMe();
+
+  const { error, errorType, clearError, setNetworkError, setServerError } =
+    useErrorHandler();
 
   // read-only here; controls update them themselves
   const { department, status, name, clearAll } = useFilterParams();
@@ -28,11 +31,20 @@ const EmployeeItem = () => {
     (async () => {
       try {
         setIsLoading(true);
+        clearError();
         const { data } = await axios.get(`${serverUrl}/api/employees`);
         console.log(data);
         setEmployees(data || []);
-      } catch {
-        setError("Failed to fetch employees");
+      } catch (err) {
+        const errorInfo = getErrorInfo(err);
+
+        if (errorInfo.type === "network") {
+          setNetworkError(errorInfo.message);
+        } else if (errorInfo.type === "server") {
+          setServerError(errorInfo.message);
+        } else {
+          setServerError("שגיאה בטעינת רשימת העובדים");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -111,8 +123,18 @@ const EmployeeItem = () => {
   };
 
   if (isLoading) return <div className="text-center p-4">Loading...</div>;
-  if (error)
-    return <div className="text-center p-4 text-red-500">Error: {error}</div>;
+  if (error) {
+    return (
+      <div className="text-center p-4">
+        <ErrorMessage
+          message={error}
+          type={errorType}
+          show={!!error}
+          onClose={clearError}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">

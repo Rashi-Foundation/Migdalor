@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ReportDisplay from "./ReportDisplay";
 import serverUrl from "@config/api";
+import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
 
 const ALL_STATIONS_OPTION = {
   _id: "ALL",
@@ -29,17 +30,34 @@ const ReportGenerator = () => {
   const [reportData, setReportData] = useState(null);
   const [reportType, setReportType] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [showReportModal, setShowReportModal] = useState(false);
+
+  const {
+    error,
+    errorType,
+    clearError,
+    setValidationError,
+    setNetworkError,
+    setServerError,
+  } = useErrorHandler();
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
+        clearError();
         const { data } = await axios.get(`${serverUrl}/api/employees`);
         setEmployees(data || []);
       } catch (err) {
         console.error("Error fetching employees:", err);
-        setError("נכשל באחזור עובדים");
+        const errorInfo = getErrorInfo(err);
+
+        if (errorInfo.type === "network") {
+          setNetworkError(errorInfo.message);
+        } else if (errorInfo.type === "server") {
+          setServerError(errorInfo.message);
+        } else {
+          setServerError("שגיאה בטעינת רשימת העובדים");
+        }
       }
     };
 
@@ -49,7 +67,15 @@ const ReportGenerator = () => {
         setStations(data || []);
       } catch (err) {
         console.error("Error fetching stations:", err);
-        setError("נכשל באחזור תחנות");
+        const errorInfo = getErrorInfo(err);
+
+        if (errorInfo.type === "network") {
+          setNetworkError(errorInfo.message);
+        } else if (errorInfo.type === "server") {
+          setServerError(errorInfo.message);
+        } else {
+          setServerError("שגיאה בטעינת רשימת התחנות");
+        }
       }
     };
 
@@ -103,14 +129,14 @@ const ReportGenerator = () => {
       new Date(startDate.setHours(0, 0, 0, 0)).getTime();
 
   const handleGenerateReport = async () => {
-    setError(null);
+    clearError();
 
     if (!startDate || !endDate) {
-      setError("אנא בחר תאריך התחלה ותאריך סיום.");
+      setValidationError("אנא בחר תאריך התחלה ותאריך סיום");
       return;
     }
     if (!datesValid) {
-      setError("תאריך סיום לא יכול להיות קטן מתאריך ההתחלה.");
+      setValidationError("תאריך סיום לא יכול להיות קטן מתאריך ההתחלה");
       return;
     }
 
@@ -151,7 +177,15 @@ const ReportGenerator = () => {
       setShowReportModal(true);
     } catch (err) {
       console.error("Error generating report:", err);
-      setError("נכשל ביצירת הדוח. נסה שוב.");
+      const errorInfo = getErrorInfo(err);
+
+      if (errorInfo.type === "network") {
+        setNetworkError(errorInfo.message);
+      } else if (errorInfo.type === "server") {
+        setServerError(errorInfo.message);
+      } else {
+        setServerError("שגיאה ביצירת הדוח - נסה שוב");
+      }
     } finally {
       setLoading(false);
     }
@@ -386,7 +420,13 @@ const ReportGenerator = () => {
         {loading ? "מייצר דוח..." : "יצירת דוח"}
       </button>
 
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      <ErrorMessage
+        message={error}
+        type={errorType}
+        show={!!error}
+        onClose={clearError}
+        className="mt-2"
+      />
 
       {/* Modal */}
       {showReportModal && reportData && (

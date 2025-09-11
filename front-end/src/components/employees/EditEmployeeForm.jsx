@@ -5,6 +5,7 @@ import DepartmentDropdown from "../DepartmentDropdown";
 import StationSelector from "../StationSelector";
 import StatusDropdown from "./StatusDropdown";
 import { useMe } from "@hooks/useMe";
+import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
 
 const EditEmployeeForm = ({
   employee,
@@ -25,7 +26,6 @@ const EditEmployeeForm = ({
   const [department, setDepartment] = useState(employee.department || "");
   const [role, setRole] = useState(employee.role || "Employee");
   const [status, setStatus] = useState(employee.status || "פעיל");
-  
 
   // Qualifications (init from props instead of fetching)
   const [stations, setStations] = useState(initialStations);
@@ -34,7 +34,15 @@ const EditEmployeeForm = ({
   );
 
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState(null);
+
+  const {
+    error,
+    errorType,
+    clearError,
+    setValidationError,
+    setServerError,
+    setSuccess,
+  } = useErrorHandler();
 
   // If parent props change (e.g., after refetch), sync once
   useEffect(() => {
@@ -47,9 +55,23 @@ const EditEmployeeForm = ({
     if (!isAdmin) return;
 
     setBusy(true);
-    setMsg(null);
+    clearError();
 
     try {
+      // Validate required fields
+      if (!first_name.trim()) {
+        setValidationError("נא להכניס שם פרטי");
+        return;
+      }
+      if (!last_name.trim()) {
+        setValidationError("נא להכניס שם משפחה");
+        return;
+      }
+      if (!department) {
+        setValidationError("נא לבחור מחלקה");
+        return;
+      }
+
       // 1) Update profile
       const updatePayload = {
         first_name,
@@ -73,7 +95,7 @@ const EditEmployeeForm = ({
       );
       await Promise.all(qualOps);
 
-      setMsg({ type: "success", text: "עודכן בהצלחה" });
+      setSuccess("העובד עודכן בהצלחה");
       onUpdateEmployee?.({
         ...employee,
         first_name,
@@ -86,12 +108,16 @@ const EditEmployeeForm = ({
       });
 
       setTimeout(() => onClose?.(), 1200);
-    } catch (error) {
-      console.error("Error updating employee:", error);
-      setMsg({
-        type: "error",
-        text: error?.response?.data?.message || "שגיאה בעדכון",
-      });
+    } catch (err) {
+      const errorInfo = getErrorInfo(err);
+
+      if (errorInfo.type === "validation") {
+        setValidationError(errorInfo.message);
+      } else if (errorInfo.type === "server") {
+        setServerError(errorInfo.message);
+      } else {
+        setServerError("שגיאה בעדכון עובד - נסה שוב");
+      }
     } finally {
       setBusy(false);
     }
@@ -105,17 +131,13 @@ const EditEmployeeForm = ({
         </h2>
 
         <div className="overflow-y-auto flex-grow p-6 pt-4">
-          {msg && (
-            <div
-              className={`mb-3 rounded px-3 py-2 text-sm ${
-                msg.type === "success"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }`}
-            >
-              {msg.text}
-            </div>
-          )}
+          <ErrorMessage
+            message={error}
+            type={errorType}
+            show={!!error}
+            onClose={clearError}
+            className="mb-3"
+          />
 
           <form
             onSubmit={handleSubmit}

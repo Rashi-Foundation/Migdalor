@@ -3,6 +3,7 @@ import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import axios from "axios";
 import serverUrl from "@config/api";
+import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -12,19 +13,29 @@ function ShlokerCheck() {
     improper: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const { error, errorType, clearError, setNetworkError, setServerError } =
+    useErrorHandler();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        clearError();
         const response = await axios.get(`${serverUrl}/api/shluker-results`);
         console.log("Received data:", response.data);
         setCounterData(response.data);
-        setError(null);
-      } catch (error) {
-        console.error("Error fetching Shluker results:", error);
-        setError("Error fetching data. Please try again later.");
+      } catch (err) {
+        console.error("Error fetching Shluker results:", err);
+        const errorInfo = getErrorInfo(err);
+
+        if (errorInfo.type === "network") {
+          setNetworkError(errorInfo.message);
+        } else if (errorInfo.type === "server") {
+          setServerError(errorInfo.message);
+        } else {
+          setServerError("שגיאה בטעינת נתוני שלוקר - נסה שוב מאוחר יותר");
+        }
       } finally {
         setLoading(false);
       }
@@ -51,7 +62,16 @@ function ShlokerCheck() {
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="flex flex-col items-center">
+        <ErrorMessage
+          message={error}
+          type={errorType}
+          show={!!error}
+          onClose={clearError}
+        />
+      </div>
+    );
   }
 
   return (
