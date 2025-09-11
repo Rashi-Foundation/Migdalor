@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const DateTime = () => {
+  const { i18n } = useTranslation();
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   useEffect(() => {
@@ -11,7 +13,8 @@ const DateTime = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const formattedDateTime = currentDateTime.toLocaleString("he-IL", {
+  const locale = i18n.language === "he" ? "he-IL" : "en-US";
+  const formattedDateTime = currentDateTime.toLocaleString(locale, {
     weekday: "long",
     year: "numeric",
     month: "long",

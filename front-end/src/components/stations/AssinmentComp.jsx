@@ -1,5 +1,6 @@
 // components/stations/AssignmentComp.jsx
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { CalendarIcon, Trash2, FileDown } from "lucide-react";
 import AddAssignmentForm from "./AddAssignmentForm";
 import { http } from "../../api/http";
@@ -20,12 +21,13 @@ const Alert = ({ children, type = "info" }) => {
 };
 
 const DatePicker = ({ selectedDate, onDateChange }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-white border border-gray-300 rounded-md p-2 shadow-sm hover:border-blue-500 transition-colors duration-200">
       <div className="flex items-center gap-2">
         <CalendarIcon className="text-gray-400" size={20} />
         <label htmlFor="datePicker" className="text-gray-700 font-medium">
-          בחר תאריך:
+          {t("assignmentComp.selectDate")}
         </label>
       </div>
       <input
@@ -52,6 +54,7 @@ const AssignmentComp = ({
   onCloseForm,
   isAdmin: isAdminProp,
 }) => {
+  const { t } = useTranslation();
   const { me } = useMe();
   const isAdmin = isAdminProp ?? !!me?.isAdmin;
 
@@ -95,7 +98,7 @@ const AssignmentComp = ({
 
   const handleAssignmentSubmit = async (newAssignments) => {
     if (!isAdmin) {
-      setError("רק מנהל יכול לבצע שיבוץ.");
+      setError(t("assignmentComp.onlyAdminCanAssign"));
       return;
     }
     try {
@@ -108,7 +111,10 @@ const AssignmentComp = ({
           (e) => `${e.first_name} ${e.last_name}` === newAssignment.fullName
         );
         if (!employee) {
-          message += `לא נמצא עובד בשם ${newAssignment.fullName}. `;
+          message +=
+            t("assignmentComp.employeeNotFound", {
+              name: newAssignment.fullName,
+            }) + " ";
           continue;
         }
 
@@ -119,14 +125,22 @@ const AssignmentComp = ({
         // We still only add up to 2 per your original logic
         if (existingAssignments.length <= 1) {
           await saveAssignmentToDB(employee, newAssignment.assignment1);
-          message += `נוסף שיבוץ ל${newAssignment.fullName}. `;
+          message +=
+            t("assignmentComp.assignmentAdded", {
+              name: newAssignment.fullName,
+            }) + " ";
         } else {
-          message += `ל${newAssignment.fullName} כבר יש שני שיבוצים. `;
+          message +=
+            t("assignmentComp.alreadyHasTwoAssignments", {
+              name: newAssignment.fullName,
+            }) + " ";
         }
       }
 
       await fetchAssignments();
-      setAssignmentMessage(message || "השיבוצים נוספו בהצלחה");
+      setAssignmentMessage(
+        message || t("assignmentComp.assignmentsAddedSuccessfully")
+      );
     } catch (error) {
       setError(
         "Failed to submit assignments: " +
@@ -151,7 +165,7 @@ const AssignmentComp = ({
 
   const handleDeleteAssignment = async (fullName, assignmentIndex) => {
     if (!isAdmin) {
-      setError("רק מנהל יכול למחוק שיבוץ.");
+      setError(t("assignmentComp.onlyAdminCanDelete"));
       return;
     }
     try {
@@ -169,7 +183,9 @@ const AssignmentComp = ({
       });
 
       if (resp.status === 200) {
-        setAssignmentMessage(`השיבוץ של ${fullName} נמחק בהצלחה.`);
+        setAssignmentMessage(
+          t("assignmentComp.assignmentDeletedSuccessfully", { name: fullName })
+        );
         await fetchAssignments();
       } else {
         throw new Error("Failed to delete assignment");
@@ -184,7 +200,11 @@ const AssignmentComp = ({
 
   const exportToCsv = () => {
     const rows = [
-      ["שם ושם משפחה", "שיבוץ 1", "שיבוץ 2"],
+      [
+        t("assignmentComp.fullName"),
+        t("assignmentComp.assignment1"),
+        t("assignmentComp.assignment2"),
+      ],
       ...employees.map((employee) => {
         const employeeAssignments = assignments.filter(
           (a) => a.person_id === employee.person_id
@@ -217,17 +237,15 @@ const AssignmentComp = ({
     a.click();
     URL.revokeObjectURL(url);
   };
-  if (isLoading) return <div>טוען...</div>;
+  if (isLoading) return <div>{t("assignmentComp.loading")}</div>;
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 rounded-lg shadow-md">
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">
-        טבלת שיבוץ יומי
+        {t("assignmentComp.title")}
       </h1>
 
-      {!isAdmin && (
-        <Alert>מצב צפייה בלבד — רק מנהל יכול להוסיף או למחוק שיבוצים.</Alert>
-      )}
+      {!isAdmin && <Alert>{t("assignmentComp.viewOnlyMode")}</Alert>}
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <DatePicker
@@ -239,13 +257,15 @@ const AssignmentComp = ({
           className="bg-[#1F6231] hover:bg-[#309d49] text-white font-bold py-2 px-4 rounded inline-flex items-center"
         >
           <FileDown className="mr-2" />
-          ייצא לאקסל
+          {t("assignmentComp.exportToExcel")}
         </button>
       </div>
 
       <div className="mt-4 sm:mt-6 bg-white border border-gray-200 rounded-lg p-4">
         <h2 className="font-bold mb-4 text-lg sm:text-xl text-gray-700">
-          שיבוץ ליום {new Date(selectedDate).toLocaleDateString("he-IL")}
+          {t("assignmentComp.assignmentForDate", {
+            date: new Date(selectedDate).toLocaleDateString("he-IL"),
+          })}
         </h2>
 
         {error && <Alert type="error">{error}</Alert>}
@@ -256,13 +276,13 @@ const AssignmentComp = ({
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 p-2 text-right">
-                  שם ושם משפחה
+                  {t("assignmentComp.fullName")}
                 </th>
                 <th className="border border-gray-300 p-2 text-right">
-                  שיבוץ 1
+                  {t("assignmentComp.assignment1")}
                 </th>
                 <th className="border border-gray-300 p-2 text-right">
-                  שיבוץ 2
+                  {t("assignmentComp.assignment2")}
                 </th>
               </tr>
             </thead>
@@ -292,7 +312,7 @@ const AssignmentComp = ({
                                 )
                               }
                               className="text-red-600 hover:text-red-800 ml-2"
-                              title="מחק שיבוץ"
+                              title={t("assignmentComp.deleteAssignment")}
                             >
                               <Trash2 size={16} />
                             </button>

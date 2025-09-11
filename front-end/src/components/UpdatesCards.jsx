@@ -1,42 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import serverUrl from "@config/api";
 import { useNavigate, createSearchParams, Link } from "react-router-dom";
 import ErrorMessage, { useErrorHandler, getErrorInfo } from "./ErrorMessage";
 
-// static meta
-const SECTIONS_META = [
-  {
-    key: "inactiveWorkers",
-    name: "עובדים לא פעילים",
-    color: "#FDF5F5",
-    to: () => ({
-      pathname: "/employees",
-      search: `?${createSearchParams({ status: "לא פעיל" })}`,
-    }),
-  },
-  {
-    key: "activeWorkers",
-    name: "עובדים פעילים",
-    color: "#E9F7F5",
-    to: () => ({
-      pathname: "/employees",
-      search: `?${createSearchParams({ status: "פעיל" })}`,
-    }),
-  },
-  {
-    key: "dailyDefects",
-    name: "מס' פגומים יומי",
-    color: "#F5F8FD",
-    to: null,
-  },
-  {
-    key: "inactiveStations",
-    name: "עמדות לא פעילות",
-    color: "#FDFCF5",
-    to: null,
-  },
-];
+// This will be moved inside the component to use translations
 const UpdatesSection = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [values, setValues] = useState({
@@ -48,13 +18,48 @@ const UpdatesSection = () => {
 
   const { error, errorType, clearError, setNetworkError, setServerError } =
     useErrorHandler();
+
+  // Move SECTIONS_META inside component to use translations
+  const SECTIONS_META = [
+    {
+      key: "inactiveWorkers",
+      name: t("updatesCards.inactiveWorkers"),
+      color: "#FDF5F5",
+      to: () => ({
+        pathname: "/employees",
+        search: `?${createSearchParams({ status: "לא פעיל" })}`,
+      }),
+    },
+    {
+      key: "activeWorkers",
+      name: t("updatesCards.activeWorkers"),
+      color: "#E9F7F5",
+      to: () => ({
+        pathname: "/employees",
+        search: `?${createSearchParams({ status: "פעיל" })}`,
+      }),
+    },
+    {
+      key: "dailyDefects",
+      name: t("updatesCards.dailyDefects"),
+      color: "#F5F8FD",
+      to: null,
+    },
+    {
+      key: "inactiveStations",
+      name: t("updatesCards.inactiveStations"),
+      color: "#FDFCF5",
+      to: null,
+    },
+  ];
+
   const sections = useMemo(
     () =>
       SECTIONS_META.map((m) => ({
         ...m,
         value: values[m.key] ?? 0,
       })),
-    [values]
+    [values, SECTIONS_META]
   );
 
   useEffect(() => {
@@ -80,7 +85,7 @@ const UpdatesSection = () => {
         } else if (errorInfo.type === "server") {
           setServerError(errorInfo.message);
         } else {
-          setServerError("שגיאה בטעינת נתוני הלוח");
+          setServerError(t("updatesCards.dashboardError"));
         }
       }
     };
@@ -131,12 +136,12 @@ const UpdatesSection = () => {
                   onClick={handleClick}
                   className="mt-2 text-sm text-blue-600 hover:text-blue-800 focus:outline-none underline"
                 >
-                  צפייה בפרטים &#x3E;
+                  {t("updatesCards.viewDetails")}
                 </button>
               ) : (
                 // If there's no target, show disabled look or hide:
                 <span className="mt-2 text-sm text-gray-400 cursor-not-allowed">
-                  אין פרטים
+                  {t("updatesCards.noDetails")}
                 </span>
               )}
             </div>

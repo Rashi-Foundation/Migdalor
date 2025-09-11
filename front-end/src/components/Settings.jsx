@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Navbar from "@components/Navbar";
 import DateTime from "@components/DateTime";
 import { useMe } from "@hooks/useMe";
@@ -8,6 +9,7 @@ import AdminUsersTable from "./users/AdminUsersTable";
 import ErrorMessage, { useErrorHandler, getErrorInfo } from "./ErrorMessage";
 
 export default function Settings() {
+  const { t } = useTranslation();
   const { me, loading } = useMe();
 
   const [newPassword, setNewPassword] = useState("");
@@ -28,31 +30,31 @@ export default function Settings() {
     clearError();
 
     if (newPassword.length < 6) {
-      setValidationError("הסיסמה חייבת להיות באורך 6 תווים לפחות");
+      setValidationError(t("settingsPage.passwordMustBe6Characters"));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setValidationError("הסיסמאות אינן תואמות");
+      setValidationError(t("settingsPage.passwordsDoNotMatch"));
       return;
     }
 
     try {
       setPasswordBusy(true);
       await http.put("/me/password", { newPassword });
-      setSuccess("הסיסמה עודכנה בהצלחה");
+      setSuccess(t("settingsPage.passwordUpdatedSuccessfully"));
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
       const errorInfo = getErrorInfo(err);
 
       if (errorInfo.type === "auth") {
-        setAuthError("התחבר מחדש");
+        setAuthError(t("settingsPage.loginAgain"));
       } else if (errorInfo.type === "validation") {
         setValidationError(errorInfo.message);
       } else if (errorInfo.type === "server") {
         setServerError(errorInfo.message);
       } else {
-        setServerError("שגיאה בעדכון סיסמה - נסה שוב");
+        setServerError(t("settingsPage.errorUpdatingPassword"));
       }
     } finally {
       setPasswordBusy(false);
@@ -74,22 +76,29 @@ export default function Settings() {
         />
 
         <div className="bg-white rounded-xl shadow p-6">
-          <h1 className="text-2xl font-bold mb-4">
-            Account Settings / הגדרות חשבון
-          </h1>
+          <h1 className="text-2xl font-bold mb-4">{t("settingsPage.title")}</h1>
 
           {loading ? (
-            <div className="text-gray-500">טוען פרופיל…</div>
+            <div className="text-gray-500">
+              {t("settingsPage.loadingProfile")}
+            </div>
           ) : !me ? (
-            <div className="text-red-600">לא נטען משתמש.</div>
+            <div className="text-red-600">
+              {t("settingsPage.userNotLoaded")}
+            </div>
           ) : (
             <>
               {/* Minimal account info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <InfoCard label="Username / שם משתמש" value={me.username} />
                 <InfoCard
-                  label="Admin / מנהל"
-                  value={me.isAdmin ? "Yes / כן" : "No / לא"}
+                  label={t("settingsPage.username")}
+                  value={me.username}
+                />
+                <InfoCard
+                  label={t("settingsPage.admin")}
+                  value={
+                    me.isAdmin ? t("settingsPage.yes") : t("settingsPage.no")
+                  }
                 />
               </div>
 
@@ -97,21 +106,21 @@ export default function Settings() {
               <div>
                 <div className="mb-2">
                   <span className="text-base font-semibold">
-                    Password / סיסמה
+                    {t("settingsPage.password")}
                   </span>
                 </div>
                 <div className="text-sm grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <input
                     type="password"
                     className="rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-[#1F6231]"
-                    placeholder="סיסמה חדשה"
+                    placeholder={t("settingsPage.newPassword")}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <input
                     type="password"
                     className="rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-[#1F6231]"
-                    placeholder="אשר סיסמה"
+                    placeholder={t("settingsPage.confirmPassword")}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
@@ -124,15 +133,19 @@ export default function Settings() {
                         : "bg-[#1F6231] hover:bg-[#309d49]"
                     }`}
                   >
-                    {passwordBusy ? "מעדכן…" : "Change Password / עדכן סיסמה"}
+                    {passwordBusy
+                      ? t("settingsPage.updating")
+                      : t("settingsPage.changePassword")}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">מינימום 6 תווים.</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  {t("settingsPage.minimum6Characters")}
+                </p>
               </div>
               {me.isAdmin && (
                 <div className="mt-8 space-y-4">
                   <h2 className="text-xl font-semibold">
-                    ניהול משתמשים (מנהל)
+                    {t("settingsPage.userManagement")}
                   </h2>
                   <AdminUsersTable />
                   <CreateUserForm />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -6,21 +7,25 @@ import ReportDisplay from "./ReportDisplay";
 import serverUrl from "@config/api";
 import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
 
-const ALL_STATIONS_OPTION = {
-  _id: "ALL",
-  station_id: "ALL",
-  station_name: "כל התחנות",
-};
-const ALL_EMPLOYEES_OPTION = {
-  _id: "ALL",
-  person_id: "ALL",
-  first_name: "כל",
-  last_name: "העובדים",
-};
+// These will be moved inside the component to use translations
 
 const ReportGenerator = () => {
+  const { t } = useTranslation();
   const [employees, setEmployees] = useState([]);
   const [stations, setStations] = useState([]);
+
+  const ALL_STATIONS_OPTION = {
+    _id: "ALL",
+    station_id: "ALL",
+    station_name: t("reportGenerator.allStations"),
+  };
+  const ALL_EMPLOYEES_OPTION = {
+    _id: "ALL",
+    person_id: "ALL",
+    first_name: t("reportGenerator.allEmployees").split(" ")[0],
+    last_name: t("reportGenerator.allEmployees").split(" ")[1],
+  };
+
   const [selectedEmployee, setSelectedEmployee] =
     useState(ALL_EMPLOYEES_OPTION);
   const [selectedStation, setSelectedStation] = useState(ALL_STATIONS_OPTION);
@@ -56,7 +61,7 @@ const ReportGenerator = () => {
         } else if (errorInfo.type === "server") {
           setServerError(errorInfo.message);
         } else {
-          setServerError("שגיאה בטעינת רשימת העובדים");
+          setServerError(t("reportGenerator.errorLoadingEmployees"));
         }
       }
     };
@@ -74,7 +79,7 @@ const ReportGenerator = () => {
         } else if (errorInfo.type === "server") {
           setServerError(errorInfo.message);
         } else {
-          setServerError("שגיאה בטעינת רשימת התחנות");
+          setServerError(t("reportGenerator.errorLoadingStations"));
         }
       }
     };
@@ -132,11 +137,11 @@ const ReportGenerator = () => {
     clearError();
 
     if (!startDate || !endDate) {
-      setValidationError("אנא בחר תאריך התחלה ותאריך סיום");
+      setValidationError(t("reportGenerator.pleaseSelectStartAndEndDate"));
       return;
     }
     if (!datesValid) {
-      setValidationError("תאריך סיום לא יכול להיות קטן מתאריך ההתחלה");
+      setValidationError(t("reportGenerator.endDateCannotBeBeforeStart"));
       return;
     }
 
@@ -184,7 +189,7 @@ const ReportGenerator = () => {
       } else if (errorInfo.type === "server") {
         setServerError(errorInfo.message);
       } else {
-        setServerError("שגיאה ביצירת הדוח - נסה שוב");
+        setServerError(t("reportGenerator.errorGeneratingReport"));
       }
     } finally {
       setLoading(false);
@@ -200,11 +205,11 @@ const ReportGenerator = () => {
     const stationName =
       selectedStation && selectedStation._id !== "ALL"
         ? selectedStation.station_name
-        : "כל התחנות";
+        : t("reportGenerator.allStations");
     const employeeName =
       selectedEmployee && selectedEmployee._id !== "ALL"
         ? `${selectedEmployee.first_name} ${selectedEmployee.last_name}`
-        : "כל העובדים";
+        : t("reportGenerator.allEmployees");
     const startStr = startDate.toLocaleDateString("he-IL");
     const endStr = endDate.toLocaleDateString("he-IL");
 
@@ -276,22 +281,24 @@ const ReportGenerator = () => {
   const selectedStationName =
     selectedStation && selectedStation._id !== "ALL"
       ? selectedStation.station_name
-      : "כל התחנות";
+      : t("reportGenerator.allStations");
 
   const selectedEmployeeName =
     selectedEmployee && selectedEmployee._id !== "ALL"
       ? `${selectedEmployee.first_name} ${selectedEmployee.last_name}`
-      : "כל העובדים";
+      : t("reportGenerator.allEmployees");
 
   return (
     <div className="bg-white p-4 md:p-6 rounded-lg shadow-md max-w-3xl mx-auto h-full md:h-auto overflow-y-auto">
       <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
-        יצירת דוח
+        {t("reportGenerator.title")}
       </h2>
 
       {/* Station */}
       <div className="mb-4">
-        <label className="block mb-2 font-semibold">בחר תחנה</label>
+        <label className="block mb-2 font-semibold">
+          {t("reportGenerator.selectStation")}
+        </label>
         <select
           value={selectedStation?._id || "ALL"}
           onChange={(e) => handleStationChange(e.target.value)}
@@ -307,11 +314,13 @@ const ReportGenerator = () => {
 
       {/* Employee + search */}
       <div className="mb-4">
-        <label className="block mb-2 font-semibold">בחר עובד</label>
+        <label className="block mb-2 font-semibold">
+          {t("reportGenerator.selectEmployee")}
+        </label>
         <div className="flex items-center mb-2">
           <input
             type="text"
-            placeholder="חיפוש עובד..."
+            placeholder={t("reportGenerator.searchEmployee")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-grow p-2 border rounded"
@@ -321,13 +330,15 @@ const ReportGenerator = () => {
               onClick={handleClearEmployee}
               className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             >
-              נקה
+              {t("reportGenerator.clear")}
             </button>
           )}
         </div>
         <div className="max-h-32 md:max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
           {filteredEmployees.length === 0 ? (
-            <p className="p-4 text-center text-gray-500">לא נמצאו עובדים</p>
+            <p className="p-4 text-center text-gray-500">
+              {t("reportGenerator.noEmployeesFound")}
+            </p>
           ) : (
             <ul className="space-y-1 md:space-y-2 p-2">
               {filteredEmployees.map((emp) => (
@@ -351,7 +362,9 @@ const ReportGenerator = () => {
       {/* Date range */}
       <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-2 font-semibold">תאריך התחלה</label>
+          <label className="block mb-2 font-semibold">
+            {t("reportGenerator.startDate")}
+          </label>
           <DatePicker
             selected={startDate}
             onChange={(date) => {
@@ -365,11 +378,13 @@ const ReportGenerator = () => {
             endDate={endDate}
             className="w-full p-2 border rounded"
             dateFormat="dd/MM/yyyy"
-            placeholderText="בחר תאריך התחלה"
+            placeholderText={t("reportGenerator.selectStartDate")}
           />
         </div>
         <div>
-          <label className="block mb-2 font-semibold">תאריך סיום</label>
+          <label className="block mb-2 font-semibold">
+            {t("reportGenerator.endDate")}
+          </label>
           <DatePicker
             selected={endDate}
             onChange={(date) => {
@@ -383,26 +398,33 @@ const ReportGenerator = () => {
             minDate={startDate || undefined}
             className="w-full p-2 border rounded"
             dateFormat="dd/MM/yyyy"
-            placeholderText="בחר תאריך סיום"
+            placeholderText={t("reportGenerator.selectEndDate")}
           />
         </div>
       </div>
 
       {/* Current filters summary */}
       <div className="mt-4 p-3 md:p-4 bg-gray-100 rounded-lg text-sm md:text-base">
-        <h3 className="font-semibold mb-2">תנאי הדוח הנוכחי:</h3>
+        <h3 className="font-semibold mb-2">
+          {t("reportGenerator.currentReportConditions")}
+        </h3>
         <ul className="list-disc list-inside">
-          <li>תחנה: {selectedStationName}</li>
-          <li>עובד: {selectedEmployeeName}</li>
           <li>
-            טווח תאריכים:{" "}
-            {startDate ? startDate.toLocaleDateString("he-IL") : "—"} עד{" "}
+            {t("reportGenerator.station")}: {selectedStationName}
+          </li>
+          <li>
+            {t("reportGenerator.employee")}: {selectedEmployeeName}
+          </li>
+          <li>
+            {t("reportGenerator.dateRange")}:{" "}
+            {startDate ? startDate.toLocaleDateString("he-IL") : "—"}{" "}
+            {t("reportGenerator.to")}{" "}
             {endDate ? endDate.toLocaleDateString("he-IL") : "—"}
           </li>
         </ul>
         {!datesValid && (startDate || endDate) && (
           <p className="text-red-600 mt-2">
-            ודא שתאריך הסיום אינו קטן מתאריך ההתחלה.
+            {t("reportGenerator.ensureEndDateNotBeforeStart")}
           </p>
         )}
       </div>
@@ -417,7 +439,9 @@ const ReportGenerator = () => {
         }`}
         disabled={!datesValid || loading}
       >
-        {loading ? "מייצר דוח..." : "יצירת דוח"}
+        {loading
+          ? t("reportGenerator.generatingReport")
+          : t("reportGenerator.generateReport")}
       </button>
 
       <ErrorMessage
@@ -457,13 +481,13 @@ const ReportGenerator = () => {
                 onClick={handleDownloadReport}
                 className="bg-[#1F6231] hover:bg-[#309d49] text-white font-bold py-2 px-4 rounded"
               >
-                הורד דוח (Excel)
+                {t("reportGenerator.downloadReport")}
               </button>
               <button
                 onClick={() => setShowReportModal(false)}
                 className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
               >
-                סגור
+                {t("reportGenerator.close")}
               </button>
             </div>
           </div>

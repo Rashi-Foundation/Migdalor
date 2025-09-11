@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import EmployeeCard from "./EmployeeCard";
 import AddEmployeeForm from "./AddEmployeeForm";
 import DepartmentDropdown from "../DepartmentDropdown";
@@ -14,6 +15,7 @@ import { useMe } from "@hooks/useMe"; // add this if not already imported
 import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
 
 const EmployeeItem = () => {
+  const { t } = useTranslation();
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -43,7 +45,7 @@ const EmployeeItem = () => {
         } else if (errorInfo.type === "server") {
           setServerError(errorInfo.message);
         } else {
-          setServerError("שגיאה בטעינת רשימת העובדים");
+          setServerError(t("errors.serverError"));
         }
       } finally {
         setIsLoading(false);
@@ -122,7 +124,8 @@ const EmployeeItem = () => {
     }
   };
 
-  if (isLoading) return <div className="text-center p-4">Loading...</div>;
+  if (isLoading)
+    return <div className="text-center p-4">{t("common.loading")}</div>;
   if (error) {
     return (
       <div className="text-center p-4">
@@ -139,14 +142,16 @@ const EmployeeItem = () => {
   return (
     <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">
       {/* Title */}
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-right">עובדים</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-right">
+        {t("workersPage.title")}
+      </h1>
 
       {/* Mobile filter toggle */}
       <button
         className="lg:hidden mb-4 inline-flex items-center gap-2 px-3 py-2 rounded border bg-white"
         onClick={() => setMobileFiltersOpen((v) => !v)}
       >
-        <FiFilter /> סינון
+        <FiFilter /> {t("common.search")}
       </button>
 
       {/* Full-width filter bar */}
@@ -155,18 +160,26 @@ const EmployeeItem = () => {
           mobileFiltersOpen ? "block" : "hidden"
         } lg:block bg-white p-3 rounded shadow-sm mb-6`}
       >
-        <h2 className="font-semibold mb-3 text-right">סינון עובדים</h2>
+        <h2 className="font-semibold mb-3 text-right">
+          {t("workersPage.employeeList")}
+        </h2>
         <div className="flex flex-col lg:flex-row lg:items-end gap-3">
           <div className="flex-1">
-            <label className="block mb-1 text-sm text-right">לפי מחלקה</label>
+            <label className="block mb-1 text-sm text-right">
+              {t("workersPage.department")}
+            </label>
             <DepartmentDropdown includeAllOption className="w-full p-2" />
           </div>
           <div className="flex-1">
-            <label className="block mb-1 text-sm text-right">לפי סטטוס</label>
+            <label className="block mb-1 text-sm text-right">
+              {t("workersPage.status")}
+            </label>
             <StatusDropdown includeAllOption className="w-full p-2" />
           </div>
           <div className="flex-1">
-            <label className="block mb-1 text-sm text-right">לפי שם עובד</label>
+            <label className="block mb-1 text-sm text-right">
+              {t("workersPage.searchPlaceholder")}
+            </label>
             <NameSearch className="w-full" />
           </div>
           <div className="flex-none">
@@ -174,7 +187,7 @@ const EmployeeItem = () => {
               onClick={clearAll}
               className="w-full lg:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-3 rounded"
             >
-              נקה סינון
+              {t("common.clear")}
             </button>
           </div>
           <div className="flex-none">
@@ -183,7 +196,7 @@ const EmployeeItem = () => {
               className="w-full lg:w-auto flex items-center justify-center bg-[#1F6231] hover:bg-[#309d49] text-white font-bold py-2 px-4 rounded"
             >
               <FaFileExcel className="mr-2" />
-              ייצא ל-Excel
+              {t("reports.export")}
             </button>
           </div>
         </div>
@@ -226,7 +239,7 @@ const EmployeeItem = () => {
                   onClick={() => setShowAddForm(true)}
                   className="w-full sm:w-auto inline-flex items-center justify-center text-lg font-bold px-8 py-3 rounded-lg bg-[#1F6231] hover:bg-[#309d49] text-white transition"
                 >
-                  הוספת עובד חדש
+                  {t("workersPage.addEmployee")}
                 </button>
               </div>
             </div>

@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import { IoMdMenu } from "react-icons/io";
 import { TbLogout2 } from "react-icons/tb";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import NavItems from "./NavItems";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -47,13 +50,16 @@ const Navbar = () => {
           </ul>
         )}
         {!isMobile && (
-          <Link
-            className="px-3 py-2 flex items-center space-x-2 hover:bg-[#246B35] rounded-[7px] hover:text-white"
-            to="/"
-          >
-            <TbLogout2 />
-            <span>התנתקות</span>
-          </Link>
+          <div className="flex items-center space-x-2">
+            <LanguageSwitcher />
+            <Link
+              className="px-3 py-2 flex items-center space-x-2 hover:bg-[#246B35] rounded-[7px] hover:text-white"
+              to="/"
+            >
+              <TbLogout2 />
+              <span>{t("navbar.logout")}</span>
+            </Link>
+          </div>
         )}
       </div>
       {isMobile && isOpen && (

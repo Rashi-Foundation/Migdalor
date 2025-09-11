@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import axios from "axios";
@@ -8,6 +9,7 @@ import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function ShlokerCheck() {
+  const { t } = useTranslation();
   const [counterData, setCounterData] = useState({
     proper: 0,
     improper: 0,
@@ -34,7 +36,7 @@ function ShlokerCheck() {
         } else if (errorInfo.type === "server") {
           setServerError(errorInfo.message);
         } else {
-          setServerError("שגיאה בטעינת נתוני שלוקר - נסה שוב מאוחר יותר");
+          setServerError(t("shlokerCheck.loadingError"));
         }
       } finally {
         setLoading(false);
@@ -48,7 +50,7 @@ function ShlokerCheck() {
   }, []);
 
   const chartData = {
-    labels: ["תקין", "פגום"],
+    labels: [t("shlokerCheck.valid"), t("shlokerCheck.defective")],
     datasets: [
       {
         data: [counterData.proper, counterData.improper],
@@ -58,7 +60,7 @@ function ShlokerCheck() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>{t("common.loading")}</div>;
   }
 
   if (error) {
@@ -76,16 +78,18 @@ function ShlokerCheck() {
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-4xl font-bold pt-3">תוצרת יומית-בדיקת לחץ אוויר</h1>
+      <h1 className="text-4xl font-bold pt-3">{t("shlokerCheck.title")}</h1>
       <div className="flex w-11/12 justify-center gap-9">
         <div className="flex items-center justify-center w-1/2 h-15 bg-green-100 p-4 rounded-lg m-5">
           <h2 className="text-xl font-bold">
-            רכיבים תקינים: {counterData.proper}
+            {t("shlokerCheck.validComponents", { count: counterData.proper })}
           </h2>
         </div>
         <div className="flex items-center justify-center w-1/2 bg-red-100 p-4 rounded-lg m-5">
           <h2 className="text-xl font-bold">
-            רכיבים פגומים: {counterData.improper}
+            {t("shlokerCheck.defectiveComponents", {
+              count: counterData.improper,
+            })}
           </h2>
         </div>
       </div>

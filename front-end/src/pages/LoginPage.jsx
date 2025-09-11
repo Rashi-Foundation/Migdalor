@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { http } from "../api/http";
 import ErrorMessage, {
   useErrorHandler,
@@ -7,6 +8,8 @@ import ErrorMessage, {
 } from "../components/ErrorMessage";
 
 const LoginPage = () => {
+  const { t } = useTranslation();
+
   // login form
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -36,11 +39,11 @@ const LoginPage = () => {
     try {
       // Validate input
       if (!username.trim()) {
-        setAuthError("נא להכניס שם משתמש");
+        setAuthError(t("loginPage.errors.usernameRequired"));
         return;
       }
       if (!password.trim()) {
-        setAuthError("נא להכניס סיסמה");
+        setAuthError(t("loginPage.errors.passwordRequired"));
         return;
       }
 
@@ -51,7 +54,7 @@ const LoginPage = () => {
         localStorage.setItem("user", JSON.stringify(data.user || {}));
         navigate("/home");
       } else {
-        setAuthError("התחברות נכשלה - נסה שוב");
+        setAuthError(t("loginPage.errors.loginFailed"));
       }
     } catch (err) {
       const errorInfo = getErrorInfo(err);
@@ -63,7 +66,7 @@ const LoginPage = () => {
       } else if (errorInfo.type === "server") {
         setServerError(errorInfo.message);
       } else {
-        setServerError("שגיאה לא צפויה - נסה שוב");
+        setServerError(t("loginPage.errors.unexpectedError"));
       }
     } finally {
       setBusy(false);
@@ -79,7 +82,7 @@ const LoginPage = () => {
 
       <div className="z-10 max-w-md w-full mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
-          התחברות
+          {t("loginPage.title")}
         </h2>
 
         <ErrorMessage
@@ -96,7 +99,7 @@ const LoginPage = () => {
         >
           <div className="mb-4 w-full">
             <label className="block text-gray-700 text-sm font-bold mb-2 text-center">
-              שם משתמש
+              {t("loginPage.usernameLabel")}
             </label>
             <input
               type="text"
@@ -104,7 +107,7 @@ const LoginPage = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={busy}
-              placeholder="הכנס את שם המשתמש שלך"
+              placeholder={t("loginPage.usernamePlaceholder")}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               required
             />
@@ -112,7 +115,7 @@ const LoginPage = () => {
 
           <div className="mb-6 w-full">
             <label className="block text-gray-700 text-sm font-bold mb-2 text-center">
-              סיסמה
+              {t("loginPage.passwordLabel")}
             </label>
             <input
               type="password"
@@ -120,7 +123,7 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={busy}
-              placeholder="הכנס את הסיסמה שלך"
+              placeholder={t("loginPage.passwordPlaceholder")}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               required
             />
@@ -135,7 +138,7 @@ const LoginPage = () => {
                 : "bg-green-500 hover:bg-green-700"
             }`}
           >
-            {busy ? "מתחבר…" : "התחברות"}
+            {busy ? t("loginPage.loggingIn") : t("loginPage.loginButton")}
           </button>
         </form>
       </div>
