@@ -4,7 +4,7 @@ import ReportGenerator from "@components/reports/ReportGenerator";
 
 const ProductivityPage = () => {
   return (
-    <div>
+    <div className="theme-bg-primary min-h-screen transition-colors duration-300">
       <Navbar />
       <ShlokerCheck />
       <ReportGenerator />

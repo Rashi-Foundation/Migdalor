@@ -82,37 +82,37 @@ const StationItem = ({ onSelectStation, onAssignmentButtonClick, isAdmin }) => {
   }
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 max-w-full sm:max-w-md mx-auto flex flex-col h-[500px] sm:h-[700px]">
+    <div className="theme-bg-secondary theme-shadow-md rounded-lg p-4 sm:p-6 max-w-full sm:max-w-md mx-auto flex flex-col h-[500px] sm:h-[700px] transition-colors duration-300">
       <div className="flex-none">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800 text-center">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 theme-text-primary text-center">
           {t("stationItem.title")}
         </h1>
-        <div className="mb-4 sm:mb-6 bg-gray-100 p-3 sm:p-4 rounded-md">
-          <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 flex items-center">
+        <div className="mb-4 sm:mb-6 theme-bg-tertiary p-3 sm:p-4 rounded-md transition-colors duration-300">
+          <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 flex items-center theme-text-primary">
             <Filter className="mr-2" size={18} />
             {t("stationItem.filter")}
           </h2>
           <div className="space-y-3 sm:space-y-4">
             <div className="flex flex-col">
-              <label className="mb-1 text-sm font-medium text-gray-700">
+              <label className="mb-1 text-sm font-medium theme-text-secondary">
                 {t("stationItem.filterByDepartment")}
               </label>
               <DepartmentDropdown
                 value={selectedDepartment}
                 onChange={handleDepartmentChange}
                 includeAllOption={true}
-                className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                className="p-2 theme-border-primary border rounded-md focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] text-sm sm:text-base theme-bg-secondary theme-text-primary transition-colors duration-200"
               />
             </div>
             <div className="flex flex-col">
-              <label className="mb-1 text-sm font-medium text-gray-700">
+              <label className="mb-1 text-sm font-medium theme-text-secondary">
                 {t("stationItem.filterByProduct")}
               </label>
               <ProductDropdown
                 value={selectedProduct}
                 onChange={handleProductChange}
                 includeAllOption={true}
-                className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                className="p-2 theme-border-primary border rounded-md focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] text-sm sm:text-base theme-bg-secondary theme-text-primary transition-colors duration-200"
               />
             </div>
           </div>
@@ -125,16 +125,16 @@ const StationItem = ({ onSelectStation, onAssignmentButtonClick, isAdmin }) => {
             <li
               key={station._id}
               onClick={() => handleStationClick(station)}
-              className={`cursor-pointer p-2 sm:p-3 rounded-md shadow transition duration-150 ease-in-out ${
+              className={`cursor-pointer p-2 sm:p-3 rounded-md theme-shadow-sm transition duration-150 ease-in-out ${
                 selectedStation && selectedStation._id === station._id
-                  ? "bg-[#246B35] text-white"
-                  : "bg-gray-50 hover:bg-gray-100"
+                  ? "theme-accent text-white"
+                  : "theme-bg-tertiary hover:theme-bg-primary theme-text-primary"
               }`}
             >
               <div className="font-medium text-sm sm:text-base">
                 {station.station_name}
               </div>
-              <div className="text-xs sm:text-sm text-gray-500 mt-1">
+              <div className="text-xs sm:text-sm theme-text-tertiary mt-1">
                 {station.department} - {station.product_name}
               </div>
             </li>
@@ -142,7 +142,7 @@ const StationItem = ({ onSelectStation, onAssignmentButtonClick, isAdmin }) => {
         </ul>
 
         {filteredStations.length === 0 && (
-          <p className="text-center text-gray-500 mt-4 text-sm sm:text-base">
+          <p className="text-center theme-text-tertiary mt-4 text-sm sm:text-base">
             {t("stationItem.noStationsFound")}
           </p>
         )}
@@ -150,10 +150,10 @@ const StationItem = ({ onSelectStation, onAssignmentButtonClick, isAdmin }) => {
       <div className="mt-4">
         <button
           onClick={() => isAdmin && onAssignmentButtonClick()}
-          className={`w-full font-bold py-2 px-4 rounded flex items-center justify-center ${
+          className={`w-full font-bold py-2 px-4 rounded flex items-center justify-center transition-all duration-200 ${
             selectedStation && isAdmin
-              ? "bg-[#1F6231] hover:bg-[#309d49] text-white cursor-pointer"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              ? "theme-accent theme-accent-hover text-white cursor-pointer hover:scale-105"
+              : "theme-bg-tertiary theme-text-tertiary cursor-not-allowed"
           }`}
           disabled={!selectedStation || !isAdmin}
           title={!isAdmin ? t("stationItem.adminsOnly") : ""}

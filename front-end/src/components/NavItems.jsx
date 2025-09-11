@@ -20,9 +20,9 @@ const NavItems = ({ isMobile, closeMenu }) => {
 
   return (
     <>
-      <li className="hover:bg-[#246B35] rounded-[7px] hover:text-white">
+      <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
         <Link
-          className="px-3 py-2 rounded flex items-center space-x-2"
+          className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
           to="/home"
           onClick={handleClick}
         >
@@ -30,9 +30,9 @@ const NavItems = ({ isMobile, closeMenu }) => {
           <span>{t("navbar.home")}</span>
         </Link>
       </li>
-      <li className="hover:bg-[#246B35] rounded-[7px] hover:text-white">
+      <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
         <Link
-          className="px-3 py-2 rounded flex items-center space-x-2"
+          className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
           to="/station"
           onClick={handleClick}
         >
@@ -40,9 +40,9 @@ const NavItems = ({ isMobile, closeMenu }) => {
           <span>{t("navbar.stationAssignment")}</span>
         </Link>
       </li>
-      <li className="hover:bg-[#246B35] rounded-[7px] hover:text-white">
+      <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
         <Link
-          className="px-3 py-2 rounded flex items-center space-x-2"
+          className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
           to="/employees"
           onClick={handleClick}
         >
@@ -50,9 +50,9 @@ const NavItems = ({ isMobile, closeMenu }) => {
           <span>{t("navbar.employees")}</span>
         </Link>
       </li>
-      <li className="hover:bg-[#246B35] rounded-[7px] hover:text-white">
+      <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
         <Link
-          className="px-3 py-2 rounded flex items-center space-x-2"
+          className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
           to="/productivity"
           onClick={handleClick}
         >
@@ -60,9 +60,9 @@ const NavItems = ({ isMobile, closeMenu }) => {
           <span>{t("navbar.productivity")}</span>
         </Link>
       </li>
-      <li className="hover:bg-[#246B35] rounded-[7px] hover:text-white">
+      <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
         <Link
-          className="px-3 py-2 rounded flex items-center space-x-2"
+          className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
           to="/settings"
           onClick={handleClick}
         >
@@ -72,14 +72,14 @@ const NavItems = ({ isMobile, closeMenu }) => {
       </li>
       {isMobile && (
         <>
-          <li className="hover:bg-[#246B35] rounded-[7px] hover:text-white">
+          <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
             <div className="px-3 py-2 flex items-center space-x-2">
               <LanguageSwitcher />
             </div>
           </li>
-          <li className="hover:bg-[#246B35] rounded-[7px] hover:text-white">
+          <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
             <Link
-              className="px-3 py-2 rounded flex items-center space-x-2"
+              className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
               to="/"
               onClick={handleClick}
             >

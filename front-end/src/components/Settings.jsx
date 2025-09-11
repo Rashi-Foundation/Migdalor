@@ -62,7 +62,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="theme-bg-primary min-h-screen transition-colors duration-300">
       <Navbar />
       <DateTime />
 
@@ -75,11 +75,13 @@ export default function Settings() {
           className="mb-4"
         />
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <h1 className="text-2xl font-bold mb-4">{t("settingsPage.title")}</h1>
+        <div className="theme-bg-secondary theme-shadow-lg rounded-xl p-6 transition-colors duration-300">
+          <h1 className="text-2xl font-bold mb-4 theme-text-primary">
+            {t("settingsPage.title")}
+          </h1>
 
           {loading ? (
-            <div className="text-gray-500">
+            <div className="theme-text-tertiary">
               {t("settingsPage.loadingProfile")}
             </div>
           ) : !me ? (
@@ -112,14 +114,14 @@ export default function Settings() {
                 <div className="text-sm grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <input
                     type="password"
-                    className="rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-[#1F6231]"
+                    className="rounded-lg theme-border-primary border px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-primary)] theme-bg-secondary theme-text-primary transition-colors duration-200"
                     placeholder={t("settingsPage.newPassword")}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <input
                     type="password"
-                    className="rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-[#1F6231]"
+                    className="rounded-lg theme-border-primary border px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-primary)] theme-bg-secondary theme-text-primary transition-colors duration-200"
                     placeholder={t("settingsPage.confirmPassword")}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -127,10 +129,10 @@ export default function Settings() {
                   <button
                     onClick={handleUpdatePassword}
                     disabled={passwordBusy}
-                    className={`px-6 py-2 rounded-lg text-white font-semibold ${
+                    className={`px-6 py-2 rounded-lg text-white font-semibold transition-all duration-200 ${
                       passwordBusy
                         ? "bg-gray-400"
-                        : "bg-[#1F6231] hover:bg-[#309d49]"
+                        : "theme-accent theme-accent-hover hover:scale-105"
                     }`}
                   >
                     {passwordBusy
@@ -138,13 +140,13 @@ export default function Settings() {
                       : t("settingsPage.changePassword")}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs theme-text-tertiary mt-2">
                   {t("settingsPage.minimum6Characters")}
                 </p>
               </div>
               {me.isAdmin && (
                 <div className="mt-8 space-y-4">
-                  <h2 className="text-xl font-semibold">
+                  <h2 className="text-xl font-semibold theme-text-primary">
                     {t("settingsPage.userManagement")}
                   </h2>
                   <AdminUsersTable />
@@ -162,9 +164,15 @@ export default function Settings() {
 /** Small helper so your cards look uniform */
 function InfoCard({ label, value, full = false }) {
   return (
-    <div className={`border rounded-lg p-4 ${full ? "sm:col-span-2" : ""}`}>
-      <div className="text-sm text-gray-500 mb-1">{label}</div>
-      <div className="font-semibold break-words">{String(value)}</div>
+    <div
+      className={`theme-border-primary border rounded-lg p-4 transition-colors duration-300 ${
+        full ? "sm:col-span-2" : ""
+      }`}
+    >
+      <div className="text-sm theme-text-secondary mb-1">{label}</div>
+      <div className="font-semibold break-words theme-text-primary">
+        {String(value)}
+      </div>
     </div>
   );
 }

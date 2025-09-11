@@ -120,27 +120,32 @@ const UpdatesSection = () => {
           return (
             <div
               key={index}
-              className="rounded-lg p-5 flex flex-col justify-between items-center text-center"
-              style={{ backgroundColor: section.color }}
+              className="theme-bg-secondary theme-shadow-md rounded-lg p-5 flex flex-col justify-between items-center text-center transition-all duration-300 hover:theme-shadow-lg hover:scale-105"
             >
-              <h2 className="text-lg text-gray-800 mb-5">{section.name}</h2>
+              <h2 className="text-lg theme-text-primary mb-5">
+                {section.name}
+              </h2>
               <div className="flex flex-col items-center">
-                <span className="text-4xl font-bold mb-1">{section.value}</span>
+                <span className="text-4xl font-bold mb-1 theme-text-primary">
+                  {section.value}
+                </span>
                 {section.today && (
-                  <span className="text-sm">{section.today}</span>
+                  <span className="text-sm theme-text-secondary">
+                    {section.today}
+                  </span>
                 )}
               </div>
 
               {canNavigate ? (
                 <button
                   onClick={handleClick}
-                  className="mt-2 text-sm text-blue-600 hover:text-blue-800 focus:outline-none underline"
+                  className="mt-2 text-sm theme-text-primary hover:theme-accent focus:outline-none underline transition-colors duration-200"
                 >
                   {t("updatesCards.viewDetails")}
                 </button>
               ) : (
                 // If there's no target, show disabled look or hide:
-                <span className="mt-2 text-sm text-gray-400 cursor-not-allowed">
+                <span className="mt-2 text-sm theme-text-tertiary cursor-not-allowed">
                   {t("updatesCards.noDetails")}
                 </span>
               )}

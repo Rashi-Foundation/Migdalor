@@ -7,12 +7,18 @@ import { http } from "../../api/http";
 import { useMe } from "@hooks/useMe";
 
 const Alert = ({ children, type = "info" }) => {
-  const bgColor = type === "error" ? "bg-red-100" : "bg-yellow-100";
+  const bgColor =
+    type === "error"
+      ? "bg-red-100 dark:bg-red-900/20"
+      : "bg-yellow-100 dark:bg-yellow-900/20";
   const borderColor = type === "error" ? "border-red-500" : "border-yellow-500";
-  const textColor = type === "error" ? "text-red-700" : "text-yellow-700";
+  const textColor =
+    type === "error"
+      ? "text-red-700 dark:text-red-300"
+      : "text-yellow-700 dark:text-yellow-300";
   return (
     <div
-      className={`${bgColor} border-l-4 ${borderColor} ${textColor} p-4 mb-4`}
+      className={`${bgColor} border-l-4 ${borderColor} ${textColor} p-4 mb-4 transition-colors duration-300`}
       role="alert"
     >
       {children}
@@ -23,10 +29,10 @@ const Alert = ({ children, type = "info" }) => {
 const DatePicker = ({ selectedDate, onDateChange }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-white border border-gray-300 rounded-md p-2 shadow-sm hover:border-blue-500 transition-colors duration-200">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 theme-bg-secondary theme-border-primary border rounded-md p-2 theme-shadow-sm hover:border-[var(--accent-primary)] transition-colors duration-200">
       <div className="flex items-center gap-2">
-        <CalendarIcon className="text-gray-400" size={20} />
-        <label htmlFor="datePicker" className="text-gray-700 font-medium">
+        <CalendarIcon className="theme-text-tertiary" size={20} />
+        <label htmlFor="datePicker" className="theme-text-primary font-medium">
           {t("assignmentComp.selectDate")}
         </label>
       </div>
@@ -35,7 +41,7 @@ const DatePicker = ({ selectedDate, onDateChange }) => {
         type="date"
         value={selectedDate}
         onChange={(e) => onDateChange(e.target.value)}
-        className="outline-none border-none bg-transparent text-gray-800 font-semibold w-full sm:w-auto"
+        className="outline-none border-none bg-transparent theme-text-primary font-semibold w-full sm:w-auto"
       />
     </div>
   );
@@ -240,8 +246,8 @@ const AssignmentComp = ({
   if (isLoading) return <div>{t("assignmentComp.loading")}</div>;
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-50 rounded-lg shadow-md">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">
+    <div className="p-4 sm:p-6 theme-bg-tertiary rounded-lg theme-shadow-md transition-colors duration-300">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 theme-text-primary">
         {t("assignmentComp.title")}
       </h1>
 
@@ -254,15 +260,15 @@ const AssignmentComp = ({
         />
         <button
           onClick={exportToCsv}
-          className="bg-[#1F6231] hover:bg-[#309d49] text-white font-bold py-2 px-4 rounded inline-flex items-center"
+          className="theme-accent theme-accent-hover text-white font-bold py-2 px-4 rounded inline-flex items-center transition-all duration-200 hover:scale-105"
         >
           <FileDown className="mr-2" />
           {t("assignmentComp.exportToExcel")}
         </button>
       </div>
 
-      <div className="mt-4 sm:mt-6 bg-white border border-gray-200 rounded-lg p-4">
-        <h2 className="font-bold mb-4 text-lg sm:text-xl text-gray-700">
+      <div className="mt-4 sm:mt-6 theme-bg-secondary theme-border-primary border rounded-lg p-4 transition-colors duration-300">
+        <h2 className="font-bold mb-4 text-lg sm:text-xl theme-text-primary">
           {t("assignmentComp.assignmentForDate", {
             date: new Date(selectedDate).toLocaleDateString("he-IL"),
           })}
@@ -274,14 +280,14 @@ const AssignmentComp = ({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 p-2 text-right">
+              <tr className="theme-bg-tertiary">
+                <th className="theme-border-primary border p-2 text-right theme-text-primary">
                   {t("assignmentComp.fullName")}
                 </th>
-                <th className="border border-gray-300 p-2 text-right">
+                <th className="theme-border-primary border p-2 text-right theme-text-primary">
                   {t("assignmentComp.assignment1")}
                 </th>
-                <th className="border border-gray-300 p-2 text-right">
+                <th className="theme-border-primary border p-2 text-right theme-text-primary">
                   {t("assignmentComp.assignment2")}
                 </th>
               </tr>
@@ -292,14 +298,20 @@ const AssignmentComp = ({
                   (a) => a.person_id === employee.person_id
                 );
                 return (
-                  <tr key={employee.person_id} className="hover:bg-gray-50">
-                    <td className="border border-gray-300 p-2 text-right">
+                  <tr
+                    key={employee.person_id}
+                    className="hover:theme-bg-tertiary transition-colors duration-200"
+                  >
+                    <td className="theme-border-primary border p-2 text-right theme-text-primary">
                       {`${employee.first_name} ${employee.last_name}`}
                     </td>
                     {[0, 1].map((index) => (
-                      <td key={index} className="border border-gray-300 p-2">
+                      <td
+                        key={index}
+                        className="theme-border-primary border p-2"
+                      >
                         <div className="flex justify-between items-center">
-                          <span className="text-right">
+                          <span className="text-right theme-text-primary">
                             {employeeAssignments[index]?.workingStation_name ||
                               ""}
                           </span>
@@ -311,7 +323,7 @@ const AssignmentComp = ({
                                   index
                                 )
                               }
-                              className="text-red-600 hover:text-red-800 ml-2"
+                              className="text-red-600 hover:text-red-800 ml-2 transition-colors duration-200"
                               title={t("assignmentComp.deleteAssignment")}
                             >
                               <Trash2 size={16} />

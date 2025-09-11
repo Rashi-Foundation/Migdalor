@@ -80,8 +80,8 @@ const LoginPage = () => {
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
 
-      <div className="z-10 max-w-md w-full mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+      <div className="z-10 max-w-md w-full mx-auto p-8 theme-bg-secondary bg-opacity-90 rounded-lg theme-shadow-lg transition-colors duration-300">
+        <h2 className="text-2xl font-bold theme-text-primary text-center mb-6">
           {t("loginPage.title")}
         </h2>
 
@@ -98,7 +98,7 @@ const LoginPage = () => {
           className="flex flex-col items-center"
         >
           <div className="mb-4 w-full">
-            <label className="block text-gray-700 text-sm font-bold mb-2 text-center">
+            <label className="block theme-text-primary text-sm font-bold mb-2 text-center">
               {t("loginPage.usernameLabel")}
             </label>
             <input
@@ -108,13 +108,13 @@ const LoginPage = () => {
               onChange={(e) => setUsername(e.target.value)}
               disabled={busy}
               placeholder={t("loginPage.usernamePlaceholder")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 theme-border-primary border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] theme-bg-secondary theme-text-primary transition-colors duration-200"
               required
             />
           </div>
 
           <div className="mb-6 w-full">
-            <label className="block text-gray-700 text-sm font-bold mb-2 text-center">
+            <label className="block theme-text-primary text-sm font-bold mb-2 text-center">
               {t("loginPage.passwordLabel")}
             </label>
             <input
@@ -124,7 +124,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               disabled={busy}
               placeholder={t("loginPage.passwordPlaceholder")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 theme-border-primary border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] theme-bg-secondary theme-text-primary transition-colors duration-200"
               required
             />
           </div>
@@ -132,10 +132,10 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={busy}
-            className={`w-full text-white font-bold py-2 px-4 rounded-lg mb-4 ${
+            className={`w-full text-white font-bold py-2 px-4 rounded-lg mb-4 transition-all duration-200 ${
               busy
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-500 hover:bg-green-700"
+                : "theme-accent theme-accent-hover hover:scale-105"
             }`}
           >
             {busy ? t("loginPage.loggingIn") : t("loginPage.loginButton")}

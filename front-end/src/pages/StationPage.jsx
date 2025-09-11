@@ -11,7 +11,7 @@ const StationPage = () => {
   const isAdmin = !!me?.isAdmin;
 
   return (
-    <div>
+    <div className="theme-bg-primary min-h-screen transition-colors duration-300">
       <Navbar />
       <div
         style={{
@@ -22,9 +22,9 @@ const StationPage = () => {
         }}
       >
         <div
+          className="theme-bg-tertiary transition-colors duration-300"
           style={{
             flex: "1",
-            background: "#f0f0f0",
             padding: "20px",
             overflowY: "auto",
           }}
@@ -36,9 +36,9 @@ const StationPage = () => {
           />
         </div>
         <div
+          className="theme-bg-secondary transition-colors duration-300"
           style={{
             flex: "3",
-            background: "#e0e0e0",
             padding: "20px",
             overflowY: "auto",
           }}

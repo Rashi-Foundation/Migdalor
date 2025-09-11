@@ -289,20 +289,20 @@ const ReportGenerator = () => {
       : t("reportGenerator.allEmployees");
 
   return (
-    <div className="bg-white p-4 md:p-6 rounded-lg shadow-md max-w-3xl mx-auto h-full md:h-auto overflow-y-auto">
-      <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
+    <div className="theme-bg-secondary p-4 md:p-6 rounded-lg theme-shadow-md max-w-3xl mx-auto h-full md:h-auto overflow-y-auto transition-colors duration-300">
+      <h2 className="text-xl md:text-2xl font-bold mb-4 text-center theme-text-primary">
         {t("reportGenerator.title")}
       </h2>
 
       {/* Station */}
       <div className="mb-4">
-        <label className="block mb-2 font-semibold">
+        <label className="block mb-2 font-semibold theme-text-primary">
           {t("reportGenerator.selectStation")}
         </label>
         <select
           value={selectedStation?._id || "ALL"}
           onChange={(e) => handleStationChange(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary transition-colors duration-200"
         >
           {stationsWithAll.map((station) => (
             <option key={station._id} value={station._id}>
@@ -314,7 +314,7 @@ const ReportGenerator = () => {
 
       {/* Employee + search */}
       <div className="mb-4">
-        <label className="block mb-2 font-semibold">
+        <label className="block mb-2 font-semibold theme-text-primary">
           {t("reportGenerator.selectEmployee")}
         </label>
         <div className="flex items-center mb-2">
@@ -323,20 +323,20 @@ const ReportGenerator = () => {
             placeholder={t("reportGenerator.searchEmployee")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-grow p-2 border rounded"
+            className="flex-grow p-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary transition-colors duration-200"
           />
           {selectedEmployee && selectedEmployee._id !== "ALL" && (
             <button
               onClick={handleClearEmployee}
-              className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200"
             >
               {t("reportGenerator.clear")}
             </button>
           )}
         </div>
-        <div className="max-h-32 md:max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
+        <div className="max-h-32 md:max-h-48 overflow-y-auto theme-border-primary border rounded-lg transition-colors duration-300">
           {filteredEmployees.length === 0 ? (
-            <p className="p-4 text-center text-gray-500">
+            <p className="p-4 text-center theme-text-tertiary">
               {t("reportGenerator.noEmployeesFound")}
             </p>
           ) : (
@@ -347,8 +347,8 @@ const ReportGenerator = () => {
                   onClick={() => handleEmployeeSelect(emp)}
                   className={`cursor-pointer p-2 md:p-3 rounded transition duration-150 ease-in-out ${
                     selectedEmployee && selectedEmployee._id === emp._id
-                      ? "bg-[#246B35] text-white"
-                      : "hover:bg-gray-100"
+                      ? "theme-accent text-white"
+                      : "hover:theme-bg-tertiary theme-text-primary"
                   }`}
                 >
                   {emp.first_name} {emp.last_name}
@@ -362,7 +362,7 @@ const ReportGenerator = () => {
       {/* Date range */}
       <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-2 font-semibold">
+          <label className="block mb-2 font-semibold theme-text-primary">
             {t("reportGenerator.startDate")}
           </label>
           <DatePicker
@@ -376,13 +376,13 @@ const ReportGenerator = () => {
             selectsStart
             startDate={startDate}
             endDate={endDate}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary transition-colors duration-200"
             dateFormat="dd/MM/yyyy"
             placeholderText={t("reportGenerator.selectStartDate")}
           />
         </div>
         <div>
-          <label className="block mb-2 font-semibold">
+          <label className="block mb-2 font-semibold theme-text-primary">
             {t("reportGenerator.endDate")}
           </label>
           <DatePicker
@@ -396,7 +396,7 @@ const ReportGenerator = () => {
             startDate={startDate}
             endDate={endDate}
             minDate={startDate || undefined}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary transition-colors duration-200"
             dateFormat="dd/MM/yyyy"
             placeholderText={t("reportGenerator.selectEndDate")}
           />
@@ -404,11 +404,11 @@ const ReportGenerator = () => {
       </div>
 
       {/* Current filters summary */}
-      <div className="mt-4 p-3 md:p-4 bg-gray-100 rounded-lg text-sm md:text-base">
-        <h3 className="font-semibold mb-2">
+      <div className="mt-4 p-3 md:p-4 theme-bg-tertiary rounded-lg text-sm md:text-base transition-colors duration-300">
+        <h3 className="font-semibold mb-2 theme-text-primary">
           {t("reportGenerator.currentReportConditions")}
         </h3>
-        <ul className="list-disc list-inside">
+        <ul className="list-disc list-inside theme-text-primary">
           <li>
             {t("reportGenerator.station")}: {selectedStationName}
           </li>
@@ -432,10 +432,10 @@ const ReportGenerator = () => {
       {/* Generate */}
       <button
         onClick={handleGenerateReport}
-        className={`mt-4 w-full font-bold py-2 px-4 rounded transition duration-150 ease-in-out text-sm md:text-base ${
+        className={`mt-4 w-full font-bold py-2 px-4 rounded transition-all duration-200 text-sm md:text-base ${
           datesValid
-            ? "bg-[#1F6231] hover:bg-[#309d49] text-white"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            ? "theme-accent theme-accent-hover text-white hover:scale-105"
+            : "theme-bg-tertiary theme-text-tertiary cursor-not-allowed"
         }`}
         disabled={!datesValid || loading}
       >
@@ -455,7 +455,7 @@ const ReportGenerator = () => {
       {/* Modal */}
       {showReportModal && reportData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+          <div className="theme-bg-secondary p-6 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto transition-colors duration-300">
             <ReportDisplay
               reportData={reportData}
               reportType={reportType}

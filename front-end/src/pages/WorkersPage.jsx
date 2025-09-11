@@ -3,7 +3,7 @@ import Navbar from "@components/Navbar";
 
 const WorkersPage = () => {
   return (
-    <div>
+    <div className="theme-bg-primary min-h-screen transition-colors duration-300">
       <Navbar />
       <EmployeeItem />
     </div>

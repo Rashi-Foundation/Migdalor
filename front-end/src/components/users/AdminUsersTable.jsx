@@ -61,33 +61,49 @@ export default function AdminUsersTable() {
     }
   };
 
-  if (loading) return <div className="text-gray-500">טוען משתמשים…</div>;
+  if (loading) return <div className="theme-text-tertiary">טוען משתמשים…</div>;
   if (error) return <div className="text-red-600">{error}</div>;
 
-  if (!users.length) return <div className="text-gray-500">No users.</div>;
+  if (!users.length)
+    return <div className="theme-text-tertiary">No users.</div>;
 
   return (
-    <div className="bg-white rounded-xl shadow p-4 overflow-x-auto">
-      <h3 className="text-lg font-semibold mb-3">רשימת משתמשים</h3>
+    <div className="theme-bg-secondary rounded-xl theme-shadow-md p-4 overflow-x-auto transition-colors duration-300">
+      <h3 className="text-lg font-semibold mb-3 theme-text-primary">
+        רשימת משתמשים
+      </h3>
       <table className="min-w-full text-sm">
         <thead>
-          <tr className="text-left bg-gray-100">
-            <th className="px-3 py-2">Username</th>
-            <th className="px-3 py-2">Admin</th>
-            <th className="px-3 py-2 text-center">Actions</th>
+          <tr className="text-left theme-bg-tertiary">
+            <th className="px-3 py-2 theme-text-primary">Username</th>
+            <th className="px-3 py-2 theme-text-primary">Admin</th>
+            <th className="px-3 py-2 text-center theme-text-primary">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           {users.map((u, idx) => (
-            <tr key={u.id} className={idx === 0 ? "bg-amber-50" : ""}>
-              <td className="px-3 py-2 font-medium">{u.username}</td>
-              <td className="px-3 py-2">{u.isAdmin ? "Yes" : "No"}</td>
+            <tr
+              key={u.id}
+              className={
+                idx === 0
+                  ? "bg-amber-50 dark:bg-amber-900/20"
+                  : "hover:theme-bg-tertiary transition-colors duration-200"
+              }
+            >
+              <td className="px-3 py-2 font-medium theme-text-primary">
+                {u.username}
+              </td>
+              <td className="px-3 py-2 theme-text-primary">
+                {u.isAdmin ? "Yes" : "No"}
+              </td>
               <td className="px-3 py-2">
                 <div className="flex justify-center gap-2">
                   <button
                     onClick={() => changePassword(u.username)}
                     disabled={busyUser === u.username}
-                    className={`px-3 py-1 rounded text-white text-xs font-semibold ${
+                    className={`px-3 py-1 rounded text-white text-xs font-semibold transition-colors duration-200 ${
                       busyUser === u.username
                         ? "bg-gray-400"
                         : "bg-blue-600 hover:bg-blue-700"
@@ -98,7 +114,7 @@ export default function AdminUsersTable() {
                   <button
                     onClick={() => deleteUser(u.username)}
                     disabled={u.username === "admin" || busyUser === u.username}
-                    className={`px-3 py-1 rounded text-white text-xs font-semibold ${
+                    className={`px-3 py-1 rounded text-white text-xs font-semibold transition-colors duration-200 ${
                       u.username === "admin" || busyUser === u.username
                         ? "bg-gray-400"
                         : "bg-red-600 hover:bg-red-700"
@@ -117,7 +133,7 @@ export default function AdminUsersTable() {
           ))}
         </tbody>
       </table>
-      <p className="text-xs text-gray-500 mt-2">
+      <p className="text-xs theme-text-tertiary mt-2">
         הערה: משתמשי מנהל מסודרים ראשונים וחסומים למחיקה.
       </p>
     </div>

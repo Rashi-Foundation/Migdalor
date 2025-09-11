@@ -29,20 +29,20 @@ const EmployeeList = ({
   return (
     <div className="flex flex-col h-full">
       {/* Title */}
-      <div className="bg-gray-50 border-b px-4 py-2 rounded-t-lg">
+      <div className="theme-bg-tertiary theme-border-primary border-b px-4 py-2 rounded-t-lg transition-colors duration-300">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-700">
+          <h2 className="text-lg font-semibold theme-text-primary">
             רשימת עובדים ({total})
           </h2>
         </div>
       </div>
 
       {/* List: only 10 items */}
-      <div className="flex-grow bg-white rounded-b-lg shadow">
+      <div className="flex-grow theme-bg-secondary rounded-b-lg theme-shadow-sm transition-colors duration-300">
         {total === 0 ? (
-          <p className="p-4 text-center text-gray-500">לא נמצאו עובדים</p>
+          <p className="p-4 text-center theme-text-tertiary">לא נמצאו עובדים</p>
         ) : (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y theme-border-primary">
             {pageItems.map((emp, idxOnPage) => {
               const key =
                 emp._id ??
@@ -59,18 +59,18 @@ const EmployeeList = ({
                 <li
                   key={key}
                   onClick={() => setSelectedEmployee(emp)}
-                  className={`flex items-center justify-between cursor-pointer px-4 py-3 transition ${
+                  className={`flex items-center justify-between cursor-pointer px-4 py-3 transition-colors duration-200 ${
                     isSelected
-                      ? "bg-[#246B35] text-white"
-                      : "hover:bg-gray-100 text-gray-800"
+                      ? "theme-accent text-white"
+                      : "hover:theme-bg-tertiary theme-text-primary"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <span
                       className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold ${
                         isSelected
-                          ? "bg-white text-[#246B35]"
-                          : "bg-gray-200 text-gray-700"
+                          ? "bg-white theme-text-primary"
+                          : "theme-bg-tertiary theme-text-primary"
                       }`}
                     >
                       {absoluteIndex + 1}
@@ -88,15 +88,15 @@ const EmployeeList = ({
 
       {/* Slider pager (mobile-friendly) */}
       {totalPages > 1 && (
-        <div className="px-4 py-3 bg-white border-t rounded-b-lg">
+        <div className="px-4 py-3 theme-bg-secondary theme-border-primary border-t rounded-b-lg transition-colors duration-300">
           <div className="flex items-center gap-3">
             <button
               onClick={goPrev}
               disabled={page === 1}
-              className={`px-3 py-1 rounded border ${
+              className={`px-3 py-1 rounded theme-border-primary border transition-colors duration-200 ${
                 page === 1
-                  ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                  : "hover:bg-gray-100"
+                  ? "theme-text-tertiary theme-bg-tertiary cursor-not-allowed"
+                  : "hover:theme-bg-tertiary theme-text-primary"
               }`}
             >
               -
@@ -114,16 +114,16 @@ const EmployeeList = ({
             <button
               onClick={goNext}
               disabled={page === totalPages}
-              className={`px-3 py-1 rounded border ${
+              className={`px-3 py-1 rounded theme-border-primary border transition-colors duration-200 ${
                 page === totalPages
-                  ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                  : "hover:bg-gray-100"
+                  ? "theme-text-tertiary theme-bg-tertiary cursor-not-allowed"
+                  : "hover:theme-bg-tertiary theme-text-primary"
               }`}
             >
               +
             </button>
           </div>
-          <div className="text-center text-xs text-gray-500 mt-1">
+          <div className="text-center text-xs theme-text-tertiary mt-1">
             מציג {Math.min((page - 1) * PAGE_SIZE + 1, total)}–
             {Math.min(page * PAGE_SIZE, total)} מתוך {total}
           </div>

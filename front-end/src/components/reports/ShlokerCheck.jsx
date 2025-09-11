@@ -78,15 +78,17 @@ function ShlokerCheck() {
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-4xl font-bold pt-3">{t("shlokerCheck.title")}</h1>
+      <h1 className="text-4xl font-bold pt-3 theme-text-primary">
+        {t("shlokerCheck.title")}
+      </h1>
       <div className="flex w-11/12 justify-center gap-9">
-        <div className="flex items-center justify-center w-1/2 h-15 bg-green-100 p-4 rounded-lg m-5">
-          <h2 className="text-xl font-bold">
+        <div className="flex items-center justify-center w-1/2 h-15 theme-success-bg p-4 rounded-lg m-5 transition-colors duration-300">
+          <h2 className="text-xl font-bold theme-success">
             {t("shlokerCheck.validComponents", { count: counterData.proper })}
           </h2>
         </div>
-        <div className="flex items-center justify-center w-1/2 bg-red-100 p-4 rounded-lg m-5">
-          <h2 className="text-xl font-bold">
+        <div className="flex items-center justify-center w-1/2 theme-error-bg p-4 rounded-lg m-5 transition-colors duration-300">
+          <h2 className="text-xl font-bold theme-error">
             {t("shlokerCheck.defectiveComponents", {
               count: counterData.improper,
             })}

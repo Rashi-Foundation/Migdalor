@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NavItems from "./NavItems";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const { t } = useTranslation();
@@ -31,7 +32,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-100 p-2">
+    <nav className="theme-bg-secondary theme-shadow-md p-2 transition-colors duration-300">
       <div className="flex items-center justify-between">
         <img
           src="/migdalorLogo.png"
@@ -41,7 +42,10 @@ const Navbar = () => {
           className="ml-4"
         />
         {isMobile ? (
-          <button onClick={toggleMenu} className="text-2xl">
+          <button
+            onClick={toggleMenu}
+            className="text-2xl theme-text-primary hover:theme-text-secondary transition-colors duration-200"
+          >
             <IoMdMenu />
           </button>
         ) : (
@@ -50,10 +54,11 @@ const Navbar = () => {
           </ul>
         )}
         {!isMobile && (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
+            <ThemeToggle />
             <LanguageSwitcher />
             <Link
-              className="px-3 py-2 flex items-center space-x-2 hover:bg-[#246B35] rounded-[7px] hover:text-white"
+              className="px-3 py-2 flex items-center space-x-2 theme-accent theme-accent-hover rounded-[7px] text-white transition-all duration-200 hover:scale-105"
               to="/"
             >
               <TbLogout2 />
@@ -67,6 +72,10 @@ const Navbar = () => {
           <ul className="space-y-2 list-none">
             <NavItems isMobile={isMobile} closeMenu={closeMenu} />
           </ul>
+          <div className="flex items-center justify-center mt-4 space-x-3">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
         </div>
       )}
     </nav>

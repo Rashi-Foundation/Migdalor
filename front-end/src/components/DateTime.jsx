@@ -22,7 +22,7 @@ const DateTime = () => {
   });
 
   return (
-    <div className="text-center text-2xl text-gray-700 my-4">
+    <div className="text-center text-2xl theme-text-primary my-4 transition-colors duration-300">
       {formattedDateTime}
     </div>
   );

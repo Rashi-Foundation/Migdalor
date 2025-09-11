@@ -70,21 +70,27 @@ export default function CreateUserForm() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-4">
-      <h2 className="text-lg font-semibold mb-3">יצירת משתמש</h2>
+    <div className="theme-bg-secondary rounded-xl theme-shadow-md p-4 transition-colors duration-300">
+      <h2 className="text-lg font-semibold mb-3 theme-text-primary">
+        יצירת משתמש
+      </h2>
       <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <label className="block">
-          <span className="block mb-1 text-sm font-medium">Username</span>
+          <span className="block mb-1 text-sm font-medium theme-text-primary">
+            Username
+          </span>
           <input
             id="username"
             value={form.username}
             onChange={onChange}
             required
-            className="w-full border p-2 rounded text-sm"
+            className="w-full theme-border-primary border p-2 rounded text-sm theme-bg-secondary theme-text-primary transition-colors duration-200"
           />
         </label>
         <label className="block">
-          <span className="block mb-1 text-sm font-medium">Password</span>
+          <span className="block mb-1 text-sm font-medium theme-text-primary">
+            Password
+          </span>
           <input
             type="password"
             id="password"
@@ -92,7 +98,7 @@ export default function CreateUserForm() {
             onChange={onChange}
             required
             minLength={6}
-            className="w-full border p-2 rounded text-sm"
+            className="w-full theme-border-primary border p-2 rounded text-sm theme-bg-secondary theme-text-primary transition-colors duration-200"
           />
         </label>
         <label className="inline-flex items-center gap-2 mt-6">
@@ -101,9 +107,9 @@ export default function CreateUserForm() {
             id="isAdmin"
             checked={form.isAdmin}
             onChange={onChange}
-            className="h-4 w-4"
+            className="h-4 w-4 theme-accent"
           />
-          <span className="text-sm">Admin</span>
+          <span className="text-sm theme-text-primary">Admin</span>
         </label>
 
         <ErrorMessage
@@ -118,7 +124,7 @@ export default function CreateUserForm() {
           <button
             type="submit"
             disabled={busy}
-            className="px-4 py-2 rounded bg-[#1F6231] text-white text-sm font-medium hover:bg-[#309d49]"
+            className="px-4 py-2 rounded theme-accent theme-accent-hover text-white text-sm font-medium transition-all duration-200 hover:scale-105"
           >
             {busy ? "שומר…" : "יצירת משתמש"}
           </button>
@@ -127,17 +133,21 @@ export default function CreateUserForm() {
 
       {created && (
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="border rounded-lg p-3">
-            <div className="text-sm text-gray-500">ID</div>
-            <div className="font-semibold break-words">{created.id}</div>
+          <div className="theme-border-primary border rounded-lg p-3 transition-colors duration-300">
+            <div className="text-sm theme-text-secondary">ID</div>
+            <div className="font-semibold break-words theme-text-primary">
+              {created.id}
+            </div>
           </div>
-          <div className="border rounded-lg p-3">
-            <div className="text-sm text-gray-500">Username</div>
-            <div className="font-semibold break-words">{created.username}</div>
+          <div className="theme-border-primary border rounded-lg p-3 transition-colors duration-300">
+            <div className="text-sm theme-text-secondary">Username</div>
+            <div className="font-semibold break-words theme-text-primary">
+              {created.username}
+            </div>
           </div>
-          <div className="border rounded-lg p-3">
-            <div className="text-sm text-gray-500">Admin</div>
-            <div className="font-semibold break-words">
+          <div className="theme-border-primary border rounded-lg p-3 transition-colors duration-300">
+            <div className="text-sm theme-text-secondary">Admin</div>
+            <div className="font-semibold break-words theme-text-primary">
               {created.isAdmin ? "Yes" : "No"}
             </div>
           </div>
