@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { IoMdMenu } from "react-icons/io";
 import { TbLogout2 } from "react-icons/tb";
-import { Link } from 'react-router-dom';
-import NavItems from './NavItems';
+import { Link } from "react-router-dom";
+import NavItems from "./NavItems";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,9 +14,9 @@ const Navbar = () => {
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
 
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   const toggleMenu = () => {
@@ -30,7 +30,13 @@ const Navbar = () => {
   return (
     <nav className="bg-gray-100 p-2">
       <div className="flex items-center justify-between">
-        <img src="/migdalorLogo.png" alt="logo" height={60} width={60} className="ml-4"/>
+        <img
+          src="/migdalorLogo.png"
+          alt="logo"
+          height={60}
+          width={60}
+          className="ml-4"
+        />
         {isMobile ? (
           <button onClick={toggleMenu} className="text-2xl">
             <IoMdMenu />
@@ -41,7 +47,10 @@ const Navbar = () => {
           </ul>
         )}
         {!isMobile && (
-          <Link className="px-3 py-2 flex items-center space-x-2 hover:bg-[#246B35] rounded-[7px] hover:text-white" to="/">
+          <Link
+            className="px-3 py-2 flex items-center space-x-2 hover:bg-[#246B35] rounded-[7px] hover:text-white"
+            to="/"
+          >
             <TbLogout2 />
             <span>התנתקות</span>
           </Link>
@@ -56,6 +65,6 @@ const Navbar = () => {
       )}
     </nav>
   );
-}
+};
 
 export default Navbar;
