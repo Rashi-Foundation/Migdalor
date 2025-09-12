@@ -246,5 +246,41 @@
     "passwordUpdatedSuccessfully": "הסיסמה עודכנה בהצלחה",
     "loginAgain": "התחבר מחדש",
     "errorUpdatingPassword": "שגיאה בעדכון סיסמה - נסה שוב"
+  },
+  "productionEfficiency": {
+    "title": "יעילות ייצור",
+    "todayEfficiency": "יעילות היום",
+    "yesterday": "אתמול",
+    "weeklyAverage": "ממוצע שבועי",
+    "validComponents": "רכיבים תקינים",
+    "defectiveComponents": "רכיבים פגומים",
+    "errorLoadingData": "שגיאה בטעינת נתוני יעילות"
+  },
+  "departmentPerformance": {
+    "title": "ביצועי מחלקות",
+    "unknownDepartment": "מחלקה לא ידועה",
+    "stations": "עמדות",
+    "employees": "עובדים",
+    "active": "פעיל",
+    "inactive": "לא פעיל",
+    "totalDepartments": "סה\"כ מחלקות",
+    "averageEfficiency": "יעילות ממוצעת",
+    "totalEmployees": "סה\"כ עובדים",
+    "noData": "אין נתוני מחלקות זמינים",
+    "errorLoadingData": "שגיאה בטעינת נתוני מחלקות"
+  },
+  "productionQuality": {
+    "title": "איכות ייצור",
+    "qualityScore": "ציון איכות",
+    "weeklyTrend": "מגמה שבועית",
+    "topIssues": "בעיות עיקריות",
+    "defectRate": "שיעור פגמים",
+    "grade": "ציון",
+    "issues": {
+      "dimensionError": "שגיאת מידות",
+      "surfaceDefect": "פגם משטח",
+      "materialIssue": "בעיית חומר"
+    },
+    "errorLoadingData": "שגיאה בטעינת נתוני איכות"
   }
 }

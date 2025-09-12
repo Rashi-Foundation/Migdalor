@@ -242,5 +242,41 @@
     "passwordUpdatedSuccessfully": "Password updated successfully",
     "loginAgain": "Login again",
     "errorUpdatingPassword": "Error updating password - try again"
+  },
+  "productionEfficiency": {
+    "title": "Production Efficiency",
+    "todayEfficiency": "Today's Efficiency",
+    "yesterday": "Yesterday",
+    "weeklyAverage": "Weekly Average",
+    "validComponents": "Valid Components",
+    "defectiveComponents": "Defective Components",
+    "errorLoadingData": "Error loading efficiency data"
+  },
+  "departmentPerformance": {
+    "title": "Department Performance",
+    "unknownDepartment": "Unknown Department",
+    "stations": "Stations",
+    "employees": "Employees",
+    "active": "Active",
+    "inactive": "Inactive",
+    "totalDepartments": "Total Departments",
+    "averageEfficiency": "Average Efficiency",
+    "totalEmployees": "Total Employees",
+    "noData": "No department data available",
+    "errorLoadingData": "Error loading department data"
+  },
+  "productionQuality": {
+    "title": "Production Quality",
+    "qualityScore": "Quality Score",
+    "weeklyTrend": "Weekly Trend",
+    "topIssues": "Top Issues",
+    "defectRate": "Defect Rate",
+    "grade": "Grade",
+    "issues": {
+      "dimensionError": "Dimension Error",
+      "surfaceDefect": "Surface Defect",
+      "materialIssue": "Material Issue"
+    },
+    "errorLoadingData": "Error loading quality data"
   }
 }
