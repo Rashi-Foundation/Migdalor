@@ -7,6 +7,7 @@ import { LuUsers } from "react-icons/lu";
 import { AiOutlineProduct } from "react-icons/ai";
 import { TbLogout2 } from "react-icons/tb";
 import { LuSettings } from "react-icons/lu";
+import { MdOutlineAssessment } from "react-icons/md";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const NavItems = ({ isMobile, closeMenu }) => {
@@ -53,11 +54,21 @@ const NavItems = ({ isMobile, closeMenu }) => {
       <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
         <Link
           className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
-          to="/productivity"
+          to="/production"
           onClick={handleClick}
         >
           <AiOutlineProduct />
-          <span>{t("navbar.productivity")}</span>
+          <span>{t("navbar.production")}</span>
+        </Link>
+      </li>
+      <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
+        <Link
+          className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
+          to="/reports"
+          onClick={handleClick}
+        >
+          <MdOutlineAssessment />
+          <span>{t("navbar.reports")}</span>
         </Link>
       </li>
       <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
