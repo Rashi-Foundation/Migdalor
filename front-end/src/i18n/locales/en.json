@@ -86,17 +86,6 @@
     "allDepartments": "All Departments",
     "generate": "Generate"
   },
-  "settingsPage": {
-    "title": "Settings",
-    "general": "General",
-    "language": "Language",
-    "theme": "Theme",
-    "notifications": "Notifications",
-    "account": "Account",
-    "users": "Users",
-    "createUser": "Create User",
-    "userManagement": "User Management"
-  },
   "employeeForm": {
     "personalInfo": "Personal Information",
     "firstName": "First Name",
@@ -228,6 +217,14 @@
   },
   "settingsPage": {
     "title": "Account Settings",
+    "general": "General",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "account": "Account",
+    "users": "Users",
+    "createUser": "Create User",
+    "userManagement": "User Management (Admin)",
     "loadingProfile": "Loading profile...",
     "userNotLoaded": "User not loaded.",
     "username": "Username",
@@ -240,7 +237,6 @@
     "updating": "Updating...",
     "changePassword": "Change Password",
     "minimum6Characters": "Minimum 6 characters.",
-    "userManagement": "User Management (Admin)",
     "passwordMustBe6Characters": "Password must be at least 6 characters long",
     "passwordsDoNotMatch": "Passwords do not match",
     "passwordUpdatedSuccessfully": "Password updated successfully",

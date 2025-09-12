@@ -68,74 +68,152 @@ export default function AdminUsersTable() {
     return <div className="theme-text-tertiary">No users.</div>;
 
   return (
-    <div className="theme-bg-secondary rounded-xl theme-shadow-md p-4 overflow-x-auto transition-colors duration-300">
-      <h3 className="text-lg font-semibold mb-3 theme-text-primary">
-        רשימת משתמשים
-      </h3>
-      <table className="min-w-full text-sm">
-        <thead>
-          <tr className="text-left theme-bg-tertiary">
-            <th className="px-3 py-2 theme-text-primary">Username</th>
-            <th className="px-3 py-2 theme-text-primary">Admin</th>
-            <th className="px-3 py-2 text-center theme-text-primary">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u, idx) => (
-            <tr
-              key={u.id}
-              className={
-                idx === 0
-                  ? "bg-amber-50 dark:bg-amber-900/20"
-                  : "hover:theme-bg-tertiary transition-colors duration-200"
-              }
-            >
-              <td className="px-3 py-2 font-medium theme-text-primary">
-                {u.username}
-              </td>
-              <td className="px-3 py-2 theme-text-primary">
-                {u.isAdmin ? "Yes" : "No"}
-              </td>
-              <td className="px-3 py-2">
-                <div className="flex justify-center gap-2">
-                  <button
-                    onClick={() => changePassword(u.username)}
-                    disabled={busyUser === u.username}
-                    className={`px-3 py-1 rounded text-white text-xs font-semibold transition-colors duration-200 ${
-                      busyUser === u.username
-                        ? "bg-gray-400"
-                        : "bg-blue-600 hover:bg-blue-700"
-                    }`}
-                  >
-                    Change Password
-                  </button>
-                  <button
-                    onClick={() => deleteUser(u.username)}
-                    disabled={u.username === "admin" || busyUser === u.username}
-                    className={`px-3 py-1 rounded text-white text-xs font-semibold transition-colors duration-200 ${
-                      u.username === "admin" || busyUser === u.username
-                        ? "bg-gray-400"
-                        : "bg-red-600 hover:bg-red-700"
-                    }`}
-                    title={
-                      u.username === "admin"
-                        ? "Cannot delete 'admin' user"
-                        : "Delete user"
-                    }
-                  >
-                    Delete
-                  </button>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold theme-text-primary flex items-center gap-2">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+          Users ({users.length})
+        </h3>
+        <div className="text-sm theme-text-secondary">
+          {users.filter((u) => u.isAdmin).length} admin(s)
+        </div>
+      </div>
+
+      <div className="grid gap-3">
+        {users.map((u, idx) => (
+          <div
+            key={u.id}
+            className={`theme-bg-tertiary rounded-xl p-4 border transition-all duration-200 hover:scale-[1.02] hover:shadow-md ${
+              u.isAdmin
+                ? "border-amber-300 dark:border-amber-700 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20"
+                : "theme-border-primary"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                    u.isAdmin
+                      ? "bg-gradient-to-r from-amber-500 to-yellow-500"
+                      : "bg-gradient-to-r from-blue-500 to-indigo-500"
+                  }`}
+                >
+                  {u.username.charAt(0).toUpperCase()}
                 </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <p className="text-xs theme-text-tertiary mt-2">
-        הערה: משתמשי מנהל מסודרים ראשונים וחסומים למחיקה.
-      </p>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold theme-text-primary text-lg">
+                      {u.username}
+                    </span>
+                    {u.isAdmin && (
+                      <span className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-xs font-medium rounded-full flex items-center gap-1">
+                        <svg
+                          className="w-3 h-3"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M9.504 1.132a1 1 0 01.992 0l1.75 1a1 1 0 11-.992 1.736L10 3.152l-1.254.716a1 1 0 11-.992-1.736l1.75-1zM5.618 4.504a1 1 0 01-.372 1.364L5.016 6l.23.132a1 1 0 11-.992 1.736L3.5 7.723V8a1 1 0 01-2 0V6a.996.996 0 01.52-.878l1.734-.99a1 1 0 011.364.372zm8.764 0a1 1 0 011.364-.372l1.734.99A.996.996 0 0118 6v2a1 1 0 11-2 0v-.277l-1.754-1.132a1 1 0 11-.992-1.736L14.984 6l-.23-.132a1 1 0 01-.372-1.364zm-7 4a1 1 0 011.364-.372L10 8.848l1.254-.716a1 1 0 11.992 1.736L11.254 10.4 12 10.848a1 1 0 11-.992 1.736l-1.75-1a1 1 0 01-.372-1.364zM3.5 11.5a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zm14 0a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-9.5 3a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Admin
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-sm theme-text-secondary">
+                    {u.isAdmin ? "Administrator" : "Regular User"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => changePassword(u.username)}
+                  disabled={busyUser === u.username}
+                  className={`px-4 py-2 rounded-lg text-white text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                    busyUser === u.username
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:scale-105 hover:shadow-md"
+                  }`}
+                >
+                  {busyUser === u.username ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  ) : (
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                      />
+                    </svg>
+                  )}
+                  Change Password
+                </button>
+
+                <button
+                  onClick={() => deleteUser(u.username)}
+                  disabled={u.username === "admin" || busyUser === u.username}
+                  className={`px-4 py-2 rounded-lg text-white text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                    u.username === "admin" || busyUser === u.username
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-red-500 to-pink-500 hover:scale-105 hover:shadow-md"
+                  }`}
+                  title={
+                    u.username === "admin"
+                      ? "Cannot delete 'admin' user"
+                      : "Delete user"
+                  }
+                >
+                  {busyUser === u.username ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  ) : (
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  )}
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-center">
+        <p className="text-sm theme-text-tertiary">
+          💡 Admin users are highlighted and protected from deletion
+        </p>
+      </div>
     </div>
   );
 }
