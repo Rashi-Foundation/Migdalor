@@ -96,7 +96,24 @@
     "account": "חשבון",
     "users": "משתמשים",
     "createUser": "צור משתמש",
-    "userManagement": "ניהול משתמשים"
+    "userManagement": "ניהול משתמשים",
+    "loadingProfile": "טוען פרופיל…",
+    "userNotLoaded": "לא נטען משתמש.",
+    "username": "שם משתמש",
+    "admin": "מנהל",
+    "yes": "כן",
+    "no": "לא",
+    "password": "סיסמה",
+    "newPassword": "סיסמה חדשה",
+    "confirmPassword": "אשר סיסמה",
+    "updating": "מעדכן…",
+    "changePassword": "עדכן סיסמה",
+    "minimum6Characters": "מינימום 6 תווים.",
+    "passwordMustBe6Characters": "הסיסמה חייבת להיות באורך 6 תווים לפחות",
+    "passwordsDoNotMatch": "הסיסמאות אינן תואמות",
+    "passwordUpdatedSuccessfully": "הסיסמה עודכנה בהצלחה",
+    "loginAgain": "התחבר מחדש",
+    "errorUpdatingPassword": "שגיאה בעדכון סיסמה - נסה שוב"
   },
   "employeeForm": {
     "personalInfo": "מידע אישי",
@@ -226,13 +243,12 @@
     "totalValidValves": "סה״כ שסתומים תקינים",
     "totalDefectiveValves": "סה״כ שסתומים פגומים",
     "overallQualityRate": "שיעור איכות כללי",
-    "totalProduction": "סה״כ תפוקה",
     "filterType": "סוג מסנן",
     "noDataAvailable": "אין נתונים זמינים לטווח התאריכים שנבחר",
     "summaryStatistics": "סטטיסטיקות סיכום",
     "endOfReport": "סוף דוח - נוצר על ידי מערכת התפוקה מיגדלור"
   },
-  "reports": {
+  "advancedReports": {
     "title": "דוחות מתקדמים",
     "subtitle": "צור דוחות תפוקה מקיפים עם ויזואליזציות יצירתיות",
     "selectEmployee": "בחר עובד",
@@ -303,27 +319,6 @@
     "errorGeneratingReport": "שגיאה ביצירת הדוח - נסה שוב",
     "errorLoadingEmployees": "שגיאה בטעינת רשימת העובדים",
     "errorLoadingStations": "שגיאה בטעינת רשימת התחנות"
-  },
-  "settingsPage": {
-    "title": "הגדרות חשבון",
-    "loadingProfile": "טוען פרופיל…",
-    "userNotLoaded": "לא נטען משתמש.",
-    "username": "שם משתמש",
-    "admin": "מנהל",
-    "yes": "כן",
-    "no": "לא",
-    "password": "סיסמה",
-    "newPassword": "סיסמה חדשה",
-    "confirmPassword": "אשר סיסמה",
-    "updating": "מעדכן…",
-    "changePassword": "עדכן סיסמה",
-    "minimum6Characters": "מינימום 6 תווים.",
-    "userManagement": "ניהול משתמשים (מנהל)",
-    "passwordMustBe6Characters": "הסיסמה חייבת להיות באורך 6 תווים לפחות",
-    "passwordsDoNotMatch": "הסיסמאות אינן תואמות",
-    "passwordUpdatedSuccessfully": "הסיסמה עודכנה בהצלחה",
-    "loginAgain": "התחבר מחדש",
-    "errorUpdatingPassword": "שגיאה בעדכון סיסמה - נסה שוב"
   },
   "productionEfficiency": {
     "title": "יעילות ייצור",
