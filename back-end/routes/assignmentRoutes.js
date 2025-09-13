@@ -41,6 +41,44 @@ router.get("/assignments", async (req, res) => {
   }
 });
 
+// GET assignments for a specific week
+router.get("/assignments/weekly", async (req, res) => {
+  try {
+    const { weekStart } = req.query;
+    if (!weekStart) {
+      logger.error("Weekly assignment fetch", "Missing weekStart parameter");
+      return res
+        .status(400)
+        .json({ message: "weekStart parameter is required" });
+    }
+
+    const startDate = new Date(weekStart);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 7);
+
+    logger.db("Fetch weekly assignments", "Assignment");
+    const assignments = await Assignment.find({
+      date: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    }).sort("date");
+
+    logger.success(
+      "Weekly assignments fetched",
+      `${assignments.length} assignments for week starting ${weekStart}`
+    );
+    res.json(assignments);
+  } catch (error) {
+    logger.error("Error fetching weekly assignments", error);
+    res.status(500).json({
+      message: "Error fetching weekly assignments",
+      error: error.message,
+    });
+  }
+});
+
 // POST new assignment
 router.post("/assignments", requireAuth, requireAdmin, async (req, res) => {
   try {
