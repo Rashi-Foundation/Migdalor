@@ -27,7 +27,7 @@
   },
   "navbar": {
     "home": "דף הבית",
-    "stationAssignment": "שיבוץ עמדות",
+    "stationAssignment": "ניהול עמדות",
     "employees": "עובדים",
     "production": "תפוקה",
     "reports": "דוחות",
@@ -224,6 +224,39 @@
     "loading": "טוען...",
     "error": "שגיאה",
     "tryAgainLater": "אנא נסה שוב מאוחר יותר או פנה לתמיכה."
+  },
+  "stationPage": {
+    "title": "ניהול עמדות",
+    "subtitle": "נהל את העמדות והשיבוצים שלך ביעילות",
+    "assignmentSection": "שיבוץ",
+    "managementSection": "ניהול",
+    "assignmentDescription": "נהל שיבוץ עובדים לעמדות",
+    "managementDescription": "הוסף, ערוך ומחק עמדות"
+  },
+  "stationManagement": {
+    "title": "ניהול עמדות",
+    "addStation": "הוסף עמדה חדשה",
+    "editStation": "ערוך עמדה",
+    "deleteStation": "מחק עמדה",
+    "stationName": "שם עמדה",
+    "department": "מחלקה",
+    "productName": "שם מוצר",
+    "stationId": "מזהה עמדה",
+    "actions": "פעולות",
+    "noStations": "לא נמצאו עמדות",
+    "confirmDelete": "האם אתה בטוח שברצונך למחוק עמדה זו?",
+    "deleteWarning": "פעולה זו לא ניתנת לביטול ותמחק גם את כל עמדות העבודה הקשורות.",
+    "stationCreated": "העמדה נוצרה בהצלחה",
+    "stationUpdated": "העמדה עודכנה בהצלחה",
+    "stationDeleted": "העמדה נמחקה בהצלחה",
+    "errorLoading": "שגיאה בטעינת העמדות",
+    "errorCreating": "שגיאה ביצירת העמדה",
+    "errorUpdating": "שגיאה בעדכון העמדה",
+    "errorDeleting": "שגיאה במחיקת העמדה",
+    "stationExists": "עמדה עם שם זה כבר קיימת",
+    "hasAssignments": "לא ניתן למחוק עמדה עם שיבוצים פעילים",
+    "requiredFields": "כל השדות נדרשים",
+    "adminOnly": "תכונה זו זמינה למנהלים בלבד"
   },
   "assignmentComp": {
     "title": "טבלת שיבוצים",
