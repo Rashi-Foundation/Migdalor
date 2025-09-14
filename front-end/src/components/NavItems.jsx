@@ -8,15 +8,24 @@ import { AiOutlineProduct } from "react-icons/ai";
 import { TbLogout2 } from "react-icons/tb";
 import { LuSettings } from "react-icons/lu";
 import { MdOutlineAssessment } from "react-icons/md";
+import { useAuth } from "../contexts/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const NavItems = ({ isMobile, closeMenu }) => {
   const { t } = useTranslation();
+  const { logout } = useAuth();
 
   const handleClick = () => {
     if (isMobile && closeMenu) {
       closeMenu();
     }
+  };
+
+  const handleLogout = () => {
+    if (isMobile && closeMenu) {
+      closeMenu();
+    }
+    logout();
   };
 
   return (
@@ -89,14 +98,13 @@ const NavItems = ({ isMobile, closeMenu }) => {
             </div>
           </li>
           <li className="theme-accent-hover rounded-[7px] hover:text-white transition-all duration-200">
-            <Link
-              className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary"
-              to="/"
-              onClick={handleClick}
+            <button
+              className="px-3 py-2 rounded flex items-center space-x-2 theme-text-primary hover:theme-text-primary w-full text-left"
+              onClick={handleLogout}
             >
               <TbLogout2 />
               <span>{t("navbar.logout")}</span>
-            </Link>
+            </button>
           </li>
         </>
       )}

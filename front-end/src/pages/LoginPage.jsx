@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { http } from "../api/http";
+import { useAuth } from "../contexts/AuthContext";
 import ErrorMessage, {
   useErrorHandler,
   getErrorInfo,
@@ -9,6 +9,7 @@ import ErrorMessage, {
 
 const LoginPage = () => {
   const { t } = useTranslation();
+  const { login } = useAuth();
 
   // login form
   const [username, setUsername] = useState("");
@@ -17,7 +18,6 @@ const LoginPage = () => {
   // UI state
   const [busy, setBusy] = useState(false);
 
-  const navigate = useNavigate();
   const {
     error,
     errorType,
@@ -50,9 +50,7 @@ const LoginPage = () => {
       const { data } = await http.post("/login", { username, password });
 
       if (data?.success && data?.token) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user || {}));
-        navigate("/home");
+        login(data.user || {}, data.token);
       } else {
         setAuthError(t("loginPage.errors.loginFailed"));
       }

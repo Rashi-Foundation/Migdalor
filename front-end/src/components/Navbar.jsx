@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { IoMdMenu } from "react-icons/io";
 import { TbLogout2 } from "react-icons/tb";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../contexts/AuthContext";
 import NavItems from "./NavItems";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const { t } = useTranslation();
+  const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -57,13 +58,13 @@ const Navbar = () => {
           <div className="flex items-center space-x-3">
             <ThemeToggle />
             <LanguageSwitcher />
-            <Link
+            <button
+              onClick={logout}
               className="px-3 py-2 flex items-center space-x-2 theme-accent theme-accent-hover rounded-[7px] text-white transition-all duration-200 hover:scale-105"
-              to="/"
             >
               <TbLogout2 />
               <span>{t("navbar.logout")}</span>
-            </Link>
+            </button>
           </div>
         )}
       </div>

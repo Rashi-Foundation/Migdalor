@@ -6,16 +6,60 @@ import ProductionPage from "@pages/ProductionPage";
 import ReportsPage from "@pages/ReportsPage";
 import StationPage from "@pages/StationPage";
 import SettingsPage from "@pages/SettingsPage";
+import ProtectedRoute from "@components/ProtectedRoute";
+
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route path="/home" element={<HomePage />} />
-      <Route path="/employees" element={<WorkersPage />} />
-      <Route path="/production" element={<ProductionPage />} />
-      <Route path="/reports" element={<ReportsPage />} />
-      <Route path="/station" element={<StationPage />} />
-      <Route path="/Settings" element={<SettingsPage />} />
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees"
+        element={
+          <ProtectedRoute>
+            <WorkersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/production"
+        element={
+          <ProtectedRoute>
+            <ProductionPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <ReportsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/station"
+        element={
+          <ProtectedRoute>
+            <StationPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <SettingsPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
