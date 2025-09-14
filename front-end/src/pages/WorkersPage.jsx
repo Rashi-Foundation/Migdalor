@@ -5,7 +5,9 @@ const WorkersPage = () => {
   return (
     <div className="theme-bg-primary min-h-screen transition-colors duration-300">
       <Navbar />
-      <EmployeeItem />
+      <div className="responsive-container">
+        <EmployeeItem />
+      </div>
     </div>
   );
 };

@@ -590,16 +590,16 @@ const ReportsPage = () => {
   return (
     <div className="theme-bg-primary min-h-screen transition-colors duration-300">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
+      <div className="responsive-container py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
             <div>
-              <h1 className="text-4xl font-bold theme-text-primary mb-2 flex items-center">
-                <Sparkles className="mr-3 text-yellow-500" />
+              <h1 className="responsive-heading font-bold theme-text-primary mb-2 flex items-center">
+                <Sparkles className="mr-2 sm:mr-3 text-yellow-500 h-6 w-6 sm:h-8 sm:w-8" />
                 {t("reports.title")}
               </h1>
-              <p className="text-lg theme-text-secondary">
+              <p className="responsive-text theme-text-secondary">
                 {t("reports.subtitle")}
               </p>
             </div>
@@ -607,7 +607,7 @@ const ReportsPage = () => {
               <button
                 onClick={exportToPDF}
                 disabled={exporting || !reportData}
-                className={`flex items-center px-4 py-2 text-white rounded-lg transition-colors ${
+                className={`flex items-center px-3 sm:px-4 py-2 text-white rounded-lg transition-colors touch-button ${
                   exporting
                     ? "bg-gray-500 cursor-not-allowed"
                     : reportData
@@ -618,17 +618,19 @@ const ReportsPage = () => {
                 <Download
                   className={`mr-2 h-4 w-4 ${exporting ? "animate-spin" : ""}`}
                 />
-                {exporting ? t("reports.exporting") : t("reports.exportPDF")}
+                <span className="text-sm sm:text-base">
+                  {exporting ? t("reports.exporting") : t("reports.exportPDF")}
+                </span>
               </button>
             </div>
           </div>
 
           {/* Report Controls */}
-          <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="responsive-card">
+            <div className="responsive-grid mb-4">
               <div>
-                <label className="block text-sm font-semibold theme-text-primary mb-2">
-                  <Users className="inline mr-2 h-4 w-4" />
+                <label className="block text-xs sm:text-sm font-semibold theme-text-primary mb-2">
+                  <Users className="inline mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                   {t("reports.selectEmployee")}
                 </label>
                 <select
@@ -639,7 +641,7 @@ const ReportsPage = () => {
                         null
                     )
                   }
-                  className="w-full p-3 theme-border-primary border rounded-lg theme-bg-primary theme-text-primary transition-colors"
+                  className="w-full p-2 sm:p-3 theme-border-primary border rounded-lg theme-bg-primary theme-text-primary transition-colors touch-input"
                 >
                   <option value="">{t("reports.allEmployees")}</option>
                   {employees.map((emp) => (
@@ -651,8 +653,8 @@ const ReportsPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold theme-text-primary mb-2">
-                  <Settings className="inline mr-2 h-4 w-4" />
+                <label className="block text-xs sm:text-sm font-semibold theme-text-primary mb-2">
+                  <Settings className="inline mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                   {t("reports.selectStation")}
                 </label>
                 <select
@@ -664,7 +666,7 @@ const ReportsPage = () => {
                       ) || null
                     )
                   }
-                  className="w-full p-3 theme-border-primary border rounded-lg theme-bg-primary theme-text-primary transition-colors"
+                  className="w-full p-2 sm:p-3 theme-border-primary border rounded-lg theme-bg-primary theme-text-primary transition-colors touch-input"
                 >
                   <option value="">{t("reports.allStations")}</option>
                   {stations.map((station) => (
@@ -676,43 +678,45 @@ const ReportsPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold theme-text-primary mb-2">
-                  <Calendar className="inline mr-2 h-4 w-4" />
+                <label className="block text-xs sm:text-sm font-semibold theme-text-primary mb-2">
+                  <Calendar className="inline mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                   {t("reports.startDate")}
                 </label>
                 <DatePicker
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
-                  className="w-full p-3 theme-border-primary border rounded-lg theme-bg-primary theme-text-primary"
+                  className="w-full p-2 sm:p-3 theme-border-primary border rounded-lg theme-bg-primary theme-text-primary touch-input"
                   dateFormat="dd/MM/yyyy"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold theme-text-primary mb-2">
-                  <Calendar className="inline mr-2 h-4 w-4" />
+                <label className="block text-xs sm:text-sm font-semibold theme-text-primary mb-2">
+                  <Calendar className="inline mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                   {t("reports.endDate")}
                 </label>
                 <DatePicker
                   selected={endDate}
                   onChange={(date) => setEndDate(date)}
-                  className="w-full p-3 theme-border-primary border rounded-lg theme-bg-primary theme-text-primary"
+                  className="w-full p-2 sm:p-3 theme-border-primary border rounded-lg theme-bg-primary theme-text-primary touch-input"
                   dateFormat="dd/MM/yyyy"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                 <button
                   onClick={generateReport}
                   disabled={loading}
-                  className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                  className="flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 touch-button"
                 >
-                  <Zap className="mr-2 h-5 w-5" />
-                  {loading
-                    ? t("reports.generating")
-                    : t("reports.generateReport")}
+                  <Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-sm sm:text-base">
+                    {loading
+                      ? t("reports.generating")
+                      : t("reports.generateReport")}
+                  </span>
                 </button>
                 <button
                   onClick={() => {
@@ -722,10 +726,12 @@ const ReportsPage = () => {
                     setEndDate(new Date());
                     setReportData(null);
                   }}
-                  className="flex items-center px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                  className="flex items-center justify-center px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors touch-button"
                 >
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  {t("reports.reset")}
+                  <span className="text-sm sm:text-base">
+                    {t("reports.reset")}
+                  </span>
                 </button>
               </div>
             </div>
@@ -736,73 +742,73 @@ const ReportsPage = () => {
         {reportData && (
           <div ref={reportRef} className="space-y-8">
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg border-l-4 border-green-500">
+            <div className="responsive-grid">
+              <div className="responsive-card border-l-4 border-green-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm theme-text-tertiary font-medium">
+                    <p className="text-xs sm:text-sm theme-text-tertiary font-medium">
                       {t("reports.totalProduction")}
                     </p>
-                    <p className="text-3xl font-bold theme-text-primary">
+                    <p className="text-xl sm:text-2xl lg:text-3xl font-bold theme-text-primary">
                       {stats?.total || 0}
                     </p>
                   </div>
-                  <Target className="h-8 w-8 text-green-500" />
+                  <Target className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
                 </div>
               </div>
 
-              <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg border-l-4 border-blue-500">
+              <div className="responsive-card border-l-4 border-blue-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm theme-text-tertiary font-medium">
+                    <p className="text-xs sm:text-sm theme-text-tertiary font-medium">
                       {t("reports.validValves")}
                     </p>
-                    <p className="text-3xl font-bold text-blue-600">
+                    <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600">
                       {stats?.totalGood || 0}
                     </p>
                   </div>
-                  <Award className="h-8 w-8 text-blue-500" />
+                  <Award className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
                 </div>
               </div>
 
-              <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg border-l-4 border-red-500">
+              <div className="responsive-card border-l-4 border-red-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm theme-text-tertiary font-medium">
+                    <p className="text-xs sm:text-sm theme-text-tertiary font-medium">
                       {t("reports.defectiveValves")}
                     </p>
-                    <p className="text-3xl font-bold text-red-600">
+                    <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-red-600">
                       {stats?.totalInvalid || 0}
                     </p>
                   </div>
-                  <Activity className="h-8 w-8 text-red-500" />
+                  <Activity className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />
                 </div>
               </div>
 
-              <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg border-l-4 border-purple-500">
+              <div className="responsive-card border-l-4 border-purple-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm theme-text-tertiary font-medium">
+                    <p className="text-xs sm:text-sm theme-text-tertiary font-medium">
                       {t("reports.qualityRate")}
                     </p>
-                    <p className="text-3xl font-bold text-purple-600">
+                    <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600">
                       {stats?.qualityRate || 0}%
                     </p>
                   </div>
-                  <Star className="h-8 w-8 text-purple-500" />
+                  <Star className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500" />
                 </div>
               </div>
             </div>
 
             {/* Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {/* Quality Distribution */}
-              <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg">
-                <h3 className="text-xl font-semibold theme-text-primary mb-4 flex items-center">
-                  <PieChart className="mr-2 h-5 w-5 text-green-500" />
+              <div className="responsive-card">
+                <h3 className="responsive-text font-semibold theme-text-primary mb-3 sm:mb-4 flex items-center">
+                  <PieChart className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                   {t("reports.qualityDistribution")}
                 </h3>
-                <div className="h-80 chart-container">
+                <div className="mobile-chart tablet-chart desktop-chart chart-container">
                   <Doughnut
                     data={qualityDistributionData}
                     options={chartOptions}
@@ -811,34 +817,34 @@ const ReportsPage = () => {
               </div>
 
               {/* Production Trend */}
-              <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg">
-                <h3 className="text-xl font-semibold theme-text-primary mb-4 flex items-center">
-                  <TrendingUp className="mr-2 h-5 w-5 text-blue-500" />
+              <div className="responsive-card">
+                <h3 className="responsive-text font-semibold theme-text-primary mb-3 sm:mb-4 flex items-center">
+                  <TrendingUp className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                   {t("reports.productionTrend")}
                 </h3>
-                <div className="h-80 chart-container">
+                <div className="mobile-chart tablet-chart desktop-chart chart-container">
                   <Line data={productionTrendData} options={chartOptions} />
                 </div>
               </div>
 
               {/* Quality Radar */}
-              <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg">
-                <h3 className="text-xl font-semibold theme-text-primary mb-4 flex items-center">
-                  <Target className="mr-2 h-5 w-5 text-purple-500" />
+              <div className="responsive-card">
+                <h3 className="responsive-text font-semibold theme-text-primary mb-3 sm:mb-4 flex items-center">
+                  <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
                   {t("reports.qualityMetrics")}
                 </h3>
-                <div className="h-80 chart-container">
+                <div className="mobile-chart tablet-chart desktop-chart chart-container">
                   <Radar data={qualityRadarData} options={chartOptions} />
                 </div>
               </div>
 
               {/* Weekly Performance */}
-              <div className="theme-bg-secondary p-6 rounded-xl theme-shadow-lg">
-                <h3 className="text-xl font-semibold theme-text-primary mb-4 flex items-center">
-                  <Clock className="mr-2 h-5 w-5 text-orange-500" />
+              <div className="responsive-card">
+                <h3 className="responsive-text font-semibold theme-text-primary mb-3 sm:mb-4 flex items-center">
+                  <Clock className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
                   {t("reports.weeklyPerformance")}
                 </h3>
-                <div className="h-80 chart-container">
+                <div className="mobile-chart tablet-chart desktop-chart chart-container">
                   <PolarArea
                     data={performancePolarData}
                     options={chartOptions}

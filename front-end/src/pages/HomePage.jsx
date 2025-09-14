@@ -15,20 +15,20 @@ const HomePage = () => {
       <UpdatesCards />
 
       {/* New Enhanced Components */}
-      <div className="p-5">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div className="responsive-container py-4 sm:py-6 lg:py-8">
+        <div className="responsive-grid mb-6">
           {/* Production Efficiency Chart */}
-          <div className="lg:col-span-1">
+          <div className="sm:col-span-1 lg:col-span-1">
             <ProductionEfficiencyChart />
           </div>
 
           {/* Department Performance Overview */}
-          <div className="lg:col-span-1">
+          <div className="sm:col-span-1 lg:col-span-1">
             <DepartmentPerformanceOverview />
           </div>
 
           {/* Production Quality Dashboard */}
-          <div className="lg:col-span-1">
+          <div className="sm:col-span-1 lg:col-span-1">
             <ProductionQualityDashboard />
           </div>
         </div>

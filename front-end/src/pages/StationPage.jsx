@@ -16,36 +16,15 @@ const StationPage = () => {
   const renderContent = () => {
     if (activeSection === "assignment") {
       return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            gap: "2px",
-            height: "calc(100vh - 120px)",
-          }}
-        >
-          <div
-            className="theme-bg-tertiary transition-colors duration-300"
-            style={{
-              flex: "1",
-              padding: "20px",
-              overflowY: "auto",
-            }}
-          >
+        <div className="flex flex-col lg:flex-row gap-2 min-h-[calc(100vh-120px)]">
+          <div className="theme-bg-tertiary transition-colors duration-300 flex-1 lg:flex-none lg:w-1/4 p-4 sm:p-6 lg:p-5 overflow-y-auto">
             <StationItem
               onSelectStation={setSelectedStation}
               onAssignmentButtonClick={() => setShowAssignmentForm(true)}
               isAdmin={isAdmin}
             />
           </div>
-          <div
-            className="theme-bg-secondary transition-colors duration-300"
-            style={{
-              flex: "3",
-              padding: "20px",
-              overflowY: "auto",
-            }}
-          >
+          <div className="theme-bg-secondary transition-colors duration-300 flex-1 lg:flex-1 p-4 sm:p-6 lg:p-5 overflow-y-auto">
             <AssignmentComp
               selectedStation={selectedStation}
               showForm={isAdmin && showAssignmentForm}
@@ -64,7 +43,7 @@ const StationPage = () => {
   return (
     <div className="theme-bg-primary min-h-screen transition-colors duration-300">
       <Navbar />
-      <div className="px-6 py-4 theme-bg-primary">
+      <div className="responsive-container py-4 theme-bg-primary">
         <StationNavigation
           activeSection={activeSection}
           onSectionChange={setActiveSection}

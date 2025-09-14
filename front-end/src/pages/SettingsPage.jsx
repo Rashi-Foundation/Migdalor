@@ -113,7 +113,7 @@ export default function SettingsPage() {
       <Navbar />
       <DateTime />
 
-      <div className="max-w-4xl mx-auto p-4 space-y-6">
+      <div className="responsive-container py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6">
         <ErrorMessage
           message={error}
           type={errorType}
@@ -123,10 +123,10 @@ export default function SettingsPage() {
         />
 
         {/* Header */}
-        <div className="text-center py-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] rounded-full mb-4 shadow-lg">
+        <div className="text-center py-6 sm:py-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] rounded-full mb-4 shadow-lg">
             <svg
-              className="w-10 h-10 text-white"
+              className="w-8 h-8 sm:w-10 sm:h-10 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -145,10 +145,10 @@ export default function SettingsPage() {
               />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold theme-text-primary mb-2">
+          <h1 className="responsive-heading font-bold theme-text-primary mb-2">
             {t("settingsPage.title")}
           </h1>
-          <p className="theme-text-secondary text-lg">
+          <p className="responsive-text theme-text-secondary">
             Manage your account and system preferences
           </p>
         </div>
@@ -160,7 +160,7 @@ export default function SettingsPage() {
           isExpanded={expandedSections.account}
           onToggle={() => toggleSection("account")}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="responsive-grid">
             <InfoCard
               label={t("settingsPage.username")}
               value={me.username}
@@ -349,14 +349,16 @@ function CollapsibleSection({
   adminOnly = false,
 }) {
   return (
-    <div className="theme-bg-secondary theme-shadow-lg rounded-xl transition-all duration-300 hover:shadow-xl">
+    <div className="responsive-card transition-all duration-300 hover:shadow-xl">
       <button
         onClick={onToggle}
-        className="w-full px-6 py-4 flex items-center justify-between text-left hover:theme-bg-tertiary transition-colors duration-200 rounded-t-xl"
+        className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between text-left hover:theme-bg-tertiary transition-colors duration-200 rounded-t-xl touch-target"
       >
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{icon}</span>
-          <h2 className="text-xl font-semibold theme-text-primary">{title}</h2>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="text-xl sm:text-2xl">{icon}</span>
+          <h2 className="text-lg sm:text-xl font-semibold theme-text-primary">
+            {title}
+          </h2>
           {adminOnly && (
             <span className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-xs font-medium rounded-full">
               Admin
@@ -364,7 +366,7 @@ function CollapsibleSection({
           )}
         </div>
         <svg
-          className={`w-5 h-5 theme-text-secondary transition-transform duration-200 ${
+          className={`w-4 h-4 sm:w-5 sm:h-5 theme-text-secondary transition-transform duration-200 ${
             isExpanded ? "rotate-180" : ""
           }`}
           fill="none"
@@ -385,7 +387,7 @@ function CollapsibleSection({
           isExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-6 pb-6">{children}</div>
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6">{children}</div>
       </div>
     </div>
   );
@@ -395,18 +397,20 @@ function CollapsibleSection({
 function InfoCard({ label, value, icon, highlight = false }) {
   return (
     <div
-      className={`theme-border-primary border rounded-xl p-4 transition-all duration-300 hover:scale-105 hover:shadow-md ${
+      className={`theme-border-primary border rounded-xl p-3 sm:p-4 transition-all duration-300 hover:scale-105 hover:shadow-md ${
         highlight
           ? "bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border-amber-300 dark:border-amber-700"
           : ""
       }`}
     >
-      <div className="flex items-center gap-3 mb-2">
-        <span className="text-lg">{icon}</span>
-        <div className="text-sm theme-text-secondary font-medium">{label}</div>
+      <div className="flex items-center gap-2 sm:gap-3 mb-2">
+        <span className="text-base sm:text-lg">{icon}</span>
+        <div className="text-xs sm:text-sm theme-text-secondary font-medium">
+          {label}
+        </div>
       </div>
       <div
-        className={`font-semibold break-words theme-text-primary text-lg ${
+        className={`font-semibold break-words theme-text-primary text-sm sm:text-base lg:text-lg ${
           highlight ? "text-amber-800 dark:text-amber-200" : ""
         }`}
       >

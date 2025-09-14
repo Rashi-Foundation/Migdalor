@@ -378,22 +378,25 @@ const ProductionPage = () => {
   return (
     <div className="theme-bg-primary min-h-screen transition-colors duration-300">
       <Navbar />
-      <div className="container mx-auto px-4 py-8" id="production-dashboard">
+      <div
+        className="responsive-container py-4 sm:py-6 lg:py-8"
+        id="production-dashboard"
+      >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold theme-text-primary mb-4 flex items-center">
-            <Activity className="mr-3" />
+        <div className="mb-6 sm:mb-8">
+          <h1 className="responsive-heading font-bold theme-text-primary mb-4 flex items-center">
+            <Activity className="mr-2 sm:mr-3 h-6 w-6 sm:h-8 sm:w-8" />
             {t("production.title")}
           </h1>
 
           {/* Date Filter Controls */}
-          <div className="flex flex-wrap items-center gap-4 mb-6">
-            <div className="flex items-center space-x-2">
-              <Calendar className="theme-text-primary" />
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4 mb-6">
+            <div className="flex items-center space-x-2 w-full sm:w-auto">
+              <Calendar className="theme-text-primary h-4 w-4 sm:h-5 sm:w-5" />
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="px-3 py-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary"
+                className="flex-1 sm:flex-none px-3 py-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary touch-input"
               >
                 <option value="today">{t("production.today")}</option>
                 <option value="monthly">{t("production.thisMonth")}</option>
@@ -402,120 +405,122 @@ const ProductionPage = () => {
             </div>
 
             {dateFilter === "custom" && (
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
                 <DatePicker
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
                   selectsStart
                   startDate={startDate}
                   endDate={endDate}
-                  className="px-3 py-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary"
+                  className="w-full sm:w-auto px-3 py-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary touch-input"
                   dateFormat="dd/MM/yyyy"
                 />
-                <span className="theme-text-primary">-</span>
+                <span className="theme-text-primary hidden sm:inline">-</span>
                 <DatePicker
                   selected={endDate}
                   onChange={(date) => setEndDate(date)}
                   selectsEnd
                   startDate={startDate}
                   endDate={endDate}
-                  className="px-3 py-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary"
+                  className="w-full sm:w-auto px-3 py-2 theme-border-primary border rounded theme-bg-secondary theme-text-primary touch-input"
                   dateFormat="dd/MM/yyyy"
                 />
               </div>
             )}
 
-            <div className="flex items-center space-x-2 ml-auto">
+            <div className="flex items-center space-x-2 w-full sm:w-auto sm:ml-auto">
               <button
                 onClick={exportToCSV}
-                className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
+                className="flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition-colors touch-button w-full sm:w-auto"
               >
                 <Download className="mr-2 h-4 w-4" />
-                {t("production.exportCSV")}
+                <span className="text-sm sm:text-base">
+                  {t("production.exportCSV")}
+                </span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md">
+        <div className="responsive-grid mb-6 sm:mb-8">
+          <div className="responsive-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm theme-text-tertiary">
+                <p className="text-xs sm:text-sm theme-text-tertiary">
                   {t("production.totalProduction")}
                 </p>
-                <p className="text-3xl font-bold theme-text-primary">
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold theme-text-primary">
                   {stats?.total || 0}
                 </p>
               </div>
-              <Target className="h-8 w-8 theme-accent" />
+              <Target className="h-6 w-6 sm:h-8 sm:w-8 theme-accent" />
             </div>
           </div>
 
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md">
+          <div className="responsive-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm theme-text-tertiary">
+                <p className="text-xs sm:text-sm theme-text-tertiary">
                   {t("production.validValves")}
                 </p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
                   {stats?.totalGood || 0}
                 </p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
             </div>
           </div>
 
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md">
+          <div className="responsive-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm theme-text-tertiary">
+                <p className="text-xs sm:text-sm theme-text-tertiary">
                   {t("production.defectiveValves")}
                 </p>
-                <p className="text-3xl font-bold text-red-600">
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-red-600">
                   {stats?.totalInvalid || 0}
                 </p>
               </div>
-              <AlertTriangle className="h-8 w-8 text-red-600" />
+              <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-red-600" />
             </div>
           </div>
 
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md">
+          <div className="responsive-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm theme-text-tertiary">
+                <p className="text-xs sm:text-sm theme-text-tertiary">
                   {t("production.qualityRate")}
                 </p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
                   {stats?.qualityRate || 0}%
                 </p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
             </div>
           </div>
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
           {/* Quality Distribution Pie Chart */}
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md">
-            <h3 className="text-xl font-semibold theme-text-primary mb-4 flex items-center">
-              <PieChart className="mr-2 h-5 w-5" />
+          <div className="responsive-card">
+            <h3 className="responsive-text font-semibold theme-text-primary mb-3 sm:mb-4 flex items-center">
+              <PieChart className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               {t("production.qualityDistribution")}
             </h3>
-            <div className="h-64">
+            <div className="mobile-chart tablet-chart desktop-chart">
               <Pie data={pieChartData} options={chartOptions} />
             </div>
           </div>
 
           {/* Daily Production Bar Chart */}
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md">
-            <h3 className="text-xl font-semibold theme-text-primary mb-4 flex items-center">
-              <BarChart3 className="mr-2 h-5 w-5" />
+          <div className="responsive-card">
+            <h3 className="responsive-text font-semibold theme-text-primary mb-3 sm:mb-4 flex items-center">
+              <BarChart3 className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               {t("production.dailyProduction")}
             </h3>
-            <div className="h-64">
+            <div className="mobile-chart tablet-chart desktop-chart">
               <Bar data={barChartData} options={chartOptions} />
             </div>
           </div>
@@ -523,51 +528,51 @@ const ProductionPage = () => {
 
         {/* Quality Trend Line Chart */}
         {stats?.dailyData.length > 1 && (
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md mb-8">
-            <h3 className="text-xl font-semibold theme-text-primary mb-4 flex items-center">
-              <TrendingUp className="mr-2 h-5 w-5" />
+          <div className="responsive-card mb-6 sm:mb-8">
+            <h3 className="responsive-text font-semibold theme-text-primary mb-3 sm:mb-4 flex items-center">
+              <TrendingUp className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               {t("production.qualityTrend")}
             </h3>
-            <div className="h-64">
+            <div className="mobile-chart tablet-chart desktop-chart">
               <Line data={lineChartData} options={chartOptions} />
             </div>
           </div>
         )}
 
         {/* Performance Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md text-center">
-            <div className="text-4xl font-bold text-green-600 mb-2">
+        <div className="responsive-grid">
+          <div className="responsive-card text-center">
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600 mb-2">
               {stats?.qualityRate || 0}%
             </div>
-            <div className="theme-text-primary font-medium">
+            <div className="theme-text-primary font-medium text-sm sm:text-base">
               {t("production.overallQuality")}
             </div>
-            <div className="text-sm theme-text-tertiary mt-1">
+            <div className="text-xs sm:text-sm theme-text-tertiary mt-1">
               {t("production.qualityDescription")}
             </div>
           </div>
 
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md text-center">
-            <div className="text-4xl font-bold text-red-600 mb-2">
+          <div className="responsive-card text-center">
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-red-600 mb-2">
               {stats?.defectRate || 0}%
             </div>
-            <div className="theme-text-primary font-medium">
+            <div className="theme-text-primary font-medium text-sm sm:text-base">
               {t("production.defectRate")}
             </div>
-            <div className="text-sm theme-text-tertiary mt-1">
+            <div className="text-xs sm:text-sm theme-text-tertiary mt-1">
               {t("production.defectDescription")}
             </div>
           </div>
 
-          <div className="theme-bg-secondary p-6 rounded-lg theme-shadow-md text-center">
-            <div className="text-4xl font-bold text-purple-600 mb-2">
+          <div className="responsive-card text-center">
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-600 mb-2">
               {stats?.dailyData?.length || 0}
             </div>
-            <div className="theme-text-primary font-medium">
+            <div className="theme-text-primary font-medium text-sm sm:text-base">
               {t("production.daysAnalyzed")}
             </div>
-            <div className="text-sm theme-text-tertiary mt-1">
+            <div className="text-xs sm:text-sm theme-text-tertiary mt-1">
               {t("production.analysisPeriod")}
             </div>
           </div>

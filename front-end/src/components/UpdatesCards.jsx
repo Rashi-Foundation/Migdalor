@@ -107,8 +107,8 @@ const UpdatesSection = () => {
   }
 
   return (
-    <div className="p-5 font-sans">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="responsive-container py-4 sm:py-6 font-sans">
+      <div className="responsive-grid">
         {sections.map((section, index) => {
           const canNavigate = typeof section.to === "function";
           const handleClick = () => {
@@ -120,17 +120,17 @@ const UpdatesSection = () => {
           return (
             <div
               key={index}
-              className="theme-bg-secondary theme-shadow-md rounded-lg p-5 flex flex-col justify-between items-center text-center transition-all duration-300 hover:theme-shadow-lg hover:scale-105"
+              className="responsive-card flex flex-col justify-between items-center text-center transition-all duration-300 hover:theme-shadow-lg hover:scale-105 touch-target"
             >
-              <h2 className="text-lg theme-text-primary mb-5">
+              <h2 className="responsive-text font-semibold theme-text-primary mb-3 sm:mb-4 lg:mb-5">
                 {section.name}
               </h2>
               <div className="flex flex-col items-center">
-                <span className="text-4xl font-bold mb-1 theme-text-primary">
+                <span className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 theme-text-primary">
                   {section.value}
                 </span>
                 {section.today && (
-                  <span className="text-sm theme-text-secondary">
+                  <span className="text-xs sm:text-sm theme-text-secondary">
                     {section.today}
                   </span>
                 )}
@@ -139,13 +139,13 @@ const UpdatesSection = () => {
               {canNavigate ? (
                 <button
                   onClick={handleClick}
-                  className="mt-2 text-sm theme-text-primary hover:theme-accent focus:outline-none underline transition-colors duration-200"
+                  className="mt-2 text-xs sm:text-sm theme-text-primary hover:theme-accent focus:outline-none underline transition-colors duration-200 touch-target"
                 >
                   {t("updatesCards.viewDetails")}
                 </button>
               ) : (
                 // If there's no target, show disabled look or hide:
-                <span className="mt-2 text-sm theme-text-tertiary cursor-not-allowed">
+                <span className="mt-2 text-xs sm:text-sm theme-text-tertiary cursor-not-allowed">
                   {t("updatesCards.noDetails")}
                 </span>
               )}

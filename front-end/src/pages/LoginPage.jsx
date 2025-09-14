@@ -78,8 +78,8 @@ const LoginPage = () => {
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
 
-      <div className="z-10 max-w-md w-full mx-auto p-8 theme-bg-secondary bg-opacity-90 rounded-lg theme-shadow-lg transition-colors duration-300">
-        <h2 className="text-2xl font-bold theme-text-primary text-center mb-6">
+      <div className="z-10 max-w-sm sm:max-w-md w-full mx-4 sm:mx-auto p-6 sm:p-8 theme-bg-secondary bg-opacity-90 rounded-lg theme-shadow-lg transition-colors duration-300">
+        <h2 className="responsive-heading font-bold theme-text-primary text-center mb-4 sm:mb-6">
           {t("loginPage.title")}
         </h2>
 
@@ -93,7 +93,7 @@ const LoginPage = () => {
 
         <form
           onSubmit={handleSubmitLogin}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center mobile-form"
         >
           <div className="mb-4 w-full">
             <label className="block theme-text-primary text-sm font-bold mb-2 text-center">
@@ -106,7 +106,7 @@ const LoginPage = () => {
               onChange={(e) => setUsername(e.target.value)}
               disabled={busy}
               placeholder={t("loginPage.usernamePlaceholder")}
-              className="w-full px-3 py-2 theme-border-primary border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] theme-bg-secondary theme-text-primary transition-colors duration-200"
+              className="w-full px-3 py-2 theme-border-primary border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] theme-bg-secondary theme-text-primary transition-colors duration-200 touch-input"
               required
             />
           </div>
@@ -122,7 +122,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               disabled={busy}
               placeholder={t("loginPage.passwordPlaceholder")}
-              className="w-full px-3 py-2 theme-border-primary border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] theme-bg-secondary theme-text-primary transition-colors duration-200"
+              className="w-full px-3 py-2 theme-border-primary border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] theme-bg-secondary theme-text-primary transition-colors duration-200 touch-input"
               required
             />
           </div>
@@ -130,7 +130,7 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={busy}
-            className={`w-full text-white font-bold py-2 px-4 rounded-lg mb-4 transition-all duration-200 ${
+            className={`w-full text-white font-bold py-3 px-4 rounded-lg mb-4 transition-all duration-200 touch-button ${
               busy
                 ? "bg-gray-400 cursor-not-allowed"
                 : "theme-accent theme-accent-hover hover:scale-105"
