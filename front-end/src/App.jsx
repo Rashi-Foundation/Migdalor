@@ -6,6 +6,8 @@ import ProductionPage from "@pages/ProductionPage";
 import ReportsPage from "@pages/ReportsPage";
 import StationPage from "@pages/StationPage";
 import SettingsPage from "@pages/SettingsPage";
+import UserManualPage from "@pages/UserManualPage";
+import DeveloperManualPage from "@pages/DeveloperManualPage";
 import ProtectedRoute from "@components/ProtectedRoute";
 
 function App() {
@@ -57,6 +59,22 @@ function App() {
         element={
           <ProtectedRoute>
             <SettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manual"
+        element={
+          <ProtectedRoute>
+            <UserManualPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dev-manual"
+        element={
+          <ProtectedRoute>
+            <DeveloperManualPage />
           </ProtectedRoute>
         }
       />

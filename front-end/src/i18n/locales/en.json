@@ -32,6 +32,8 @@
     "production": "Production",
     "reports": "Reports",
     "settings": "Settings",
+    "userManual": "User Manual",
+    "developerManual": "Developer Manual",
     "logout": "Logout"
   },
   "loginPage": {

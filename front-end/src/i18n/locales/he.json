@@ -32,6 +32,8 @@
     "production": "תפוקה",
     "reports": "דוחות",
     "settings": "הגדרות",
+    "userManual": "מדריך משתמש",
+    "developerManual": "מדריך מפתח",
     "logout": "התנתקות"
   },
   "loginPage": {
