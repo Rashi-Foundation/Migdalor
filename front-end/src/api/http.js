@@ -19,8 +19,10 @@ http.interceptors.response.use(
       // Token is invalid or expired, clear storage
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      // Redirect to login page
-      window.location.href = "/";
+      // Only redirect if we're not already on the login page
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
     }
     return Promise.reject(error);
   }

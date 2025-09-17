@@ -141,32 +141,32 @@ const sampleStations = [
     station_id: "ST001",
     station_name: "ישר-אסיפות",
     department: "הרכבות אלקטרוניקה",
-    product_name: "שסתום A",
+    product_name: "A",
   },
   {
     station_id: "ST002",
     station_name: "ישר-מכונה",
     department: "הרכבות אלקטרוניקה",
-    product_name: "שסתום A",
+    product_name: "A",
   },
   {
     station_id: "ST003",
     station_name: "ישר-ריתוך",
     department: "הרכבות 1",
-    product_name: "שסתום B",
+    product_name: "B",
   },
   // keep the generic ones from the old app if other screens still reference them:
   {
     station_id: "ST004",
     station_name: "עמדת בדיקה",
     department: "בדיקה",
-    product_name: "שסתום B",
+    product_name: "B",
   },
   {
     station_id: "ST005",
     station_name: "עמדת אריזה",
     department: "אריזה",
-    product_name: "שסתום B",
+    product_name: "B",
   },
 ];
 

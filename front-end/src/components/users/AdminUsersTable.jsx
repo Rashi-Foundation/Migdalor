@@ -208,12 +208,6 @@ export default function AdminUsersTable() {
           </div>
         ))}
       </div>
-
-      <div className="text-center">
-        <p className="text-sm theme-text-tertiary">
-          💡 Admin users are highlighted and protected from deletion
-        </p>
-      </div>
     </div>
   );
 }

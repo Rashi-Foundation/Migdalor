@@ -41,8 +41,13 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
 
-    checkAuth();
-  }, []);
+    // Only check auth if we're not on the login page
+    if (location.pathname !== "/") {
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
+  }, [location.pathname]);
 
   // Redirect logic based on authentication state
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { http } from "../api/http";
 import { useAuth } from "../contexts/AuthContext";
@@ -27,32 +27,34 @@ const LoginPage = () => {
     setServerError,
   } = useErrorHandler();
 
-  const resetMessages = () => {
-    clearError();
-  };
-
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
-    resetMessages();
+
+    // Clear any existing errors only when starting a new login attempt
+    clearError();
     setBusy(true);
 
     try {
       // Validate input
       if (!username.trim()) {
         setAuthError(t("loginPage.errors.usernameRequired"));
+        setBusy(false);
         return;
       }
       if (!password.trim()) {
         setAuthError(t("loginPage.errors.passwordRequired"));
+        setBusy(false);
         return;
       }
 
       const { data } = await http.post("/login", { username, password });
 
       if (data?.success && data?.token) {
+        // Only call login if successful - this prevents unwanted redirects
         login(data.user || {}, data.token);
       } else {
         setAuthError(t("loginPage.errors.loginFailed"));
+        setBusy(false);
       }
     } catch (err) {
       const errorInfo = getErrorInfo(err);
@@ -66,10 +68,23 @@ const LoginPage = () => {
       } else {
         setServerError(t("loginPage.errors.unexpectedError"));
       }
-    } finally {
       setBusy(false);
     }
   };
+
+  // Debug: Monitor error changes
+  useEffect(() => {
+    console.log("Error changed:", error);
+    if (error) {
+      console.log("Error set at:", new Date().toLocaleTimeString());
+    }
+  }, [error]);
+
+  // Debug: Monitor user state changes
+  const { user } = useAuth();
+  useEffect(() => {
+    console.log("User state changed:", user);
+  }, [user]);
 
   return (
     <div

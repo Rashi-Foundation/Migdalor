@@ -9,23 +9,23 @@ const Alert = ({ children, type = "info" }) => {
     type === "error"
       ? "bg-red-100 dark:bg-red-900/20"
       : type === "success"
-      ? "bg-green-100 dark:bg-green-900/20"
-      : "bg-yellow-100 dark:bg-yellow-900/20";
+      ? "bg-green-200 dark:bg-green-900/30"
+      : "bg-blue-100 dark:bg-blue-900/20";
   const borderColor =
     type === "error"
       ? "border-red-500"
       : type === "success"
-      ? "border-green-500"
-      : "border-yellow-500";
+      ? "border-green-600"
+      : "border-blue-500";
   const textColor =
     type === "error"
-      ? "text-red-700 dark:text-red-300"
+      ? "text-red-900 dark:text-red-300"
       : type === "success"
-      ? "text-green-700 dark:text-green-300"
-      : "text-yellow-700 dark:text-yellow-300";
+      ? "text-green-900 dark:text-green-100"
+      : "text-blue-800 dark:text-blue-300";
   return (
     <div
-      className={`${bgColor} border-l-4 ${borderColor} ${textColor} p-4 mb-4 transition-colors duration-300`}
+      className={`${bgColor} border-l-4 ${borderColor} ${textColor} p-4 mb-4 rounded-r-md shadow-sm transition-colors duration-300`}
       role="alert"
     >
       {children}
@@ -225,6 +225,8 @@ const StationManagement = () => {
       } else {
         setError(t("stationManagement.errorDeleting") + ": " + errorMessage);
       }
+      // Close the delete modal when there's an error
+      setDeleteConfirm(null);
     } finally {
       setIsLoading(false);
     }
@@ -260,25 +262,54 @@ const StationManagement = () => {
 
       {error && (
         <Alert type="error">
-          {error}
-          <button
-            onClick={clearMessages}
-            className="ml-2 text-red-600 hover:text-red-800"
-          >
-            <X size={16} />
-          </button>
+          <div className="flex items-start justify-between">
+            <div className="flex items-start">
+              <AlertCircle
+                className="text-red-700 dark:text-red-400 mr-3 mt-0.5 flex-shrink-0"
+                size={20}
+              />
+              <div>
+                <div className="font-semibold text-red-900 dark:text-red-300 mb-1">
+                  {t("common.error")}
+                </div>
+                <div className="text-red-900 dark:text-red-300">{error}</div>
+              </div>
+            </div>
+            <button
+              onClick={clearMessages}
+              className="ml-4 text-red-700 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 flex-shrink-0"
+              title={t("common.close")}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </Alert>
       )}
 
       {successMessage && (
         <Alert type="success">
-          {successMessage}
-          <button
-            onClick={clearMessages}
-            className="ml-2 text-green-600 hover:text-green-800"
-          >
-            <X size={16} />
-          </button>
+          <div className="flex items-start justify-between">
+            <div className="flex items-start">
+              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+              <div>
+                <div className="font-semibold text-green-900 dark:text-green-300 mb-1">
+                  {t("common.success")}
+                </div>
+                <div className="text-green-900 dark:text-green-300">
+                  {successMessage}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={clearMessages}
+              className="ml-4 text-green-700 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 flex-shrink-0"
+              title={t("common.close")}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </Alert>
       )}
 

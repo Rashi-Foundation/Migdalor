@@ -10,15 +10,24 @@ const Alert = ({ children, type = "info" }) => {
   const bgColor =
     type === "error"
       ? "bg-red-100 dark:bg-red-900/20"
-      : "bg-yellow-100 dark:bg-yellow-900/20";
-  const borderColor = type === "error" ? "border-red-500" : "border-yellow-500";
+      : type === "success"
+      ? "bg-green-200 dark:bg-green-900/30"
+      : "bg-green-200 dark:bg-green-900/30";
+  const borderColor =
+    type === "error"
+      ? "border-red-500"
+      : type === "success"
+      ? "border-green-600"
+      : "border-green-600";
   const textColor =
     type === "error"
-      ? "text-red-700 dark:text-red-300"
-      : "text-yellow-700 dark:text-yellow-300";
+      ? "text-red-900 dark:text-red-300"
+      : type === "success"
+      ? "text-green-900 dark:text-green-100"
+      : "text-green-900 dark:text-green-100";
   return (
     <div
-      className={`${bgColor} border-l-4 ${borderColor} ${textColor} p-4 mb-4 transition-colors duration-300`}
+      className={`${bgColor} border-l-4 ${borderColor} ${textColor} p-4 mb-4 rounded-r-md shadow-sm transition-colors duration-300`}
       role="alert"
     >
       {children}
@@ -47,6 +56,75 @@ const DatePicker = ({ selectedDate, onDateChange }) => {
   );
 };
 
+// Multi-employee assignment component
+const MultiEmployeeSelector = ({
+  employees,
+  selectedEmployees,
+  onSelectionChange,
+  maxSelections = 2,
+  t,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleEmployeeToggle = (employee) => {
+    const isSelected = selectedEmployees.some(
+      (emp) => emp.person_id === employee.person_id
+    );
+
+    if (isSelected) {
+      onSelectionChange(
+        selectedEmployees.filter((emp) => emp.person_id !== employee.person_id)
+      );
+    } else if (selectedEmployees.length < maxSelections) {
+      onSelectionChange([...selectedEmployees, employee]);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 py-2 text-left theme-bg-secondary theme-border-primary border rounded-md hover:theme-bg-primary transition-colors duration-200 flex items-center justify-between"
+      >
+        <span className="text-sm theme-text-primary">
+          {selectedEmployees.length > 0
+            ? selectedEmployees
+                .map((emp) => `${emp.first_name} ${emp.last_name}`)
+                .join(", ")
+            : t("assignmentComp.selectEmployees")}
+        </span>
+        <span className="text-xs theme-text-tertiary">
+          {selectedEmployees.length}/{maxSelections}
+        </span>
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 right-0 mt-1 theme-bg-primary theme-border-primary border rounded-md shadow-lg z-10 max-h-48 overflow-y-auto">
+          {employees.map((employee) => {
+            const isSelected = selectedEmployees.some(
+              (emp) => emp.person_id === employee.person_id
+            );
+            return (
+              <button
+                key={employee.person_id}
+                onClick={() => handleEmployeeToggle(employee)}
+                className={`w-full px-3 py-2 text-left text-sm hover:theme-bg-tertiary transition-colors duration-200 flex items-center justify-between ${
+                  isSelected
+                    ? "bg-blue-600 text-white dark:bg-blue-700"
+                    : "theme-text-primary"
+                }`}
+              >
+                <span>{`${employee.first_name} ${employee.last_name}`}</span>
+                {isSelected && <Check size={14} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const WeeklyTable = ({
   employees,
   assignments,
@@ -59,6 +137,7 @@ const WeeklyTable = ({
   onCellSave,
   onCellCancel,
   onValueChange,
+  onMultiEmployeeAssign,
   t,
 }) => {
   const getAssignmentsForStationAndDate = (stationName, date) => {
@@ -83,43 +162,33 @@ const WeeklyTable = ({
       station.station_name,
       date
     );
-    const employeesList = stationAssignments
-      .map((assignment) => `${assignment.first_name} ${assignment.last_name}`)
-      .join(", ");
 
     if (isEditing(station.station_name, 0, date)) {
       return (
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1">
-            <select
-              value={editingValue}
-              onChange={(e) => onValueChange(e.target.value)}
-              className="flex-1 px-2 py-1 border rounded text-sm theme-bg-primary theme-text-primary"
-              autoFocus
-            >
-              <option value="">{t("assignmentComp.selectEmployee")}</option>
-              {employees.map((employee) => (
-                <option
-                  key={employee.person_id}
-                  value={`${employee.first_name} ${employee.last_name}`}
-                >
-                  {`${employee.first_name} ${employee.last_name}`}
-                </option>
-              ))}
-            </select>
+        <div className="space-y-2">
+          <MultiEmployeeSelector
+            employees={employees}
+            selectedEmployees={editingValue || []}
+            onSelectionChange={onValueChange}
+            maxSelections={2}
+            t={t}
+          />
+          <div className="flex gap-1">
             <button
               onClick={onCellSave}
-              className="text-green-600 hover:text-green-800 p-1"
+              className="flex-1 px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-1"
               title={t("assignmentComp.saveAssignment")}
             >
-              <Check size={14} />
+              <Check size={12} />
+              {t("common.save")}
             </button>
             <button
               onClick={onCellCancel}
-              className="text-red-600 hover:text-red-800 p-1"
+              className="flex-1 px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors duration-200 flex items-center justify-center gap-1"
               title={t("assignmentComp.cancelEdit")}
             >
-              <X size={14} />
+              <X size={12} />
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -127,35 +196,51 @@ const WeeklyTable = ({
     }
 
     return (
-      <div className="flex justify-between items-start">
+      <div className="min-h-[60px] flex flex-col justify-between">
         <div className="flex-1">
           {stationAssignments.length > 0 ? (
             <div className="space-y-1">
-              {stationAssignments.map((assignment, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <span className="text-right theme-text-primary text-sm">
-                    {`${assignment.first_name} ${assignment.last_name}`}
-                  </span>
-                  {isAdmin && (
-                    <button
-                      onClick={() =>
-                        handleRemoveEmployee(
-                          station.station_name,
-                          date,
-                          assignment.person_id
-                        )
-                      }
-                      className="text-red-600 hover:text-red-800 ml-2 transition-colors duration-200"
-                      title={t("assignmentComp.removeEmployee")}
-                    >
-                      <X size={12} />
-                    </button>
-                  )}
-                </div>
-              ))}
+              {stationAssignments.map((assignment, index) => {
+                const employee = employees.find(
+                  (emp) => emp.person_id === assignment.person_id
+                );
+                const displayName = employee
+                  ? `${employee.first_name} ${employee.last_name}`
+                  : `${assignment.first_name || ""} ${
+                      assignment.last_name || ""
+                    }`.trim();
+
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs border border-blue-200 dark:border-blue-700 group hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200"
+                  >
+                    <span className="font-medium flex-1 text-right">
+                      {index + 1}.{" "}
+                      {displayName || t("assignmentComp.unknownEmployee")}
+                    </span>
+                    {isAdmin && (
+                      <button
+                        onClick={() =>
+                          onMultiEmployeeAssign?.(
+                            station.station_name,
+                            date,
+                            assignment.person_id,
+                            "remove"
+                          )
+                        }
+                        className="opacity-0 group-hover:opacity-100 text-red-600 hover:text-red-800 transition-all duration-200 flex-shrink-0"
+                        title={t("assignmentComp.removeEmployee")}
+                      >
+                        <X size={10} />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ) : (
-            <span className="text-right theme-text-tertiary text-sm">
+            <span className="text-right theme-text-tertiary text-xs">
               {t("assignmentComp.noAssignments")}
             </span>
           )}
@@ -163,12 +248,13 @@ const WeeklyTable = ({
         {isAdmin && (
           <button
             onClick={() =>
-              onCellEdit(station.station_name, 0, date, employeesList)
+              onCellEdit(station.station_name, 0, date, stationAssignments)
             }
-            className="text-blue-600 hover:text-blue-800 ml-2 transition-colors duration-200"
+            className="mt-1 w-full px-2 py-1 text-blue-600 hover:text-blue-800 text-xs border border-blue-300 rounded hover:bg-blue-50 transition-colors duration-200 flex items-center justify-center gap-1"
             title={t("assignmentComp.addEmployee")}
           >
-            <Edit2 size={14} />
+            <Edit2 size={10} />
+            {t("assignmentComp.assign")}
           </button>
         )}
       </div>
@@ -176,52 +262,60 @@ const WeeklyTable = ({
   };
 
   return (
-    <table className="w-full border-collapse min-w-[800px]">
-      <thead>
-        <tr className="theme-bg-tertiary">
-          <th className="theme-border-primary border p-2 text-right theme-text-primary sticky left-0 bg-inherit">
-            {t("assignmentComp.stationName")}
-          </th>
-          {weekDates.map((date, dayIndex) => (
-            <th
-              key={date}
-              className="theme-border-primary border p-2 text-center theme-text-primary"
-            >
-              {new Date(date).toLocaleDateString("he-IL", {
-                weekday: "short",
-              })}
-              <br />
-              <span className="text-xs">
-                {new Date(date).toLocaleDateString("he-IL", {
-                  day: "2-digit",
-                  month: "2-digit",
-                })}
-              </span>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse min-w-[600px]">
+        <thead>
+          <tr className="theme-bg-tertiary">
+            <th className="theme-border-primary border p-2 text-right theme-text-primary sticky left-0 bg-inherit z-10 min-w-[120px]">
+              {t("assignmentComp.stationName")}
             </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {availableStations.map((station) => (
-          <tr
-            key={station._id}
-            className="hover:theme-bg-tertiary transition-colors duration-200"
-          >
-            <td className="theme-border-primary border p-2 text-right theme-text-primary sticky left-0 bg-inherit font-medium">
-              {station.station_name}
-            </td>
-            {weekDates.map((date) => (
-              <td
+            {weekDates.map((date, dayIndex) => (
+              <th
                 key={date}
-                className="theme-border-primary border p-2 min-w-[200px]"
+                className="theme-border-primary border p-2 text-center theme-text-primary min-w-[100px]"
               >
-                {renderCell(station, date)}
-              </td>
+                <div className="text-xs font-medium">
+                  {new Date(date).toLocaleDateString("he-IL", {
+                    weekday: "short",
+                  })}
+                </div>
+                <div className="text-xs theme-text-tertiary">
+                  {new Date(date).toLocaleDateString("he-IL", {
+                    day: "2-digit",
+                    month: "2-digit",
+                  })}
+                </div>
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {availableStations.map((station) => (
+            <tr
+              key={station._id}
+              className="hover:theme-bg-tertiary transition-colors duration-200"
+            >
+              <td className="theme-border-primary border p-2 text-right theme-text-primary sticky left-0 bg-inherit font-medium z-10">
+                <div className="text-sm font-medium">
+                  {station.station_name}
+                </div>
+                <div className="text-xs theme-text-tertiary">
+                  {station.department}
+                </div>
+              </td>
+              {weekDates.map((date) => (
+                <td
+                  key={date}
+                  className="theme-border-primary border p-2 align-top"
+                >
+                  {renderCell(station, date)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
@@ -249,9 +343,9 @@ const AssignmentComp = ({
   const [selectedWeekStart, setSelectedWeekStart] = useState(() => {
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - dayOfWeek + 1);
-    return monday.toISOString().split("T")[0];
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - dayOfWeek); // Sunday is day 0
+    return sunday.toISOString().split("T")[0];
   });
   const [employees, setEmployees] = useState([]);
   const [assignments, setAssignments] = useState([]);
@@ -261,6 +355,8 @@ const AssignmentComp = ({
   const [editingCell, setEditingCell] = useState(null); // { employeeId, assignmentIndex, date }
   const [editingValue, setEditingValue] = useState("");
   const [availableStations, setAvailableStations] = useState([]);
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [selectedStationForForm, setSelectedStationForForm] = useState(null);
 
   const fetchEmployees = useCallback(async () => {
     const { data } = await http.get("/employees"); // if protected, token is sent
@@ -357,6 +453,11 @@ const AssignmentComp = ({
     } finally {
       setIsLoading(false);
       onCloseForm?.();
+      // Close modal if it was opened from daily view
+      if (showAssignmentModal) {
+        setShowAssignmentModal(false);
+        setSelectedStationForForm(null);
+      }
     }
   };
 
@@ -371,61 +472,87 @@ const AssignmentComp = ({
     await http.post("/assignments", assignmentData);
   };
 
-  const handleCellEdit = (stationName, assignmentIndex, date, currentValue) => {
+  const handleCellEdit = (
+    stationName,
+    assignmentIndex,
+    date,
+    currentAssignments
+  ) => {
     if (!isAdmin) return;
     setEditingCell({ stationName, assignmentIndex, date });
-    setEditingValue(currentValue || "");
+    // Convert current assignments to employee objects
+    const currentEmployees = currentAssignments
+      .map((assignment) =>
+        employees.find((emp) => emp.person_id === assignment.person_id)
+      )
+      .filter(Boolean);
+    setEditingValue(currentEmployees);
   };
 
   const handleCellSave = async () => {
     if (!editingCell || !isAdmin) return;
 
     try {
-      if (editingValue.trim()) {
-        // Find employee by name
-        const employee = employees.find(
-          (e) => `${e.first_name} ${e.last_name}` === editingValue.trim()
-        );
-        if (!employee) throw new Error("Employee not found");
-
-        await saveAssignmentToDB(
-          employee,
-          editingCell.stationName,
-          editingCell.date
-        );
-        setAssignmentMessage(
-          t("assignmentComp.assignmentAdded", {
-            name: `${employee.first_name} ${employee.last_name}`,
-          })
-        );
-      } else {
-        // If empty value, delete the assignment
+      if (editingValue && editingValue.length > 0) {
+        // Get current assignments for this station and date
         const existingAssignments = assignments.filter(
           (a) =>
             a.workingStation_name === editingCell.stationName &&
             new Date(a.date).toISOString().split("T")[0] === editingCell.date
         );
-        if (existingAssignments[editingCell.assignmentIndex]) {
-          const assignmentToDelete =
-            existingAssignments[editingCell.assignmentIndex];
+
+        // Remove existing assignments
+        for (const assignment of existingAssignments) {
           await http.delete("/assignments", {
             data: {
               date: editingCell.date,
-              person_id: assignmentToDelete.person_id,
-              assignmentNumber: editingCell.assignmentIndex + 1,
+              person_id: assignment.person_id,
+              assignmentNumber: 1,
             },
           });
-          setAssignmentMessage(
-            t("assignmentComp.assignmentDeletedSuccessfully", {
-              name: `${assignmentToDelete.first_name} ${assignmentToDelete.last_name}`,
-            })
+        }
+
+        // Add new assignments
+        for (const employee of editingValue) {
+          await saveAssignmentToDB(
+            employee,
+            editingCell.stationName,
+            editingCell.date
           );
         }
+
+        const employeeNames = editingValue
+          .map((emp) => `${emp.first_name} ${emp.last_name}`)
+          .join(", ");
+        setAssignmentMessage(
+          t("assignmentComp.assignmentsUpdated", {
+            names: employeeNames,
+          })
+        );
+      } else {
+        // If no employees selected, delete all assignments for this station and date
+        const existingAssignments = assignments.filter(
+          (a) =>
+            a.workingStation_name === editingCell.stationName &&
+            new Date(a.date).toISOString().split("T")[0] === editingCell.date
+        );
+
+        for (const assignment of existingAssignments) {
+          await http.delete("/assignments", {
+            data: {
+              date: editingCell.date,
+              person_id: assignment.person_id,
+              assignmentNumber: 1,
+            },
+          });
+        }
+
+        setAssignmentMessage(t("assignmentComp.allAssignmentsRemoved"));
       }
 
       await fetchAssignments();
       setEditingCell(null);
-      setEditingValue("");
+      setEditingValue([]);
     } catch (error) {
       setError(
         "Failed to save assignment: " +
@@ -436,7 +563,42 @@ const AssignmentComp = ({
 
   const handleCellCancel = () => {
     setEditingCell(null);
-    setEditingValue("");
+    setEditingValue([]);
+  };
+
+  const handleMultiEmployeeAssign = async (
+    stationName,
+    date,
+    personId,
+    action
+  ) => {
+    if (!isAdmin) return;
+
+    try {
+      if (action === "remove") {
+        await http.delete("/assignments", {
+          data: {
+            date: date,
+            person_id: personId,
+            assignmentNumber: 1,
+          },
+        });
+
+        const employee = employees.find((e) => e.person_id === personId);
+        setAssignmentMessage(
+          t("assignmentComp.assignmentDeletedSuccessfully", {
+            name: `${employee?.first_name} ${employee?.last_name}`,
+          })
+        );
+
+        await fetchAssignments();
+      }
+    } catch (error) {
+      setError(
+        "Failed to update assignment: " +
+          (error.response?.data?.message || error.message)
+      );
+    }
   };
 
   const handleRemoveEmployee = async (stationName, date, personId) => {
@@ -699,69 +861,98 @@ const AssignmentComp = ({
         </h2>
 
         {error && <Alert type="error">{error}</Alert>}
-        {assignmentMessage && <Alert>{assignmentMessage}</Alert>}
+        {assignmentMessage && <Alert type="success">{assignmentMessage}</Alert>}
 
         <div className="overflow-x-auto">
           {viewMode === "daily" ? (
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="theme-bg-tertiary">
-                  <th className="theme-border-primary border p-2 text-right theme-text-primary">
-                    {t("assignmentComp.fullName")}
-                  </th>
-                  <th className="theme-border-primary border p-2 text-right theme-text-primary">
-                    {t("assignmentComp.assignment1")}
-                  </th>
-                  <th className="theme-border-primary border p-2 text-right theme-text-primary">
-                    {t("assignmentComp.assignment2")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees.map((employee) => {
-                  const employeeAssignments = assignments.filter(
-                    (a) => a.person_id === employee.person_id
-                  );
-                  return (
-                    <tr
-                      key={employee.person_id}
-                      className="hover:theme-bg-tertiary transition-colors duration-200"
-                    >
-                      <td className="theme-border-primary border p-2 text-right theme-text-primary">
-                        {`${employee.first_name} ${employee.last_name}`}
-                      </td>
-                      {[0, 1].map((index) => (
-                        <td
-                          key={index}
-                          className="theme-border-primary border p-2"
-                        >
-                          <div className="flex justify-between items-center">
-                            <span className="text-right theme-text-primary">
-                              {employeeAssignments[index]
-                                ?.workingStation_name || ""}
-                            </span>
-                            {isAdmin && employeeAssignments[index] && (
-                              <button
-                                onClick={() =>
-                                  handleDeleteAssignment(
-                                    `${employee.first_name} ${employee.last_name}`,
-                                    index
-                                  )
-                                }
-                                className="text-red-600 hover:text-red-800 ml-2 transition-colors duration-200"
-                                title={t("assignmentComp.deleteAssignment")}
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="grid gap-4">
+              {availableStations.map((station) => {
+                const stationAssignments = assignments.filter(
+                  (a) => a.workingStation_name === station.station_name
+                );
+                return (
+                  <div
+                    key={station._id}
+                    className="theme-bg-secondary theme-border-primary border rounded-lg p-4 hover:theme-bg-tertiary transition-colors duration-200"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold theme-text-primary mb-2">
+                          {station.station_name}
+                        </h3>
+                        <div className="text-sm theme-text-tertiary mb-2">
+                          {station.department} - {station.product_name}
+                        </div>
+                        <div className="mb-3">
+                          {stationAssignments.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                              {stationAssignments.map((a, index) => {
+                                // Find the employee in the employees list
+                                const employee = employees.find(
+                                  (emp) => emp.person_id === a.person_id
+                                );
+                                const displayName = employee
+                                  ? `${employee.first_name} ${employee.last_name}`
+                                  : `${a.first_name || ""} ${
+                                      a.last_name || ""
+                                    }`.trim() ||
+                                    t("assignmentComp.unknownEmployee");
+
+                                return (
+                                  <div
+                                    key={a.person_id || index}
+                                    className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm border border-blue-200 dark:border-blue-700"
+                                  >
+                                    <span className="font-medium">
+                                      {index + 1}. {displayName}
+                                    </span>
+                                    {isAdmin && (
+                                      <button
+                                        onClick={() =>
+                                          handleMultiEmployeeAssign(
+                                            station.station_name,
+                                            selectedDate,
+                                            a.person_id,
+                                            "remove"
+                                          )
+                                        }
+                                        className="text-red-600 hover:text-red-800 transition-colors duration-200 ml-1"
+                                        title={t("common.remove")}
+                                      >
+                                        <X size={14} />
+                                      </button>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="text-sm theme-text-tertiary italic">
+                              {t("assignmentComp.noAssignments")}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2 ml-4">
+                        {isAdmin && (
+                          <button
+                            onClick={() => {
+                              setSelectedStationForForm(station);
+                              setShowAssignmentModal(true);
+                            }}
+                            className="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 flex items-center gap-2 bg-green-600 text-white hover:bg-green-700"
+                            title={t("assignmentComp.performAssignment")}
+                          >
+                            <Edit2 size={16} />
+                            {t("assignmentComp.performAssignment")}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             <WeeklyTable
               employees={employees}
@@ -775,6 +966,7 @@ const AssignmentComp = ({
               onCellSave={handleCellSave}
               onCellCancel={handleCellCancel}
               onValueChange={setEditingValue}
+              onMultiEmployeeAssign={handleMultiEmployeeAssign}
               t={t}
             />
           )}
@@ -787,6 +979,19 @@ const AssignmentComp = ({
           onClose={onCloseForm}
           onSubmit={handleAssignmentSubmit}
           selectedStation={selectedStation}
+          selectedDate={selectedDate}
+        />
+      )}
+
+      {/* Assignment modal for daily view */}
+      {isAdmin && showAssignmentModal && selectedStationForForm && (
+        <AddAssignmentForm
+          onClose={() => {
+            setShowAssignmentModal(false);
+            setSelectedStationForForm(null);
+          }}
+          onSubmit={handleAssignmentSubmit}
+          selectedStation={selectedStationForForm}
           selectedDate={selectedDate}
         />
       )}
