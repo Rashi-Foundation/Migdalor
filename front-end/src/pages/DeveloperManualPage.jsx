@@ -39,6 +39,8 @@ import {
   Users,
   BarChart3,
   TrendingUp,
+  Package,
+  Bell,
 } from "lucide-react";
 
 const DeveloperManualPage = () => {
@@ -304,196 +306,342 @@ const DeveloperManualPage = () => {
               MongoDB Collections
             </h4>
             <p className="text-green-700">
-              The system uses MongoDB Atlas with the following collections for
+              The system uses MongoDB Atlas with the following 8 collections for
               data management.
             </p>
           </div>
 
           <div className="space-y-4">
-            <div className="bg-white border rounded-lg p-4">
-              <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
-                <Users className="h-4 w-4 mr-2 text-blue-500" />
-                Users Collection
-              </h5>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="px-3 py-2 text-left">Field</th>
-                      <th className="px-3 py-2 text-left">Type</th>
-                      <th className="px-3 py-2 text-left">Required</th>
-                      <th className="px-3 py-2 text-left">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">_id</td>
-                      <td className="px-3 py-2">ObjectId</td>
-                      <td className="px-3 py-2">Yes</td>
-                      <td className="px-3 py-2">MongoDB primary key</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">username</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">Yes</td>
-                      <td className="px-3 py-2">Unique username for login</td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">password</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">Yes</td>
-                      <td className="px-3 py-2">bcrypt hashed password</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">isAdmin</td>
-                      <td className="px-3 py-2">Boolean</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">Admin privileges flag</td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">createdAt</td>
-                      <td className="px-3 py-2">Date</td>
-                      <td className="px-3 py-2">Auto</td>
-                      <td className="px-3 py-2">Record creation timestamp</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">updatedAt</td>
-                      <td className="px-3 py-2">Date</td>
-                      <td className="px-3 py-2">Auto</td>
-                      <td className="px-3 py-2">Record update timestamp</td>
-                    </tr>
-                  </tbody>
-                </table>
+            {/* Core Collections */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="bg-white border rounded-lg p-4">
+                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Users className="h-4 w-4 mr-2 text-blue-500" />
+                  Users Collection
+                </h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-mono">_id</span>
+                    <span>ObjectId (PK)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">username</span>
+                    <span>String (Unique)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">password</span>
+                    <span>String (bcrypt)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">isAdmin</span>
+                    <span>Boolean</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">createdAt</span>
+                    <span>Date</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">updatedAt</span>
+                    <span>Date</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border rounded-lg p-4">
+                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Users className="h-4 w-4 mr-2 text-green-500" />
+                  Employees Collection
+                </h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-mono">_id</span>
+                    <span>ObjectId (PK)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">person_id</span>
+                    <span>String (Unique)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">first_name</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">last_name</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">email</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">phone</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">department</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">role</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">status</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">createdAt</span>
+                    <span>Date</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">updatedAt</span>
+                    <span>Date</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="bg-white border rounded-lg p-4">
-              <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
-                <Users className="h-4 w-4 mr-2 text-green-500" />
-                Employees Collection
-              </h5>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="px-3 py-2 text-left">Field</th>
-                      <th className="px-3 py-2 text-left">Type</th>
-                      <th className="px-3 py-2 text-left">Required</th>
-                      <th className="px-3 py-2 text-left">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">_id</td>
-                      <td className="px-3 py-2">ObjectId</td>
-                      <td className="px-3 py-2">Yes</td>
-                      <td className="px-3 py-2">MongoDB primary key</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">person_id</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">Yes</td>
-                      <td className="px-3 py-2">Unique employee identifier</td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">first_name</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">Yes</td>
-                      <td className="px-3 py-2">Employee first name</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">last_name</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">Yes</td>
-                      <td className="px-3 py-2">Employee last name</td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">email</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">Contact email address</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">phone</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">Contact phone number</td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">department</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">Employee department</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">role</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">Job role/title</td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">status</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">
-                        Employee status (active/inactive)
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+            {/* Department & Product Collections */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="bg-white border rounded-lg p-4">
+                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Settings className="h-4 w-4 mr-2 text-purple-500" />
+                  Departments Collection
+                </h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-mono">_id</span>
+                    <span>ObjectId (PK)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">name</span>
+                    <span>String (Unique)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border rounded-lg p-4">
+                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Package className="h-4 w-4 mr-2 text-orange-500" />
+                  Products Collection
+                </h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-mono">_id</span>
+                    <span>ObjectId (PK)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">product_name</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">company</span>
+                    <span>String</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="bg-white border rounded-lg p-4">
-              <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
-                <Settings className="h-4 w-4 mr-2 text-purple-500" />
-                Stations Collection
+            {/* Station Collections */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="bg-white border rounded-lg p-4">
+                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Settings className="h-4 w-4 mr-2 text-indigo-500" />
+                  Stations Collection
+                </h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-mono">_id</span>
+                    <span>ObjectId (PK)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">station_id</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">station_name</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">department</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">product_name</span>
+                    <span>String</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border rounded-lg p-4">
+                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Activity className="h-4 w-4 mr-2 text-teal-500" />
+                  Working Stations Collection
+                </h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-mono">_id</span>
+                    <span>ObjectId (PK)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">station_name</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">workingStation_name</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">status</span>
+                    <span>Boolean</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Assignment & Qualification Collections */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="bg-white border rounded-lg p-4">
+                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Clock className="h-4 w-4 mr-2 text-red-500" />
+                  Assignments Collection
+                </h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-mono">_id</span>
+                    <span>ObjectId (PK)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">assignment_id</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">date</span>
+                    <span>Date</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">number_of_hours</span>
+                    <span>Number</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">workingStation_name</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">person_id</span>
+                    <span>String</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border rounded-lg p-4">
+                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Award className="h-4 w-4 mr-2 text-yellow-500" />
+                  Qualifications Collection
+                </h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-mono">_id</span>
+                    <span>ObjectId (PK)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">person_id</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">station_name</span>
+                    <span>String</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-mono">avg</span>
+                    <span>Number</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Database Relationships */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-blue-800 mb-3 flex items-center">
+                <GitBranch className="h-4 w-4 mr-2" />
+                Database Relationships
               </h5>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="px-3 py-2 text-left">Field</th>
-                      <th className="px-3 py-2 text-left">Type</th>
-                      <th className="px-3 py-2 text-left">Required</th>
-                      <th className="px-3 py-2 text-left">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">_id</td>
-                      <td className="px-3 py-2">ObjectId</td>
-                      <td className="px-3 py-2">Yes</td>
-                      <td className="px-3 py-2">MongoDB primary key</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">station_id</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">Station identifier</td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">station_name</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">Station display name</td>
-                    </tr>
-                    <tr className="border-t bg-gray-50">
-                      <td className="px-3 py-2 font-mono">department</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">Associated department</td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-3 py-2 font-mono">product_name</td>
-                      <td className="px-3 py-2">String</td>
-                      <td className="px-3 py-2">No</td>
-                      <td className="px-3 py-2">
-                        Product manufactured at station
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h6 className="font-semibold text-blue-700 mb-2">
+                    Core Relationships
+                  </h6>
+                  <ul className="space-y-1 text-blue-600">
+                    <li>
+                      • Department (1) → (0..*) Employee (via department field)
+                    </li>
+                    <li>
+                      • Department (1) → (0..*) Station (via department field)
+                    </li>
+                    <li>
+                      • Product (1) → (0..*) Station (via product_name field)
+                    </li>
+                    <li>
+                      • Station (1) → (0..*) WorkingStation (via station_name
+                      field)
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h6 className="font-semibold text-blue-700 mb-2">
+                    Assignment Relationships
+                  </h6>
+                  <ul className="space-y-1 text-blue-600">
+                    <li>
+                      • Employee (1) → (0..*) Assignment (via person_id field)
+                    </li>
+                    <li>
+                      • Station (1) → (0..*) Assignment (via workingStation_name
+                      field)
+                    </li>
+                    <li>
+                      • Employee (1) → (0..*) Qualification (via person_id
+                      field)
+                    </li>
+                    <li>
+                      • Station (1) → (0..*) Qualification (via station_name
+                      field)
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Indexing Strategy */}
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-green-800 mb-3 flex items-center">
+                <Zap className="h-4 w-4 mr-2" />
+                Indexing Strategy
+              </h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h6 className="font-semibold text-green-700 mb-2">
+                    Unique Indexes
+                  </h6>
+                  <ul className="space-y-1 text-green-600">
+                    <li>• username (Users)</li>
+                    <li>• person_id (Employees)</li>
+                    <li>• name (Departments)</li>
+                    <li>• station_id (Stations)</li>
+                  </ul>
+                </div>
+                <div>
+                  <h6 className="font-semibold text-green-700 mb-2">
+                    Query Indexes
+                  </h6>
+                  <ul className="space-y-1 text-green-600">
+                    <li>• person_id (Assignments)</li>
+                    <li>• workingStation_name (Assignments)</li>
+                    <li>• date (Assignments)</li>
+                    <li>• person_id (Qualifications)</li>
+                    <li>• station_name (Qualifications)</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
