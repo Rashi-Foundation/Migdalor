@@ -3,7 +3,6 @@ import DateTime from "@components/DateTime";
 import UpdatesCards from "@components/UpdatesCards";
 import ProductionEfficiencyChart from "@components/ProductionEfficiencyChart";
 import DepartmentPerformanceOverview from "@components/DepartmentPerformanceOverview";
-import ProductionQualityDashboard from "@components/ProductionQualityDashboard";
 
 const HomePage = () => {
   return (
@@ -22,14 +21,9 @@ const HomePage = () => {
             <ProductionEfficiencyChart />
           </div>
 
-          {/* Department Performance Overview */}
-          <div className="sm:col-span-1 lg:col-span-1">
+          {/* Department Performance Overview - Wider */}
+          <div className="sm:col-span-1 lg:col-span-2">
             <DepartmentPerformanceOverview />
-          </div>
-
-          {/* Production Quality Dashboard */}
-          <div className="sm:col-span-1 lg:col-span-1">
-            <ProductionQualityDashboard />
           </div>
         </div>
       </div>

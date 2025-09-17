@@ -7,8 +7,6 @@ const ProductionEfficiencyChart = () => {
   const { t } = useTranslation();
   const [efficiencyData, setEfficiencyData] = useState({
     todayEfficiency: 0,
-    yesterdayEfficiency: 0,
-    weeklyAverage: 0,
     totalProduction: 0,
     validComponents: 0,
     defectiveComponents: 0,
@@ -43,17 +41,8 @@ const ProductionEfficiencyChart = () => {
             ? (shlukerData.proper / totalComponents) * 100
             : 0;
 
-        // Mock data for demonstration - in real app, you'd fetch historical data
-        const yesterdayEfficiency = Math.max(
-          0,
-          todayEfficiency + (Math.random() - 0.5) * 10
-        );
-        const weeklyAverage = (todayEfficiency + yesterdayEfficiency) / 2;
-
         setEfficiencyData({
           todayEfficiency: Math.round(todayEfficiency * 10) / 10,
-          yesterdayEfficiency: Math.round(yesterdayEfficiency * 10) / 10,
-          weeklyAverage: Math.round(weeklyAverage * 10) / 10,
           totalProduction: totalComponents,
           validComponents: shlukerData.proper,
           defectiveComponents: shlukerData.improper,
@@ -77,7 +66,7 @@ const ProductionEfficiencyChart = () => {
 
   if (error) {
     return (
-      <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[28rem]">
+      <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[22rem]">
         <ErrorMessage
           message={error}
           type={errorType}
@@ -90,7 +79,7 @@ const ProductionEfficiencyChart = () => {
 
   if (loading) {
     return (
-      <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[28rem]">
+      <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[22rem]">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-300 rounded mb-4"></div>
           <div className="h-32 bg-gray-300 rounded"></div>
@@ -99,28 +88,18 @@ const ProductionEfficiencyChart = () => {
     );
   }
 
-  const efficiencyChange =
-    efficiencyData.todayEfficiency - efficiencyData.yesterdayEfficiency;
-  const isImproving = efficiencyChange > 0;
+  // Removed efficiency change calculation since we no longer have yesterday data
 
   return (
-    <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[28rem] flex flex-col">
-      <div className="flex items-center justify-between mb-6">
+    <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[22rem] flex flex-col">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold theme-text-primary">
           {t("productionEfficiency.title")}
         </h3>
-        <div
-          className={`flex items-center text-sm ${
-            isImproving ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          <span className="mr-1">{isImproving ? "↗" : "↘"}</span>
-          {Math.abs(efficiencyChange).toFixed(1)}%
-        </div>
       </div>
 
       {/* Main Efficiency Display */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-4">
         <div className="text-4xl font-bold theme-text-primary mb-2">
           {efficiencyData.todayEfficiency}%
         </div>
@@ -130,7 +109,7 @@ const ProductionEfficiencyChart = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
+      <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
         <div
           className={`h-3 rounded-full transition-all duration-500 ${
             efficiencyData.todayEfficiency >= 90
@@ -159,28 +138,6 @@ const ProductionEfficiencyChart = () => {
           </div>
           <div className="text-sm theme-text-secondary">
             {t("productionEfficiency.defectiveComponents")}
-          </div>
-        </div>
-      </div>
-
-      {/* Historical Comparison */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <div className="flex justify-between text-sm">
-          <div>
-            <div className="theme-text-secondary">
-              {t("productionEfficiency.yesterday")}
-            </div>
-            <div className="font-semibold theme-text-primary">
-              {efficiencyData.yesterdayEfficiency}%
-            </div>
-          </div>
-          <div>
-            <div className="theme-text-secondary">
-              {t("productionEfficiency.weeklyAverage")}
-            </div>
-            <div className="font-semibold theme-text-primary">
-              {efficiencyData.weeklyAverage}%
-            </div>
           </div>
         </div>
       </div>

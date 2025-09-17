@@ -102,7 +102,7 @@ const DepartmentPerformanceOverview = () => {
 
   if (error) {
     return (
-      <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[28rem]">
+      <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[22rem]">
         <ErrorMessage
           message={error}
           type={errorType}
@@ -115,7 +115,7 @@ const DepartmentPerformanceOverview = () => {
 
   if (loading) {
     return (
-      <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[28rem]">
+      <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[22rem]">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-300 rounded mb-4"></div>
           <div className="h-32 bg-gray-300 rounded"></div>
@@ -149,7 +149,7 @@ const DepartmentPerformanceOverview = () => {
   const currentDept = departmentData[currentIndex];
 
   return (
-    <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[28rem] flex flex-col">
+    <div className="theme-bg-secondary theme-shadow-md rounded-lg p-6 h-[22rem] flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold theme-text-primary">
           {t("departmentPerformance.title")}
@@ -171,47 +171,99 @@ const DepartmentPerformanceOverview = () => {
         </div>
       ) : (
         <div className="flex-1 flex flex-col">
-          {/* Current Department Display */}
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="text-center mb-6">
-              <div className="text-4xl font-bold theme-text-primary mb-2">
-                {currentDept.efficiency}%
-              </div>
-              <div className="text-lg font-semibold theme-text-primary mb-2">
+          {/* Current Department Display - Horizontal Layout */}
+          <div className="flex-1 flex flex-row items-center space-x-6">
+            {/* Left Side - Efficiency Display */}
+            <div className="flex-1 text-center">
+              <div className="text-2xl font-semibold theme-text-primary mb-2">
                 {currentDept.name}
               </div>
-              <div className="text-sm theme-text-secondary">
+              <div className="text-sm theme-text-secondary mb-4">
                 {currentDept.totalStations}{" "}
                 {t("departmentPerformance.stations")} •{" "}
                 {currentDept.totalEmployees}{" "}
                 {t("departmentPerformance.employees")}
               </div>
-            </div>
 
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+              <div className="text-5xl font-bold theme-text-primary mb-2">
+                {currentDept.efficiency}%
+              </div>
+              <div className="text-sm theme-text-secondary mb-4">
+                Employee Activity Rate
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                <div
+                  className={`h-3 rounded-full transition-all duration-500 ${
+                    currentDept.efficiency >= 90
+                      ? "bg-green-500"
+                      : currentDept.efficiency >= 75
+                      ? "bg-yellow-500"
+                      : "bg-red-500"
+                  }`}
+                  style={{ width: `${Math.min(currentDept.efficiency, 100)}%` }}
+                ></div>
+              </div>
+
+              {/* Performance Indicator */}
               <div
-                className={`h-3 rounded-full transition-all duration-500 ${
+                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                   currentDept.efficiency >= 90
-                    ? "bg-green-500"
+                    ? "bg-green-100 text-green-800"
                     : currentDept.efficiency >= 75
-                    ? "bg-yellow-500"
-                    : "bg-red-500"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-red-100 text-red-800"
                 }`}
-                style={{ width: `${Math.min(currentDept.efficiency, 100)}%` }}
-              ></div>
+              >
+                {currentDept.efficiency >= 90
+                  ? "Excellent Performance"
+                  : currentDept.efficiency >= 75
+                  ? "Good Performance"
+                  : "Needs Improvement"}
+              </div>
             </div>
 
-            {/* Employee Status */}
-            <div className="flex justify-between text-sm theme-text-secondary mb-4">
-              <span className="text-green-600">
-                {currentDept.activeEmployees}{" "}
-                {t("departmentPerformance.active")}
-              </span>
-              <span className="text-red-600">
-                {currentDept.totalEmployees - currentDept.activeEmployees}{" "}
-                {t("departmentPerformance.inactive")}
-              </span>
+            {/* Right Side - Employee Status Cards */}
+            <div className="flex-1 grid grid-cols-2 gap-3">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                <div className="text-3xl font-bold text-green-600 mb-1">
+                  {currentDept.activeEmployees}
+                </div>
+                <div className="text-xs text-green-700 font-medium">
+                  Active Employees
+                </div>
+                <div className="text-xs text-green-600">
+                  {currentDept.totalEmployees > 0
+                    ? Math.round(
+                        (currentDept.activeEmployees /
+                          currentDept.totalEmployees) *
+                          100
+                      )
+                    : 0}
+                  % of total
+                </div>
+              </div>
+
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                <div className="text-3xl font-bold text-red-600 mb-1">
+                  {currentDept.totalEmployees - currentDept.activeEmployees}
+                </div>
+                <div className="text-xs text-red-700 font-medium">
+                  Inactive Employees
+                </div>
+                <div className="text-xs text-red-600">
+                  {currentDept.totalEmployees > 0
+                    ? Math.round(
+                        ((currentDept.totalEmployees -
+                          currentDept.activeEmployees) /
+                          currentDept.totalEmployees) *
+                          100
+                      )
+                    : 0}
+                  % of total
+                </div>
+              </div>
             </div>
           </div>
 
@@ -245,49 +297,6 @@ const DepartmentPerformanceOverview = () => {
             >
               →
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Summary Stats */}
-      {departmentData.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-lg font-bold theme-text-primary">
-                {departmentData.length}
-              </div>
-              <div className="text-xs theme-text-secondary">
-                {t("departmentPerformance.totalDepartments")}
-              </div>
-            </div>
-            <div>
-              <div className="text-lg font-bold theme-text-primary">
-                {Math.round(
-                  (departmentData.reduce(
-                    (sum, dept) => sum + dept.efficiency,
-                    0
-                  ) /
-                    departmentData.length) *
-                    10
-                ) / 10}
-                %
-              </div>
-              <div className="text-xs theme-text-secondary">
-                {t("departmentPerformance.averageEfficiency")}
-              </div>
-            </div>
-            <div>
-              <div className="text-lg font-bold theme-text-primary">
-                {departmentData.reduce(
-                  (sum, dept) => sum + dept.totalEmployees,
-                  0
-                )}
-              </div>
-              <div className="text-xs theme-text-secondary">
-                {t("departmentPerformance.totalEmployees")}
-              </div>
-            </div>
           </div>
         </div>
       )}
