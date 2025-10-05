@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const rateLimit = require("express-rate-limit");
 
 const { connectToDatabase } = require("./database/atlas-connection.js");
 const { setupMQTT } = require("./services/mqttService.js");
@@ -21,6 +22,11 @@ const helmet = require("helmet");
 const app = express();
 const port = process.env.PORT;
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: "Too many requests, please try again later.",
+});
 app.use(helmet());
 
 // Middleware
@@ -40,7 +46,7 @@ async function startServer() {
     console.log("✅ MQTT service initialized");
 
     // Routes
-    app.use("/api", authRoutes);
+    app.use("/api", authLimiter, authRoutes);
     app.use("/api", employeeRoutes);
     app.use("/api", stationRoutes);
     app.use("/api", qualificationRoutes);
