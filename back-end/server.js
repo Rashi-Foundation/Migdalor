@@ -16,9 +16,12 @@ const assignmentRoutes = require("./routes/assignmentRoutes.js");
 const dashboardRoutes = require("./routes/dashboardRoutes.js");
 const reportRoutes = require("./routes/reportRoutes.js");
 const userRoutes = require("./routes/userRoutes.js");
+const helmet = require("helmet");
 
 const app = express();
 const port = process.env.PORT;
+
+app.use(helmet());
 
 // Middleware
 app.use(cors());
