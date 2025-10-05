@@ -11,6 +11,8 @@ const {
   geneticAlgorithm,
 } = require("../geneticAlgorithm.js");
 const Station = require("../models/station");
+const { body, param } = require("express-validator");
+const { validate } = require("../middleware/validate");
 
 // Register new employee (Employee schema) - admin only
 // POST /api/employees/register
@@ -18,6 +20,21 @@ router.post(
   "/employees/register",
   requireAuth,
   requireAdmin,
+  [
+    body("person_id").trim().notEmpty().withMessage("person_id is required"),
+    body("first_name").trim().notEmpty().withMessage("first_name is required"),
+    body("last_name").trim().notEmpty().withMessage("last_name is required"),
+    body("email")
+      .optional()
+      .isEmail()
+      .withMessage("email must be valid")
+      .normalizeEmail(),
+    body("phone").optional().isString().trim(),
+    body("department").optional().isString().trim(),
+    body("role").optional().isString().trim(),
+    body("status").optional().isString().trim(),
+  ],
+  validate,
   async (req, res) => {
     try {
       const {
@@ -128,6 +145,8 @@ router.put(
   "/employees/:employeeId",
   requireAuth,
   requireAdmin,
+  [param("employeeId").trim().notEmpty().withMessage("employeeId is required")],
+  validate,
   async (req, res) => {
     try {
       const { first_name, last_name, email, phone, department, role, status } =

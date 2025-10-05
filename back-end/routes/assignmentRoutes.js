@@ -4,181 +4,229 @@ const router = express.Router();
 const Assignment = require("../models/assignment");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 const logger = require("../utils/logger");
+const { query, body } = require("express-validator");
+const { validate } = require("../middleware/validate");
 
 // GET assignments for a specific date
-router.get("/assignments", async (req, res) => {
-  try {
-    const { date } = req.query;
-    if (!date) {
-      logger.error("Assignment fetch", "Missing date parameter");
-      return res.status(400).json({ message: "Date parameter is required" });
+router.get(
+  "/assignments",
+  [query("date").isISO8601().toDate().withMessage("date must be ISO8601")],
+  validate,
+  async (req, res) => {
+    try {
+      const { date } = req.query;
+      if (!date) {
+        logger.error("Assignment fetch", "Missing date parameter");
+        return res.status(400).json({ message: "Date parameter is required" });
+      }
+
+      const startDate = new Date(date);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+
+      logger.db("Fetch assignments", "Assignment");
+      const assignments = await Assignment.find({
+        date: {
+          $gte: startDate,
+          $lt: endDate,
+        },
+      }).sort("date");
+
+      logger.success(
+        "Assignments fetched",
+        `${assignments.length} assignments for ${date}`
+      );
+      res.json(assignments);
+    } catch (error) {
+      logger.error("Error fetching assignments", error);
+      res.status(500).json({
+        message: "Error fetching assignments",
+        error: error.message,
+      });
     }
-
-    const startDate = new Date(date);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 1);
-
-    logger.db("Fetch assignments", "Assignment");
-    const assignments = await Assignment.find({
-      date: {
-        $gte: startDate,
-        $lt: endDate,
-      },
-    }).sort("date");
-
-    logger.success(
-      "Assignments fetched",
-      `${assignments.length} assignments for ${date}`
-    );
-    res.json(assignments);
-  } catch (error) {
-    logger.error("Error fetching assignments", error);
-    res.status(500).json({
-      message: "Error fetching assignments",
-      error: error.message,
-    });
   }
-});
+);
 
 // GET assignments for a specific week
-router.get("/assignments/weekly", async (req, res) => {
-  try {
-    const { weekStart } = req.query;
-    if (!weekStart) {
-      logger.error("Weekly assignment fetch", "Missing weekStart parameter");
-      return res
-        .status(400)
-        .json({ message: "weekStart parameter is required" });
+router.get(
+  "/assignments/weekly",
+  [
+    query("weekStart")
+      .isISO8601()
+      .toDate()
+      .withMessage("weekStart must be an ISO8601 date"),
+  ],
+  validate,
+  async (req, res) => {
+    try {
+      const { weekStart } = req.query;
+      if (!weekStart) {
+        logger.error("Weekly assignment fetch", "Missing weekStart parameter");
+        return res
+          .status(400)
+          .json({ message: "weekStart parameter is required" });
+      }
+
+      const startDate = new Date(weekStart);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 7);
+
+      logger.db("Fetch weekly assignments", "Assignment");
+      const assignments = await Assignment.find({
+        date: {
+          $gte: startDate,
+          $lt: endDate,
+        },
+      }).sort("date");
+
+      logger.success(
+        "Weekly assignments fetched",
+        `${assignments.length} assignments for week starting ${weekStart}`
+      );
+      res.json(assignments);
+    } catch (error) {
+      logger.error("Error fetching weekly assignments", error);
+      res.status(500).json({
+        message: "Error fetching weekly assignments",
+        error: error.message,
+      });
     }
-
-    const startDate = new Date(weekStart);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 7);
-
-    logger.db("Fetch weekly assignments", "Assignment");
-    const assignments = await Assignment.find({
-      date: {
-        $gte: startDate,
-        $lt: endDate,
-      },
-    }).sort("date");
-
-    logger.success(
-      "Weekly assignments fetched",
-      `${assignments.length} assignments for week starting ${weekStart}`
-    );
-    res.json(assignments);
-  } catch (error) {
-    logger.error("Error fetching weekly assignments", error);
-    res.status(500).json({
-      message: "Error fetching weekly assignments",
-      error: error.message,
-    });
   }
-});
+);
 
 // POST new assignment
-router.post("/assignments", requireAuth, requireAdmin, async (req, res) => {
-  try {
-    const { date, workingStation_name, person_id, number_of_hours } = req.body;
+router.post(
+  "/assignments",
+  requireAuth,
+  requireAdmin,
+  [
+    body("date").isISO8601().withMessage("date must be ISO8601"),
+    body("workingStation_name")
+      .trim()
+      .notEmpty()
+      .withMessage("workingStation_name is required"),
+    body("person_id").trim().notEmpty().withMessage("person_id is required"),
+    body("number_of_hours")
+      .isInt({ min: 1, max: 24 })
+      .withMessage("number_of_hours must be between 1 and 24"),
+  ],
+  validate,
+  async (req, res) => {
+    try {
+      const { date, workingStation_name, person_id, number_of_hours } =
+        req.body;
 
-    if (!date || !workingStation_name || !person_id || !number_of_hours) {
-      logger.error("Assignment creation", "Missing required fields");
-      return res.status(400).json({ message: "All fields are required" });
+      if (!date || !workingStation_name || !person_id || !number_of_hours) {
+        logger.error("Assignment creation", "Missing required fields");
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      logger.db("Create assignment", "Assignment");
+      const newAssignment = new Assignment({
+        assignment_id: new mongoose.Types.ObjectId().toString(),
+        date: new Date(date),
+        number_of_hours,
+        workingStation_name,
+        person_id,
+      });
+
+      const savedAssignment = await newAssignment.save();
+      logger.success(
+        "Assignment created",
+        `${person_id} assigned to ${workingStation_name} for ${number_of_hours}h`
+      );
+      res.status(201).json(savedAssignment);
+    } catch (error) {
+      logger.error("Error saving assignment", error);
+      res.status(500).json({
+        message: "Error saving assignment",
+        error: error.message,
+      });
     }
-
-    logger.db("Create assignment", "Assignment");
-    const newAssignment = new Assignment({
-      assignment_id: new mongoose.Types.ObjectId().toString(),
-      date: new Date(date),
-      number_of_hours,
-      workingStation_name,
-      person_id,
-    });
-
-    const savedAssignment = await newAssignment.save();
-    logger.success(
-      "Assignment created",
-      `${person_id} assigned to ${workingStation_name} for ${number_of_hours}h`
-    );
-    res.status(201).json(savedAssignment);
-  } catch (error) {
-    logger.error("Error saving assignment", error);
-    res.status(500).json({
-      message: "Error saving assignment",
-      error: error.message,
-    });
   }
-});
+);
 
 // DELETE assignment
-router.delete("/assignments", requireAuth, requireAdmin, async (req, res) => {
-  try {
-    const { date, person_id, assignmentNumber } = req.body;
+router.delete(
+  "/assignments",
+  requireAuth,
+  requireAdmin,
+  [
+    body("date").isISO8601().withMessage("date must be ISO8601"),
+    body("person_id").trim().notEmpty().withMessage("person_id is required"),
+    body("assignmentNumber")
+      .isInt({ min: 1, max: 2 })
+      .withMessage("assignmentNumber must be 1 or 2"),
+  ],
+  validate,
+  async (req, res) => {
+    try {
+      const { date, person_id, assignmentNumber } = req.body;
 
-    if (!date || !person_id || !assignmentNumber) {
-      logger.error("Assignment deletion", "Missing required fields");
-      return res.status(400).json({
-        message: "Missing required fields",
-        required: ["date", "person_id", "assignmentNumber"],
-      });
-    }
+      if (!date || !person_id || !assignmentNumber) {
+        logger.error("Assignment deletion", "Missing required fields");
+        return res.status(400).json({
+          message: "Missing required fields",
+          required: ["date", "person_id", "assignmentNumber"],
+        });
+      }
 
-    const startDate = new Date(date);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 1);
+      const startDate = new Date(date);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
 
-    // Find all assignments for the person on the given date
-    logger.db("Find assignments for deletion", "Assignment");
-    const assignments = await Assignment.find({
-      date: {
-        $gte: startDate,
-        $lt: endDate,
-      },
-      person_id: person_id,
-    }).sort("date");
+      // Find all assignments for the person on the given date
+      logger.db("Find assignments for deletion", "Assignment");
+      const assignments = await Assignment.find({
+        date: {
+          $gte: startDate,
+          $lt: endDate,
+        },
+        person_id: person_id,
+      }).sort("date");
 
-    if (assignments.length === 0) {
-      logger.error(
-        "Assignment deletion",
-        `No assignments found for ${person_id} on ${date}`
+      if (assignments.length === 0) {
+        logger.error(
+          "Assignment deletion",
+          `No assignments found for ${person_id} on ${date}`
+        );
+        return res.status(404).json({
+          message: "No assignments found for this person on the given date",
+        });
+      }
+
+      // Delete the specified assignment (first or second)
+      const assignmentToDelete = assignments[assignmentNumber - 1];
+      if (!assignmentToDelete) {
+        logger.error(
+          "Assignment deletion",
+          `Assignment #${assignmentNumber} not found`
+        );
+        return res.status(404).json({
+          message: "Specified assignment not found",
+        });
+      }
+
+      logger.db("Delete assignment", "Assignment");
+      await Assignment.findByIdAndDelete(assignmentToDelete._id);
+
+      logger.success(
+        "Assignment deleted",
+        `${person_id} assignment #${assignmentNumber} on ${date}`
       );
-      return res.status(404).json({
-        message: "No assignments found for this person on the given date",
+      res.json({ message: "Assignment deleted successfully" });
+    } catch (error) {
+      logger.error("Error deleting assignment", error);
+      res.status(500).json({
+        message: "Error deleting assignment",
+        error: error.message,
+        stack: error.stack,
       });
     }
-
-    // Delete the specified assignment (first or second)
-    const assignmentToDelete = assignments[assignmentNumber - 1];
-    if (!assignmentToDelete) {
-      logger.error(
-        "Assignment deletion",
-        `Assignment #${assignmentNumber} not found`
-      );
-      return res.status(404).json({
-        message: "Specified assignment not found",
-      });
-    }
-
-    logger.db("Delete assignment", "Assignment");
-    await Assignment.findByIdAndDelete(assignmentToDelete._id);
-
-    logger.success(
-      "Assignment deleted",
-      `${person_id} assignment #${assignmentNumber} on ${date}`
-    );
-    res.json({ message: "Assignment deleted successfully" });
-  } catch (error) {
-    logger.error("Error deleting assignment", error);
-    res.status(500).json({
-      message: "Error deleting assignment",
-      error: error.message,
-      stack: error.stack,
-    });
   }
-});
+);
 
 module.exports = router;

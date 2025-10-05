@@ -4,6 +4,8 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 const logger = require("../utils/logger");
+const { body, param } = require("express-validator");
+const { validate } = require("../middleware/validate");
 
 // GET /api/me
 router.get("/me", requireAuth, async (req, res) => {
@@ -37,36 +39,46 @@ router.get("/me", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/me/password", requireAuth, async (req, res) => {
-  try {
-    const { newPassword } = req.body || {};
-    if (!newPassword || newPassword.length < 6) {
-      logger.error("Password change", "Password too short");
-      return res
-        .status(400)
-        .json({ message: "Password must be at least 6 characters long" });
+router.put(
+  "/me/password",
+  requireAuth,
+  [
+    body("newPassword")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long"),
+  ],
+  validate,
+  async (req, res) => {
+    try {
+      const { newPassword } = req.body || {};
+      if (!newPassword || newPassword.length < 6) {
+        logger.error("Password change", "Password too short");
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters long" });
+      }
+
+      // req.user is set by requireAuth
+      logger.db("Find user for password change", "User");
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        logger.error("Password change", `User ${req.user.userId} not found`);
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      logger.db("Update password", "User");
+      user.password = await bcrypt.hash(newPassword, 10);
+      user.passwordChangedAt = new Date(); // optional: helps invalidate old JWTs
+      await user.save();
+
+      logger.auth("Password changed", user.username);
+      return res.json({ message: "Password updated successfully" });
+    } catch (e) {
+      logger.error("Password change error", e);
+      return res.status(500).json({ message: "Server error" });
     }
-
-    // req.user is set by requireAuth
-    logger.db("Find user for password change", "User");
-    const user = await User.findById(req.user.userId);
-    if (!user) {
-      logger.error("Password change", `User ${req.user.userId} not found`);
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    logger.db("Update password", "User");
-    user.password = await bcrypt.hash(newPassword, 10);
-    user.passwordChangedAt = new Date(); // optional: helps invalidate old JWTs
-    await user.save();
-
-    logger.auth("Password changed", user.username);
-    return res.json({ message: "Password updated successfully" });
-  } catch (e) {
-    logger.error("Password change error", e);
-    return res.status(500).json({ message: "Server error" });
   }
-});
+);
 
 // Admin: list all users (minimal fields)
 router.get("/users", requireAuth, requireAdmin, async (req, res) => {
@@ -95,6 +107,8 @@ router.delete(
   "/users/:username",
   requireAuth,
   requireAdmin,
+  [param("username").trim().notEmpty().withMessage("username is required")],
+  validate,
   async (req, res) => {
     try {
       logger.db("Find user for deletion", "User");

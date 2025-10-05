@@ -2,64 +2,84 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const logger = require("../utils/logger");
+const { query } = require("express-validator");
+const { validate } = require("../middleware/validate");
 
 // Main report route
-router.get("/report", async (req, res) => {
-  let { date, startDate, endDate, employee, stationId, station } = req.query;
+router.get(
+  "/report",
+  [
+    query("date").optional().isISO8601().withMessage("date must be ISO8601"),
+    query("startDate")
+      .optional()
+      .isISO8601()
+      .withMessage("startDate must be ISO8601"),
+    query("endDate")
+      .optional()
+      .isISO8601()
+      .withMessage("endDate must be ISO8601"),
+    query("employee").optional().isString(),
+    query("stationId").optional().isString(),
+    query("station").optional().isString(),
+  ],
+  validate,
+  async (req, res) => {
+    let { date, startDate, endDate, employee, stationId, station } = req.query;
 
-  // Determine report type for logging
-  let reportType = "monthly production";
-  if (date || (startDate && endDate)) {
-    reportType = "date range";
-  } else if (employee) {
-    reportType = "employee monthly";
-  }
-
-  logger.report(
-    `Generating ${reportType} report`,
-    employee
-      ? `for employee ${employee}`
-      : station
-      ? `for station ${station}`
-      : ""
-  );
-
-  try {
-    let reportData;
-    // If station name provided, try to translate to stationId
-    if (!stationId && station) {
-      logger.db("Find station by name", "Station");
-      const Station = require("../models/station");
-      const stationDoc = await Station.findOne({ station_name: station });
-      if (stationDoc && stationDoc.station_id) {
-        stationId = stationDoc.station_id;
-      }
-    }
-
+    // Determine report type for logging
+    let reportType = "monthly production";
     if (date || (startDate && endDate)) {
-      reportData = await generateRangeReport({
-        date,
-        startDate,
-        endDate,
-        employee,
-        stationId,
-      });
+      reportType = "date range";
     } else if (employee) {
-      reportData = await generateMonthlyEmployeeReport(employee, stationId);
-    } else {
-      reportData = await generateMonthlyProductionReport(stationId);
+      reportType = "employee monthly";
     }
 
     logger.report(
-      `${reportType} report completed`,
-      `Data points: ${Array.isArray(reportData) ? reportData.length : "N/A"}`
+      `Generating ${reportType} report`,
+      employee
+        ? `for employee ${employee}`
+        : station
+        ? `for station ${station}`
+        : ""
     );
-    res.json(reportData);
-  } catch (error) {
-    logger.error("Error generating report", error);
-    res.status(500).json({ error: "Error generating report" });
+
+    try {
+      let reportData;
+      // If station name provided, try to translate to stationId
+      if (!stationId && station) {
+        logger.db("Find station by name", "Station");
+        const Station = require("../models/station");
+        const stationDoc = await Station.findOne({ station_name: station });
+        if (stationDoc && stationDoc.station_id) {
+          stationId = stationDoc.station_id;
+        }
+      }
+
+      if (date || (startDate && endDate)) {
+        reportData = await generateRangeReport({
+          date,
+          startDate,
+          endDate,
+          employee,
+          stationId,
+        });
+      } else if (employee) {
+        reportData = await generateMonthlyEmployeeReport(employee, stationId);
+      } else {
+        reportData = await generateMonthlyProductionReport(stationId);
+      }
+
+      logger.report(
+        `${reportType} report completed`,
+        `Data points: ${Array.isArray(reportData) ? reportData.length : "N/A"}`
+      );
+      res.json(reportData);
+    } catch (error) {
+      logger.error("Error generating report", error);
+      res.status(500).json({ error: "Error generating report" });
+    }
   }
-});
+);
 
 // Report generation functions
 async function generateMonthlyProductionReport(stationId) {
