@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "express-validator": "^7.2.1",
     "helmet": "^8.1.0"
   }
 }
