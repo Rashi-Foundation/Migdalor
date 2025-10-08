@@ -75,11 +75,18 @@ function closeMQTT() {
   if (mqttClient) {
     mqttClient.end();
     console.log("👋 MQTT client disconnected");
+    mqttClient = null; // Reset client to null
   }
+}
+
+// Function to reset client state (for testing)
+function resetMQTTClient() {
+  mqttClient = null;
 }
 
 module.exports = {
   setupMQTT,
   getMQTTClient,
   closeMQTT,
+  resetMQTTClient,
 };

@@ -1,11 +1,14 @@
 // Global error handling middleware
 const errorHandler = (err, req, res, next) => {
-  console.error("🔴 Global Error Handler:", err.stack);
+  console.error(
+    "🔴 Global Error Handler:",
+    err?.stack || err || "Unknown error"
+  );
 
   // Default error response
   let error = {
-    message: err.message || "An unexpected error occurred",
-    status: err.status || 500,
+    message: err?.message || "An unexpected error occurred",
+    status: err?.status || 500,
   };
 
   // Add stack trace in development
@@ -14,28 +17,30 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Handle specific error types
-  if (err.name === "ValidationError") {
+  if (err?.name === "ValidationError") {
     error.message = "Validation Error";
     error.status = 400;
-    error.details = Object.values(err.errors).map((e) => e.message);
+    error.details = err.errors
+      ? Object.values(err.errors).map((e) => e.message)
+      : [];
   }
 
-  if (err.name === "CastError") {
+  if (err?.name === "CastError") {
     error.message = "Invalid ID format";
     error.status = 400;
   }
 
-  if (err.code === 11000) {
+  if (err?.code === 11000) {
     error.message = "Duplicate field value";
     error.status = 400;
   }
 
-  if (err.name === "JsonWebTokenError") {
+  if (err?.name === "JsonWebTokenError") {
     error.message = "Invalid token";
     error.status = 401;
   }
 
-  if (err.name === "TokenExpiredError") {
+  if (err?.name === "TokenExpiredError") {
     error.message = "Token expired";
     error.status = 401;
   }

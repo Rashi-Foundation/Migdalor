@@ -26,7 +26,7 @@ function handleValidation(req, res) {
 // Login (User schema)
 router.post(
   "/login",
-  [
+  ...[
     body("username")
       .trim()
       .notEmpty()
@@ -98,7 +98,7 @@ router.post(
   "/register",
   requireAuth,
   requireAdmin,
-  [
+  ...[
     body("username")
       .trim()
       .notEmpty()
@@ -172,7 +172,7 @@ router.put(
   "/users/:username/password",
   requireAuth,
   requireAdmin,
-  [
+  ...[
     param("username")
       .trim()
       .notEmpty()

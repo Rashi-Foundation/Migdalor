@@ -7,14 +7,19 @@ const uri = process.env.ATLAS_URI; // Changed from MONGO_URI to ATLAS_URI
 async function connectToDatabase() {
   try {
     // Check if URI is provided
-    if (!uri) {
+    if (
+      !process.env.ATLAS_URI ||
+      !process.env.ATLAS_URI.trim() ||
+      process.env.ATLAS_URI === "undefined" ||
+      process.env.ATLAS_URI === "null"
+    ) {
       throw new Error("ATLAS_URI environment variable is not defined");
     }
 
     console.log("🔄 Connecting to MongoDB...");
 
     // Connect to MongoDB using Mongoose
-    await mongoose.connect(uri);
+    await mongoose.connect(process.env.ATLAS_URI);
 
     console.log(
       "✅ Pinged your deployment. You successfully connected to MongoDB!"
