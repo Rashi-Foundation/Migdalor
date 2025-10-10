@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false"
   },
   "keywords": [],
   "author": "Braude College",
@@ -21,6 +25,12 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "mongodb-memory-server": "^10.2.3"
+    "mongodb-memory-server": "^10.2.3",
+    "supertest": "^7.1.4"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/tests/setupTests.js"
+    ]
   }
 }
