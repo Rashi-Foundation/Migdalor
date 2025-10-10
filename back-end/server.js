@@ -24,7 +24,7 @@ const port = process.env.PORT;
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 1000,
   message: "Too many requests, please try again later.",
 });
 app.use(helmet());

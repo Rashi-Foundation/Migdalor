@@ -115,7 +115,7 @@ const sampleEmployees = [
 // ---- USERS (minimal login accounts; only 2) --------------------------------
 // All passwords are plain here and will be bcrypt-hashed in setupDatabase
 const sampleUsers = [
-  { username: "admin", password: "admin", isAdmin: true },
+  { username: "admin", password: "adminadmin", isAdmin: true },
   { username: "EMP001", password: "secret123", isAdmin: false },
 ];
 
