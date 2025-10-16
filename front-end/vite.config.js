@@ -17,4 +17,10 @@ export default defineConfig({
       "@contexts": path.resolve(__dirname, "src/contexts"),
     },
   },
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: [],
+    css: true,
+  },
 });
