@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useTranslation } from "react-i18next";
 import serverUrl from "@config/api";
+import { useDashboardData } from "../hooks/useDashboardData";
 import ErrorMessage, { useErrorHandler, getErrorInfo } from "./ErrorMessage";
 
 const ProductionEfficiencyChart = () => {
@@ -15,32 +16,20 @@ const ProductionEfficiencyChart = () => {
   const { error, errorType, clearError, setNetworkError, setServerError } =
     useErrorHandler();
 
+  const { data: dashboardData } = useDashboardData();
   useEffect(() => {
-    const fetchEfficiencyData = async () => {
+    const fetchShluker = async () => {
       try {
         clearError();
         setLoading(true);
-
-        // Fetch dashboard data and Shluker results
-        const [dashboardResponse, shlukerResponse] = await Promise.all([
-          fetch(`${serverUrl}/api/dashboard-data`),
-          fetch(`${serverUrl}/api/shluker-results`),
-        ]);
-
-        if (!dashboardResponse.ok || !shlukerResponse.ok) {
-          throw new Error(`HTTP error! status: ${dashboardResponse.status}`);
-        }
-
-        const dashboardData = await dashboardResponse.json();
+        const shlukerResponse = await fetch(`${serverUrl}/api/shluker-results`);
+        if (!shlukerResponse.ok) throw new Error(`HTTP error!`);
         const shlukerData = await shlukerResponse.json();
-
-        // Calculate efficiency metrics
         const totalComponents = shlukerData.proper + shlukerData.improper;
         const todayEfficiency =
           totalComponents > 0
             ? (shlukerData.proper / totalComponents) * 100
             : 0;
-
         setEfficiencyData({
           todayEfficiency: Math.round(todayEfficiency * 10) / 10,
           totalProduction: totalComponents,
@@ -49,20 +38,15 @@ const ProductionEfficiencyChart = () => {
         });
       } catch (err) {
         const errorInfo = getErrorInfo(err);
-        if (errorInfo.type === "network") {
-          setNetworkError(errorInfo.message);
-        } else if (errorInfo.type === "server") {
-          setServerError(errorInfo.message);
-        } else {
-          setServerError(t("productionEfficiency.errorLoadingData"));
-        }
+        if (errorInfo.type === "network") setNetworkError(errorInfo.message);
+        else if (errorInfo.type === "server") setServerError(errorInfo.message);
+        else setServerError(t("productionEfficiency.errorLoadingData"));
       } finally {
         setLoading(false);
       }
     };
-
-    fetchEfficiencyData();
-  }, []);
+    fetchShluker();
+  }, [t]);
 
   if (error) {
     return (
@@ -145,4 +129,4 @@ const ProductionEfficiencyChart = () => {
   );
 };
 
-export default ProductionEfficiencyChart;
+export default memo(ProductionEfficiencyChart);

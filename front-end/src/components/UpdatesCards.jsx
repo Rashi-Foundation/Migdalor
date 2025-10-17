@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import serverUrl from "@config/api";
-import { useNavigate, createSearchParams, Link } from "react-router-dom";
-import ErrorMessage, { useErrorHandler, getErrorInfo } from "./ErrorMessage";
+import { useDashboardData } from "../hooks/useDashboardData";
+import { useNavigate, createSearchParams } from "react-router-dom";
+import ErrorMessage, { useErrorHandler } from "./ErrorMessage";
 
 // This will be moved inside the component to use translations
 const UpdatesSection = () => {
@@ -16,8 +16,7 @@ const UpdatesSection = () => {
     inactiveStations: 0,
   });
 
-  const { error, errorType, clearError, setNetworkError, setServerError } =
-    useErrorHandler();
+  const { error, errorType, clearError } = useErrorHandler();
 
   // Move SECTIONS_META inside component to use translations
   const SECTIONS_META = [
@@ -62,38 +61,18 @@ const UpdatesSection = () => {
     [values, SECTIONS_META]
   );
 
+  const { data, error: fetchError } = useDashboardData();
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        clearError();
-        const response = await fetch(`${serverUrl}/api/dashboard-data`);
-        if (!response.ok)
-          throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
+    if (!data) return;
+    setValues({
+      inactiveWorkers: data.inactiveWorkers ?? 0,
+      activeWorkers: data.activeWorkers ?? 0,
+      dailyDefects: data.dailyDefects ?? 0,
+      inactiveStations: data.inactiveStations ?? 0,
+    });
+  }, [data]);
 
-        setValues({
-          inactiveWorkers: data.inactiveWorkers ?? 0,
-          activeWorkers: data.activeWorkers ?? 0,
-          dailyDefects: data.dailyDefects ?? 0,
-          inactiveStations: data.inactiveStations ?? 0,
-        });
-      } catch (err) {
-        const errorInfo = getErrorInfo(err);
-
-        if (errorInfo.type === "network") {
-          setNetworkError(errorInfo.message);
-        } else if (errorInfo.type === "server") {
-          setServerError(errorInfo.message);
-        } else {
-          setServerError(t("updatesCards.dashboardError"));
-        }
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (error) {
+  if (error || fetchError) {
     return (
       <div className="p-5 font-sans">
         <ErrorMessage

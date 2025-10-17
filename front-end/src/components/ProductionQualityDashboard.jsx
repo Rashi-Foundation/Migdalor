@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useTranslation } from "react-i18next";
 import serverUrl from "@config/api";
+import { useDashboardData } from "../hooks/useDashboardData";
 import ErrorMessage, { useErrorHandler, getErrorInfo } from "./ErrorMessage";
 
 const ProductionQualityDashboard = () => {
@@ -17,26 +18,18 @@ const ProductionQualityDashboard = () => {
   const { error, errorType, clearError, setNetworkError, setServerError } =
     useErrorHandler();
 
+  const { data: dashboardData } = useDashboardData();
   useEffect(() => {
     const fetchQualityData = async () => {
       try {
         clearError();
         setLoading(true);
-
-        // Fetch Shluker results and dashboard data
-        const [shlukerResponse, dashboardResponse] = await Promise.all([
-          fetch(`${serverUrl}/api/shluker-results`),
-          fetch(`${serverUrl}/api/dashboard-data`),
-        ]);
-
-        if (!shlukerResponse.ok || !dashboardResponse.ok) {
+        const shlukerResponse = await fetch(`${serverUrl}/api/shluker-results`);
+        if (!shlukerResponse.ok) {
           throw new Error(`HTTP error! status: ${shlukerResponse.status}`);
         }
-
         const shlukerData = await shlukerResponse.json();
-        const dashboardData = await dashboardResponse.json();
 
-        // Calculate quality metrics
         const totalComponents = shlukerData.proper + shlukerData.improper;
         const qualityScore =
           totalComponents > 0
@@ -47,13 +40,11 @@ const ProductionQualityDashboard = () => {
             ? (shlukerData.improper / totalComponents) * 100
             : 0;
 
-        // Determine quality grade
         let qualityGrade = "A";
         if (qualityScore < 70) qualityGrade = "D";
         else if (qualityScore < 80) qualityGrade = "C";
         else if (qualityScore < 90) qualityGrade = "B";
 
-        // Generate mock quality trend (last 7 days)
         const qualityTrend = Array.from({ length: 7 }, (_, i) => ({
           day: new Date(
             Date.now() - (6 - i) * 24 * 60 * 60 * 1000
@@ -64,7 +55,6 @@ const ProductionQualityDashboard = () => {
           ),
         }));
 
-        // Generate mock top issues
         const topIssues = [
           {
             name: t("productionQuality.issues.dimensionError"),
@@ -83,7 +73,6 @@ const ProductionQualityDashboard = () => {
           },
         ].sort((a, b) => b.count - a.count);
 
-        // Calculate improvement (mock data)
         const improvement = (Math.random() - 0.5) * 10;
 
         setQualityData({
@@ -107,9 +96,8 @@ const ProductionQualityDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchQualityData();
-  }, []);
+  }, [t]);
 
   if (error) {
     return (
@@ -263,4 +251,4 @@ const ProductionQualityDashboard = () => {
   );
 };
 
-export default ProductionQualityDashboard;
+export default memo(ProductionQualityDashboard);
