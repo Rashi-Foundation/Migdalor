@@ -89,7 +89,7 @@ const LoginPage = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
-      style={{ backgroundImage: `url('/loginPic.jpg')` }}
+      style={{ backgroundImage: `url('/loginPic.webp')` }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
 

@@ -80,9 +80,8 @@ A modern React-based frontend application for the Migdalor production management
 ```
 front-end/
 ├── public/                 # Static assets
-│   ├── background.png
-│   ├── loginPic.jpg
-│   ├── migdalorLogo.png
+│   ├── loginPic.webp
+│   ├── migdalorLogo.webp
 │   └── manifest.json
 ├── src/
 │   ├── api/               # API utilities

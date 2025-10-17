@@ -71,7 +71,8 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <img
-              src="/migdalorLogo.png"
+              src="/migdalorLogo.webp"
+              loading="lazy"
               alt="logo"
               height={50}
               width={50}
