@@ -9,7 +9,7 @@ import { TbLogout2 } from "react-icons/tb";
 import { LuSettings } from "react-icons/lu";
 import { MdOutlineAssessment } from "react-icons/md";
 import { BookOpen, Code } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const NavItems = ({

@@ -36,6 +36,7 @@ const createMockRequest = (options = {}) => {
     body: {},
     params: {},
     query: {},
+    cookies: {},
     user: null,
     ...options,
   };

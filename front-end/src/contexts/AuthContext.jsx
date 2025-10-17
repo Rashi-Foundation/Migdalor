@@ -1,16 +1,7 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { http } from "../api/http";
-
-const AuthContext = createContext();
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+import { AuthContext } from "./AuthContextContext";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -21,21 +12,12 @@ export const AuthProvider = ({ children }) => {
   // Check if user is authenticated on app load
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem("token");
-      const storedUser = localStorage.getItem("user");
-
-      if (token && storedUser) {
-        try {
-          // Verify token with backend
-          const response = await http.get("/me");
-          setUser(response.data);
-        } catch (error) {
-          // Token is invalid, clear storage
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          setUser(null);
-        }
-      } else {
+      try {
+        // Verify token with backend - the cookie will be sent automatically
+        const response = await http.get("/me");
+        setUser(response.data);
+      } catch {
+        // Token is invalid or expired, user is not authenticated
         setUser(null);
       }
       setLoading(false);
@@ -65,15 +47,19 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user, loading, location.pathname, navigate]);
 
-  const login = (userData, token) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData));
+  const login = (userData) => {
+    // No need to store token locally - it's now in httpOnly cookie
     setUser(userData);
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const logout = async () => {
+    try {
+      // Call logout endpoint to clear the httpOnly cookie
+      await http.post("/logout");
+    } catch (error) {
+      // Even if logout fails, we should still clear the user state
+      console.error("Logout error:", error);
+    }
     setUser(null);
     navigate("/", { replace: true });
   };

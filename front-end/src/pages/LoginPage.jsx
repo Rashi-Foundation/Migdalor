@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { http } from "../api/http";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import ErrorMessage, {
   useErrorHandler,
   getErrorInfo,
@@ -49,9 +49,9 @@ const LoginPage = () => {
 
       const { data } = await http.post("/login", { username, password });
 
-      if (data?.success && data?.token) {
+      if (data?.success && data?.user) {
         // Only call login if successful - this prevents unwanted redirects
-        login(data.user || {}, data.token);
+        login(data.user);
       } else {
         setAuthError(t("loginPage.errors.loginFailed"));
         setBusy(false);

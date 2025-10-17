@@ -33,6 +33,7 @@ jest.mock("jsonwebtoken");
 
 const app = express();
 app.use(express.json());
+app.use(require("cookie-parser")());
 app.use("/api", router);
 
 describe("Auth routes", () => {
@@ -53,7 +54,7 @@ describe("Auth routes", () => {
 
   // ---------------- POST /login ----------------
   describe("POST /api/login", () => {
-    it("should login successfully and return token + user", async () => {
+    it("should login successfully and set httpOnly cookie + return user", async () => {
       // mock user returned from DB
       const mockUser = {
         _id: "u1",
@@ -75,12 +76,16 @@ describe("Auth routes", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.token).toBe("fake-jwt-token");
       expect(res.body.user).toEqual({
         id: mockUser._id,
         username: mockUser.username,
         isAdmin: false,
       });
+
+      // Check that httpOnly cookie is set
+      expect(res.headers["set-cookie"]).toBeDefined();
+      expect(res.headers["set-cookie"][0]).toContain("token=fake-jwt-token");
+      expect(res.headers["set-cookie"][0]).toContain("HttpOnly");
 
       // ensure DB findOne was called with the username
       expect(User.findOne).toHaveBeenCalledWith({ username: "alice" });
@@ -237,6 +242,21 @@ describe("Auth routes", () => {
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty("errors");
       expect(Array.isArray(res.body.errors)).toBe(true);
+    });
+  });
+
+  // ---------------- POST /logout ----------------
+  describe("POST /api/logout", () => {
+    it("should logout successfully and clear httpOnly cookie", async () => {
+      const res = await request(app).post("/api/logout");
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toBe("Logged out successfully");
+
+      // Check that cookie is cleared
+      expect(res.headers["set-cookie"]).toBeDefined();
+      expect(res.headers["set-cookie"][0]).toContain("token=;");
     });
   });
 });

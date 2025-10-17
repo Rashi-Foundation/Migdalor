@@ -12,13 +12,15 @@ describe("Auth Middleware", () => {
   let mockReq, mockRes, mockNext;
 
   beforeEach(() => {
+    // Ensure JWT_SECRET is set for tests
+    process.env.JWT_SECRET = process.env.JWT_SECRET || "test-jwt-secret";
     mockReq = createMockRequest();
     mockRes = createMockResponse();
     mockNext = createMockNext();
   });
 
   describe("requireAuth", () => {
-    it("should call next() when valid token is provided", () => {
+    it("should call next() when valid token is provided via Authorization header", () => {
       const token = generateTestToken();
       mockReq.headers.authorization = `Bearer ${token}`;
 
@@ -29,7 +31,31 @@ describe("Auth Middleware", () => {
       expect(mockReq.user.userId).toBe("test-user-id");
     });
 
-    it("should return 401 when no authorization header is provided", () => {
+    it("should call next() when valid token is provided via httpOnly cookie", () => {
+      const token = generateTestToken();
+      mockReq.cookies = { token };
+
+      requireAuth(mockReq, mockRes, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+      expect(mockReq.user).toBeDefined();
+      expect(mockReq.user.userId).toBe("test-user-id");
+    });
+
+    it("should prefer cookie token over Authorization header", () => {
+      const cookieToken = generateTestToken({ userId: "cookie-user-id" });
+      const headerToken = generateTestToken({ userId: "header-user-id" });
+      mockReq.cookies = { token: cookieToken };
+      mockReq.headers.authorization = `Bearer ${headerToken}`;
+
+      requireAuth(mockReq, mockRes, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+      expect(mockReq.user).toBeDefined();
+      expect(mockReq.user.userId).toBe("cookie-user-id");
+    });
+
+    it("should return 401 when no token is provided (no header or cookie)", () => {
       requireAuth(mockReq, mockRes, mockNext);
 
       expect(mockRes.status).toHaveBeenCalledWith(401);

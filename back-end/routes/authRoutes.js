@@ -76,10 +76,20 @@ router.post(
         { expiresIn: "1h" }
       );
 
+      // Set httpOnly cookie
+      const isProduction = process.env.NODE_ENV === "production";
+      // If frontend is on a different origin (common in production), SameSite must be 'none' and cookie must be Secure
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
+      };
+      res.cookie("token", token, cookieOptions);
+
       logger.auth("Login successful", username);
       res.json({
         success: true,
-        token,
         user: {
           id: user._id,
           username: user.username,
@@ -216,5 +226,24 @@ router.put(
     }
   }
 );
+
+// Logout route
+router.post("/logout", (req, res) => {
+  try {
+    // Clear the httpOnly cookie
+    const isProduction = process.env.NODE_ENV === "production";
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    });
+
+    logger.auth("Logout successful", req.user?.username || "unknown");
+    res.json({ success: true, message: "Logged out successfully" });
+  } catch (err) {
+    logger.error("Logout error", err);
+    res.status(500).json({ message: "Server error during logout" });
+  }
+});
 
 module.exports = router;

@@ -13,7 +13,7 @@ const TestComponent = () => {
       </div>
       <div data-testid="loading">{loading ? "true" : "false"}</div>
       <button
-        onClick={() => login({ username: "testuser" }, "token")}
+        onClick={() => login({ username: "testuser" })}
         data-testid="login"
       >
         Login
@@ -56,8 +56,7 @@ describe("AuthContext", () => {
 
     expect(screen.getByTestId("user")).toHaveTextContent("testuser");
     expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
-    expect(localStorage.getItem("user")).toBe('{"username":"testuser"}');
-    expect(localStorage.getItem("token")).toBe("token");
+    // Note: With httpOnly cookies, we no longer store user data in localStorage
   });
 
   it("handles logout", () => {
@@ -71,8 +70,7 @@ describe("AuthContext", () => {
     fireEvent.click(screen.getByTestId("logout"));
     expect(screen.getByTestId("user")).toHaveTextContent("No User");
     expect(screen.getByTestId("authenticated")).toHaveTextContent("false");
-    expect(localStorage.getItem("user")).toBeNull();
-    expect(localStorage.getItem("token")).toBeNull();
+    // Note: With httpOnly cookies, we no longer manage localStorage for auth
   });
 
   it("throws error when used outside provider", () => {

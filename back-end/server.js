@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const rateLimit = require("express-rate-limit");
 
@@ -30,8 +31,14 @@ const authLimiter = rateLimit({
 app.use(helmet());
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
 app.use(requestLogger);
 
 // Database connection
