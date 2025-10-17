@@ -1,0 +1,26 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:5173",
+      "localStorage": [
+        {
+          "name": "i18nextLng",
+          "value": "en-US"
+        },
+        {
+          "name": "theme",
+          "value": "light"
+        },
+        {
+          "name": "token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGU4ZjRkNWEyMzNiNzVmZjUyZTI3OTQiLCJpc0FkbWluIjp0cnVlLCJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzYwNjk2NjQ4LCJleHAiOjE3NjA3MDAyNDh9.7efV65RQ8UZFuCg_BU6eqoiquRCf5yLnDiRscz4Vjho"
+        },
+        {
+          "name": "user",
+          "value": "{\"id\":\"68e8f4d5a233b75ff52e2794\",\"username\":\"admin\",\"isAdmin\":true}"
+        }
+      ]
+    }
+  ]
+}
