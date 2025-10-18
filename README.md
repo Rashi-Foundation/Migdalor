@@ -1,5 +1,12 @@
 # Migdalor - Production Management System
 
+"""
+For Test only : current username + password is :
+usernmame : admin
+password : adminadmin
+
+"""
+
 A comprehensive production management system built with React frontend and Node.js backend, featuring real-time communication, employee management, station assignments, and production analytics.
 
 ## 🚀 Quick Start
