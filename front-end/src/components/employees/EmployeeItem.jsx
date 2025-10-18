@@ -8,8 +8,7 @@ import NameSearch from "../NameSearch";
 import EmployeeList from "../EmployeeList";
 import { FaFileExcel } from "react-icons/fa";
 import { FiFilter } from "react-icons/fi";
-import axios from "axios";
-import serverUrl from "@config/api";
+import { http } from "../../api/http";
 import useFilterParams from "@hooks/useFilterParams";
 import { useMe } from "@hooks/useMe"; // add this if not already imported
 import ErrorMessage, { useErrorHandler, getErrorInfo } from "../ErrorMessage";
@@ -34,7 +33,7 @@ const EmployeeItem = () => {
       try {
         setIsLoading(true);
         clearError();
-        const { data } = await axios.get(`${serverUrl}/api/employees`);
+        const { data } = await http.get("/employees");
         console.log(data);
         setEmployees(data || []);
       } catch (err) {

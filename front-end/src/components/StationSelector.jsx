@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import serverUrl from "@config/api";
+import { http } from "../api/http";
 
 const StationSelector = ({
   selectedStations,
@@ -14,7 +13,7 @@ const StationSelector = ({
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const response = await axios.get(`${serverUrl}/api/stations`);
+        const response = await http.get("/stations");
         setStationOptions(response.data.map((station) => station.station_name));
       } catch (error) {
         console.error("Error fetching stations:", error);

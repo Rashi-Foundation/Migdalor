@@ -17,8 +17,7 @@ import {
 } from "chart.js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
-import serverUrl from "@config/api";
+import { http } from "../api/http";
 import ErrorMessage, {
   useErrorHandler,
   getErrorInfo,
@@ -82,8 +81,8 @@ const ReportsPage = () => {
     const fetchInitialData = async () => {
       try {
         const [employeesRes, stationsRes] = await Promise.all([
-          axios.get(`${serverUrl}/api/employees`),
-          axios.get(`${serverUrl}/api/stations`),
+          http.get("/employees"),
+          http.get("/stations"),
         ]);
         setEmployees(employeesRes.data || []);
         setStations(stationsRes.data || []);
@@ -117,9 +116,7 @@ const ReportsPage = () => {
         );
       }
 
-      const response = await axios.get(
-        `${serverUrl}/api/report?${params.toString()}`
-      );
+      const response = await http.get(`/report?${params.toString()}`);
       setReportData(response.data);
     } catch (err) {
       console.error("Error generating report:", err);

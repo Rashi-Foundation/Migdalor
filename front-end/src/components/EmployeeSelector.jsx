@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import serverUrl from "@config/api";
+import { http } from "../api/http";
 
 const EmployeeSelector = ({
   selectedEmployees,
@@ -22,8 +21,8 @@ const EmployeeSelector = ({
         setIsLoading(true);
         setError(null);
         try {
-          const response = await axios.get(
-            `${serverUrl}/api/sorted-employees/${selectedStation.station_name}`
+          const response = await http.get(
+            `/sorted-employees/${selectedStation.station_name}`
           );
           setEmployeeOptions(response.data);
         } catch (error) {

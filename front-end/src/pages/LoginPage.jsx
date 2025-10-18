@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { http } from "../api/http";
 import { useAuth } from "../hooks/useAuth";
@@ -72,19 +72,7 @@ const LoginPage = () => {
     }
   };
 
-  // Debug: Monitor error changes
-  useEffect(() => {
-    console.log("Error changed:", error);
-    if (error) {
-      console.log("Error set at:", new Date().toLocaleTimeString());
-    }
-  }, [error]);
-
-  // Debug: Monitor user state changes
-  const { user } = useAuth();
-  useEffect(() => {
-    console.log("User state changed:", user);
-  }, [user]);
+  // Removed debug console.log statements for production
 
   return (
     <div

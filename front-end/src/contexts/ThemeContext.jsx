@@ -13,9 +13,13 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     // Check localStorage first, then default to light mode
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      return savedTheme;
+    try {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme && (savedTheme === "light" || savedTheme === "dark")) {
+        return savedTheme;
+      }
+    } catch (error) {
+      console.warn("Failed to access localStorage:", error);
     }
     // Default to light mode
     return "light";
@@ -24,7 +28,11 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     // Apply theme to document
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
+    try {
+      localStorage.setItem("theme", theme);
+    } catch (error) {
+      console.warn("Failed to save theme to localStorage:", error);
+    }
   }, [theme]);
 
   const toggleTheme = () => {

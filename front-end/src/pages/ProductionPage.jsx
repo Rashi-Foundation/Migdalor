@@ -15,8 +15,7 @@ import {
 } from "chart.js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
-import serverUrl from "@config/api";
+import { http } from "../api/http";
 import ErrorMessage, {
   useErrorHandler,
   getErrorInfo,
@@ -64,24 +63,27 @@ const ProductionPage = () => {
   const dateRange = useMemo(() => {
     const now = new Date();
     switch (dateFilter) {
-      case "today":
+      case "today": {
         const today = new Date(now);
         today.setHours(0, 0, 0, 0);
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
         return { start: today, end: tomorrow };
-      case "monthly":
+      }
+      case "monthly": {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         monthStart.setHours(0, 0, 0, 0);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
         monthEnd.setHours(0, 0, 0, 0);
         return { start: monthStart, end: monthEnd };
-      case "custom":
+      }
+      case "custom": {
         const customStart = new Date(startDate);
         customStart.setHours(0, 0, 0, 0);
         const customEnd = new Date(endDate);
         customEnd.setHours(23, 59, 59, 999);
         return { start: customStart, end: customEnd };
+      }
       default:
         return { start: now, end: now };
     }
@@ -104,9 +106,7 @@ const ProductionPage = () => {
           filter: dateFilter,
         });
 
-        const response = await axios.get(
-          `${serverUrl}/api/report?${params.toString()}`
-        );
+        const response = await http.get(`/report?${params.toString()}`);
 
         console.log("Received production data:", response.data);
         setProductionData(response.data);
@@ -127,7 +127,7 @@ const ProductionPage = () => {
     };
 
     fetchProductionData();
-  }, [dateRange, t]);
+  }, [clearError, dateFilter, dateRange, setNetworkError, setServerError, t]);
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -250,11 +250,12 @@ const ProductionPage = () => {
       switch (dateFilter) {
         case "today":
           return `today-${new Date().toISOString().split("T")[0]}`;
-        case "monthly":
+        case "monthly": {
           const now = new Date();
           return `monthly-${now.getFullYear()}-${String(
             now.getMonth() + 1
           ).padStart(2, "0")}`;
+        }
         case "custom":
           return `custom-${startDate.toISOString().split("T")[0]}-to-${
             endDate.toISOString().split("T")[0]

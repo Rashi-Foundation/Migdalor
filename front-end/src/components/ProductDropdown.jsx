@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import serverUrl from "@config/api";
+import { http } from "../api/http";
 
 const ProductDropdown = ({
   value,
@@ -13,7 +12,7 @@ const ProductDropdown = ({
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${serverUrl}/api/products`);
+        const response = await http.get("/products");
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
