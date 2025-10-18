@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n";
@@ -52,7 +52,7 @@ describe("SettingsPage", () => {
     expect(screen.getByText(/alice/i)).toBeInTheDocument();
   });
 
-  it("allows typing passwords and clicking update", () => {
+  it("allows typing passwords and clicking update", async () => {
     render(
       <MemoryRouter>
         <I18nextProvider i18n={i18n}>
@@ -61,12 +61,14 @@ describe("SettingsPage", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/enter new password/i), {
-      target: { value: "123456" },
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText(/enter new password/i), {
+        target: { value: "123456" },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/confirm new password/i), {
+        target: { value: "123456" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /change password/i }));
     });
-    fireEvent.change(screen.getByPlaceholderText(/confirm new password/i), {
-      target: { value: "123456" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /change password/i }));
   });
 });

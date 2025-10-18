@@ -32,7 +32,29 @@ vi.mock("@components/ErrorMessage", () => ({
 
 vi.mock("axios", () => ({
   default: {
+    create: vi.fn(() => ({
+      get: vi.fn().mockResolvedValue({ data: [] }),
+      post: vi.fn().mockResolvedValue({ data: {} }),
+      interceptors: {
+        response: {
+          use: vi.fn(),
+        },
+      },
+    })),
     get: vi.fn().mockResolvedValue({ data: [] }),
+  },
+}));
+
+// Mock the http module directly
+vi.mock("../../api/http", () => ({
+  http: {
+    get: vi.fn(),
+    post: vi.fn().mockResolvedValue({ data: {} }),
+    interceptors: {
+      response: {
+        use: vi.fn(),
+      },
+    },
   },
 }));
 
@@ -56,7 +78,9 @@ describe("ReportsPage", () => {
   });
 
   it("clicking generate triggers data fetch", async () => {
-    const { default: axios } = await import("axios");
+    const { http } = await import("../../api/http");
+    http.get.mockResolvedValue({ data: [] });
+
     render(
       <MemoryRouter>
         <I18nextProvider i18n={i18n}>
@@ -67,7 +91,7 @@ describe("ReportsPage", () => {
     const btn = await screen.findByRole("button", { name: /generate/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(axios.get).toHaveBeenCalled();
+      expect(http.get).toHaveBeenCalled();
     });
   });
 });

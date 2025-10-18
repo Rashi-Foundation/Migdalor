@@ -2,13 +2,13 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import ProtectedRoute from "../ProtectedRoute";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 
 const MockComponent = () => <div>Protected Content</div>;
 
-// Mock the AuthContext
+// Mock the useAuth hook
 const mockUseAuth = vi.fn();
-vi.mock("../../contexts/AuthContext", () => ({
-  AuthProvider: ({ children }) => children,
+vi.mock("../../hooks/useAuth", () => ({
   useAuth: () => mockUseAuth(),
 }));
 

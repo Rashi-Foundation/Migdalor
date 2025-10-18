@@ -1,6 +1,12 @@
 import "@testing-library/jest-dom";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n";
@@ -56,13 +62,17 @@ describe("LoginPage", () => {
 
   it("submits and shows error on failed login", async () => {
     renderWithProviders();
-    fireEvent.change(screen.getByPlaceholderText(/enter your username/i), {
-      target: { value: "u" },
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText(/enter your username/i), {
+        target: { value: "u" },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/enter your password/i), {
+        target: { value: "p" },
+      });
+      fireEvent.click(screen.getByRole("button"));
     });
-    fireEvent.change(screen.getByPlaceholderText(/enter your password/i), {
-      target: { value: "p" },
-    });
-    fireEvent.click(screen.getByRole("button"));
+
     const { http } = await import("../../api/http");
     await waitFor(() => {
       expect(http.post).toHaveBeenCalled();

@@ -22,5 +22,14 @@ export default defineConfig({
     globals: true,
     setupFiles: [],
     css: true,
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/e2e/**",
+      "**/*.e2e.{test,spec}.{js,jsx,ts,tsx}",
+      "**/playwright/**",
+      "**/.{idea,git,cache,output,temp}/**",
+      "**/playwright.config.{js,ts}",
+    ],
   },
 });

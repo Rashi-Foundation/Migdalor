@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n";
 import DateTime from "../DateTime";
@@ -20,7 +20,9 @@ describe("DateTime", () => {
     const initialText = screen.getByText(/\d+/).textContent;
 
     // Wait for potential update
-    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+    });
 
     // The time should have updated (this is a basic check)
     expect(screen.getByText(/\d+/)).toBeInTheDocument();

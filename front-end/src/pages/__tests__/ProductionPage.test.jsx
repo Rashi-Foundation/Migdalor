@@ -15,7 +15,29 @@ vi.mock("react-chartjs-2", () => ({
 
 vi.mock("axios", () => ({
   default: {
+    create: vi.fn(() => ({
+      get: vi.fn().mockResolvedValue({ data: [] }),
+      post: vi.fn().mockResolvedValue({ data: {} }),
+      interceptors: {
+        response: {
+          use: vi.fn(),
+        },
+      },
+    })),
     get: vi.fn().mockResolvedValue({ data: [] }),
+  },
+}));
+
+// Mock the http module directly
+vi.mock("../../api/http", () => ({
+  http: {
+    get: vi.fn(),
+    post: vi.fn().mockResolvedValue({ data: {} }),
+    interceptors: {
+      response: {
+        use: vi.fn(),
+      },
+    },
   },
 }));
 
@@ -36,7 +58,9 @@ vi.mock("@components/ErrorMessage", () => ({
 
 describe("ProductionPage", () => {
   it("renders heading and loads data", async () => {
-    const { default: axios } = await import("axios");
+    const { http } = await import("../../api/http");
+    http.get.mockResolvedValue({ data: [] });
+
     render(
       <MemoryRouter>
         <I18nextProvider i18n={i18n}>
@@ -51,7 +75,7 @@ describe("ProductionPage", () => {
     ).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(axios.get).toHaveBeenCalled();
+      expect(http.get).toHaveBeenCalled();
     });
   });
 });

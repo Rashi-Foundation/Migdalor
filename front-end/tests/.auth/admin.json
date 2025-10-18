@@ -1,5 +1,16 @@
 {
-  "cookies": [],
+  "cookies": [
+    {
+      "name": "token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGU4ZjRkNWEyMzNiNzVmZjUyZTI3OTQiLCJpc0FkbWluIjp0cnVlLCJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzYwNzk0NzI1LCJleHAiOjE3NjA3OTgzMjV9.OVFoLxMSyPT3Izd7MVCMNJaXb-xTG5PnG0jMb4kCzXM",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1760798325.922457,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
   "origins": [
     {
       "origin": "http://localhost:5173",
@@ -11,14 +22,6 @@
         {
           "name": "theme",
           "value": "light"
-        },
-        {
-          "name": "token",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGU4ZjRkNWEyMzNiNzVmZjUyZTI3OTQiLCJpc0FkbWluIjp0cnVlLCJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzYwNjk2NjQ4LCJleHAiOjE3NjA3MDAyNDh9.7efV65RQ8UZFuCg_BU6eqoiquRCf5yLnDiRscz4Vjho"
-        },
-        {
-          "name": "user",
-          "value": "{\"id\":\"68e8f4d5a233b75ff52e2794\",\"username\":\"admin\",\"isAdmin\":true}"
         }
       ]
     }

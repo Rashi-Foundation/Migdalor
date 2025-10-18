@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { useMe } from "../../hooks/useMe";
 import { vi, describe, it, expect, beforeEach } from "vitest";
+
 const TestComponent = () => {
   const { me, loading } = useMe();
   return (
@@ -12,10 +13,9 @@ const TestComponent = () => {
   );
 };
 
-// Mock the AuthContext
+// Mock the useAuth hook
 const mockUseAuth = vi.fn();
-vi.mock("../../contexts/AuthContext", () => ({
-  AuthProvider: ({ children }) => children,
+vi.mock("../useAuth", () => ({
   useAuth: () => mockUseAuth(),
 }));
 

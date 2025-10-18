@@ -1,8 +1,33 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { AuthProvider, useAuth } from "../AuthContext";
+import { AuthProvider } from "../AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import { vi, describe, it, expect, beforeEach } from "vitest";
+
+// Mock the http module
+vi.mock("../../api/http", () => ({
+  http: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
+
+// Mock react-router-dom
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+    useLocation: () => ({ pathname: "/test" }),
+  };
+});
 const TestComponent = () => {
   const { user, isAuthenticated, loading, login, logout } = useAuth();
   return (
@@ -35,42 +60,62 @@ const renderWithAuth = () =>
   );
 
 describe("AuthContext", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
     vi.clearAllMocks();
+    const { http } = await import("../../api/http");
+    http.get.mockRejectedValue(new Error("Not authenticated"));
   });
 
-  it("provides authentication context", () => {
+  it("provides authentication context", async () => {
     renderWithAuth();
+
+    // Wait for the auth check to complete
+    await waitFor(() => {
+      expect(screen.getByTestId("loading")).toHaveTextContent("false");
+    });
 
     expect(screen.getByTestId("user")).toHaveTextContent("No User");
     expect(screen.getByTestId("authenticated")).toHaveTextContent("false");
-    expect(screen.getByTestId("loading")).toHaveTextContent("false");
   });
 
-  it("handles login", () => {
+  it("handles login", async () => {
     renderWithAuth();
 
-    const loginButton = screen.getByTestId("login");
-    fireEvent.click(loginButton);
+    // Wait for initial loading to complete
+    await waitFor(() => {
+      expect(screen.getByTestId("loading")).toHaveTextContent("false");
+    });
+
+    await act(async () => {
+      const loginButton = screen.getByTestId("login");
+      fireEvent.click(loginButton);
+    });
 
     expect(screen.getByTestId("user")).toHaveTextContent("testuser");
     expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
-    // Note: With httpOnly cookies, we no longer store user data in localStorage
   });
 
-  it("handles logout", () => {
+  it("handles logout", async () => {
     renderWithAuth();
 
+    // Wait for initial loading to complete
+    await waitFor(() => {
+      expect(screen.getByTestId("loading")).toHaveTextContent("false");
+    });
+
     // First login
-    fireEvent.click(screen.getByTestId("login"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("login"));
+    });
     expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
 
     // Then logout
-    fireEvent.click(screen.getByTestId("logout"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("logout"));
+    });
     expect(screen.getByTestId("user")).toHaveTextContent("No User");
     expect(screen.getByTestId("authenticated")).toHaveTextContent("false");
-    // Note: With httpOnly cookies, we no longer manage localStorage for auth
   });
 
   it("throws error when used outside provider", () => {
