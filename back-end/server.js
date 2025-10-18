@@ -6,7 +6,7 @@ const rateLimit = require("express-rate-limit");
 
 const { connectToDatabase } = require("./database/atlas-connection.js");
 const { setupMQTT } = require("./services/mqttService.js");
-const { errorHandler } = require("./middleware/errorHandler.js");
+const { errorHandler, notFound } = require("./middleware/errorHandler.js");
 const requestLogger = require("./middleware/requestLogger.js");
 
 // Import routes
@@ -66,6 +66,9 @@ async function startServer() {
     app.get("/health", (req, res) => {
       res.json({ status: "OK", timestamp: new Date().toISOString() });
     });
+
+    // 404 handler for undefined routes
+    app.use(notFound);
 
     // Error handling middleware (must be last)
     app.use(errorHandler);

@@ -292,7 +292,13 @@ router.get("/employees-with-qualifications/:stationName", async (req, res) => {
 // Assign employees to stations
 router.post("/assign-employees", async (req, res) => {
   try {
-    const { selectedStations, selectedEmployees } = req.body;
+    const { selectedStations, selectedEmployees } = req.body || {};
+
+    if (!Array.isArray(selectedStations) || !Array.isArray(selectedEmployees)) {
+      return res.status(400).json({
+        message: "selectedStations and selectedEmployees must be arrays",
+      });
+    }
 
     // Fetch full employee data
     const employees = await Employee.find({ _id: { $in: selectedEmployees } });
@@ -301,8 +307,9 @@ router.post("/assign-employees", async (req, res) => {
     const stations = await Station.find({ _id: { $in: selectedStations } });
 
     // Fetch qualifications for selected employees
+    const employeePersonIds = employees.map((e) => e.person_id);
     const qualifications = await Qualification.find({
-      person_id: { $in: selectedEmployees },
+      person_id: { $in: employeePersonIds },
     });
 
     // Create a detailed assignment object
@@ -315,12 +322,15 @@ router.post("/assign-employees", async (req, res) => {
 
     Object.entries(optimalAssignment).forEach(([stationId, employeeId]) => {
       const station = stations.find((s) => s.station_id === stationId);
-      const employee = employees.find((e) => e._id.toString() === employeeId);
+      const employee = employees.find((e) => e.person_id === employeeId);
       const qualification = qualifications.find(
         (q) =>
           q.person_id === employeeId && q.station_name === station.station_name
       );
-      detailedAssignment[employeeId] = {
+      if (!station || !employee) {
+        return; // skip inconsistent data
+      }
+      detailedAssignment[employee.person_id] = {
         stationId,
         stationName: station.station_name,
         qualificationScore: qualification ? qualification.avg : 0,

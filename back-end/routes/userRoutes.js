@@ -12,7 +12,7 @@ router.get("/me", requireAuth, async (req, res) => {
   try {
     logger.db("Fetch user profile", "User");
     const user = await User.findById(req.user.userId).select(
-      "person_id username first_name last_name email phone department role status isAdmin"
+      "username isAdmin"
     );
     if (!user) {
       logger.error("User profile fetch", `User ${req.user.userId} not found`);
@@ -22,16 +22,8 @@ router.get("/me", requireAuth, async (req, res) => {
     logger.success("User profile fetched", user.username);
     res.json({
       id: user._id,
-      person_id: user.person_id,
       username: user.username,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      phone_number: user.phone_number, // <- renamed
-      department: user.department,
-      role: user.role,
-      status: user.status,
-      isAdmin: user.isAdmin,
+      isAdmin: !!user.isAdmin,
     });
   } catch (error) {
     logger.error("User profile fetch error", error);
