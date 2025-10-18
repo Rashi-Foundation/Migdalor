@@ -113,10 +113,54 @@ npm install
 
 #### Initialize Database
 
+The database setup script will clear all existing data and populate the database with sample data for testing and development.
+
+**⚠️ Warning**: This will delete all existing data in your database!
+
 ```bash
 cd back-end
 node scripts/setup-database.js
-node scripts/seedData.js
+```
+
+**What the setup script does:**
+
+- Clears all existing collections (Users, Employees, Stations, etc.)
+- Creates sample users with hashed passwords
+- Inserts sample employees, stations, products, and departments
+- Creates sample assignments and qualifications
+- Adds historical MQTT messages for testing reports
+- Displays a summary of inserted records
+
+**Default Login Credentials:**
+
+- **Admin User**: `admin` / `adminadmin`
+- **Regular User**: `EMP001` / `secret123`
+
+#### Customizing Seed Data
+
+To modify the sample data, edit the following file:
+
+```bash
+# Edit seed data
+nano scripts/seedData.js
+```
+
+**Key sections to customize:**
+
+1. **Users** (`sampleUsers`): Add/modify login accounts
+2. **Employees** (`sampleEmployees`): Employee profiles and departments
+3. **Stations** (`sampleStations`): Production stations
+4. **Working Stations** (`sampleWorkingStations`): Individual workstations
+5. **Products** (`sampleProducts`): Products manufactured
+6. **Departments** (`DEPARTMENTS`): Department names
+7. **Assignments** (`sampleAssignments`): Work assignments
+8. **Qualifications** (`sampleQualifications`): Employee skills per station
+
+**After editing seed data:**
+
+```bash
+# Re-run setup to apply changes
+node scripts/setup-database.js
 ```
 
 ### 5. Start Development Servers
@@ -361,6 +405,9 @@ Migdalor/
 │   ├── services/            # Business logic
 │   ├── tests/               # Backend tests
 │   ├── scripts/             # Database scripts
+│   │   ├── setup-database.js # Initialize database with sample data
+│   │   ├── seedData.js      # Sample data definitions
+│   │   └── simulator.js     # MQTT message simulator
 │   ├── .env.example         # Environment template
 │   └── server.js            # Main server file
 ├── front-end/               # React application
@@ -388,6 +435,10 @@ npm start              # Start production server
 npm test               # Run tests
 npm run test:watch     # Run tests in watch mode
 npm run test:coverage  # Run tests with coverage
+
+# Database scripts
+node scripts/setup-database.js  # Initialize database with sample data
+node scripts/simulator.js      # Run MQTT message simulator
 ```
 
 #### Frontend
@@ -426,6 +477,29 @@ echo $MONGODB_URI
 # Test connection
 cd back-end
 node -e "require('mongoose').connect(process.env.MONGODB_URI).then(() => console.log('Connected')).catch(console.error)"
+```
+
+#### 1.1. Database Setup Issues
+
+```bash
+# If setup-database.js fails, check:
+# 1. MongoDB connection string is correct
+# 2. Database user has read/write permissions
+# 3. Network access allows your IP
+
+# Re-run database setup
+cd back-end
+node scripts/setup-database.js
+
+# Check if collections were created
+node -e "
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI).then(async () => {
+  const collections = await mongoose.connection.db.listCollections().toArray();
+  console.log('Collections:', collections.map(c => c.name));
+  process.exit(0);
+}).catch(console.error);
+"
 ```
 
 #### 2. JWT Token Issues
