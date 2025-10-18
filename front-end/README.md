@@ -63,7 +63,18 @@ A modern React-based frontend application for the Migdalor production management
 4. **Configure environment variables:**
 
    ```env
+   # API Configuration
    VITE_REACT_APP_SERVER_URL=http://localhost:8080
+
+   # Application Configuration
+   VITE_APP_NAME=Migdalor
+   VITE_APP_VERSION=1.0.0
+
+   # Debug Mode (optional)
+   VITE_DEBUG=false
+
+   # Build Configuration
+   VITE_BUILD_TARGET=production
    ```
 
 5. **Start development server:**
@@ -322,7 +333,7 @@ npm run lint
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all unit tests
 npm test
 
 # Run tests in watch mode
@@ -330,16 +341,100 @@ npm test -- --watch
 
 # Run tests with coverage
 npm test -- --coverage
+
+# Run end-to-end tests
+npm run e2e
+
+# Run e2e tests with UI
+npm run e2e:ui
 ```
 
 ### Test Structure
 
 ```
 src/
-├── __tests__/
-│   ├── components/
-│   ├── pages/
-│   └── utils/
+├── components/
+│   └── __tests__/          # Component unit tests
+│       ├── DateTime.test.jsx
+│       ├── ErrorMessage.test.jsx
+│       ├── LanguageSwitcher.test.jsx
+│       ├── Navbar.test.jsx
+│       ├── ProtectedRoute.test.jsx
+│       └── ThemeToggle.test.jsx
+├── pages/
+│   └── __tests__/          # Page component tests
+│       ├── HomePage.test.jsx
+│       ├── LoginPage.test.jsx
+│       ├── ProductionPage.test.jsx
+│       ├── ReportsPage.test.jsx
+│       └── SettingsPage.test.jsx
+├── hooks/
+│   └── __tests__/          # Custom hook tests
+│       └── useMe.test.jsx
+├── contexts/
+│   └── __tests__/          # Context tests
+│       ├── AuthContext.test.jsx
+│       └── ThemeContext.test.jsx
+└── tests/
+    └── e2e/                # End-to-end tests
+        ├── auth.spec.ts
+        ├── home.spec.ts
+        ├── navbar.spec.ts
+        ├── production.spec.ts
+        ├── reports.spec.ts
+        ├── settings.spec.ts
+        ├── station.spec.ts
+        └── user-management.spec.ts
+```
+
+### Testing Technologies
+
+- **Vitest** - Unit testing framework
+- **React Testing Library** - Component testing utilities
+- **Playwright** - End-to-end testing
+- **Jest DOM** - DOM testing utilities
+
+### Writing Tests
+
+#### Unit Tests Example
+
+```jsx
+// src/components/__tests__/Button.test.jsx
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Button } from "../Button";
+
+describe("Button Component", () => {
+  it("renders button with text", () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByText("Click me")).toBeInTheDocument();
+  });
+
+  it("calls onClick when clicked", () => {
+    const handleClick = jest.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+
+    fireEvent.click(screen.getByText("Click me"));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+#### E2E Tests Example
+
+```typescript
+// tests/e2e/auth.spec.ts
+import { test, expect } from "@playwright/test";
+
+test("user can login", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.fill('[data-testid="username"]', "testuser");
+  await page.fill('[data-testid="password"]', "password");
+  await page.click('[data-testid="login-button"]');
+
+  await expect(page).toHaveURL("/");
+  await expect(page.locator('[data-testid="user-menu"]')).toBeVisible();
+});
 ```
 
 ## 📦 Building for Production
@@ -364,7 +459,18 @@ This creates a `dist` folder with optimized production files.
 Production environment variables:
 
 ```env
+# API Configuration
 VITE_REACT_APP_SERVER_URL=https://your-production-api.com
+
+# Application Configuration
+VITE_APP_NAME=Migdalor
+VITE_APP_VERSION=1.0.0
+
+# Debug Mode (set to false for production)
+VITE_DEBUG=false
+
+# Build Configuration
+VITE_BUILD_TARGET=production
 ```
 
 ## 🚀 Deployment

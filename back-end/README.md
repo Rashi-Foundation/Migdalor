@@ -63,10 +63,36 @@ A robust Node.js backend service for the Migdalor production management system, 
 4. **Configure environment variables:**
 
    ```env
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/migdalor
+   # Database Configuration
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/migdalor?retryWrites=true&w=majority
+
+   # Server Configuration
    PORT=8080
-   JWT_SECRET=your_super_secret_jwt_key
-   MQTT_BROKER=mqtt://broker.hivemq.com
+   NODE_ENV=development
+
+   # Frontend URL for CORS
+   FRONTEND_URL=http://localhost:5173
+
+   # JWT Configuration
+   JWT_SECRET=your_super_secret_jwt_key_here_make_it_long_and_random
+   JWT_EXPIRES_IN=24h
+
+   # MQTT Configuration
+   MQTT_BROKER=mqtt://broker.hivemq.com:1883
+   MQTT_CLIENT_ID=migdalor_backend
+   MQTT_USERNAME=
+   MQTT_PASSWORD=
+
+   # Logging Configuration
+   LOG_LEVEL=info
+   LOG_FILE=logs/app.log
+
+   # Rate Limiting
+   RATE_LIMIT_WINDOW_MS=900000
+   RATE_LIMIT_MAX_REQUESTS=1000
+
+   # Security
+   BCRYPT_ROUNDS=12
    ```
 
 5. **Initialize database:**
@@ -445,6 +471,67 @@ router.post("/admin-only", requireAdmin, (req, res) => {
 
 ## 🔄 Real-time Communication
 
+### MQTT Protocol Integration
+
+Our system uses the MQTT protocol to exchange real-time messages between devices and services.
+
+#### Broker Setup
+
+By default, the project is configured to connect to the test broker: `mqtt://broker.hivemq.com`
+
+You can simulate messages using the HiveMQ WebSocket Client:
+https://www.hivemq.com/demos/websocket-client/
+
+To use your own broker, set the MQTT_BROKER variable inside the .env file:
+
+```env
+MQTT_BROKER=mqtt://<your-broker-address>
+```
+
+#### Subscribed Channels
+
+The MQTT client subscribes to the following topic:
+
+```
+Braude/Shluker/#
+```
+
+The `#` wildcard means the client will receive all messages under `Braude/Shluker/*`.
+
+#### Message Handling
+
+When a message is received on any subscribed channel:
+
+- The message is logged in the console for debugging
+- The message is stored in the MongoDB database, in the collection: `mqttMsg`
+
+#### Database Storage Format
+
+Messages received from the MQTT broker are usually in JSON format. A typical incoming message looks like this:
+
+```json
+{
+  "station_id": "station_001",
+  "User ID": "user_123",
+  "result": 22.5
+}
+```
+
+- `station_id` → identifies the source station or device
+- `User ID` → optional field indicating the user that triggered the event
+- Other fields (`result`..) depend on the use case and are stored as part of the raw message
+
+#### Error & Connection Handling
+
+The MQTT client automatically handles the following events:
+
+- **Connection success**: Logs "Connected to MQTT broker"
+- **Subscription success/failure**: Logs subscription status
+- **Incoming messages**: Logs and saves to database
+- **Errors**: Logs any MQTT connection issues
+- **Reconnects**: Attempts to reconnect if the broker connection is lost
+- **Graceful shutdown**: On service stop, the client disconnects cleanly
+
 ### MQTT Integration
 
 The backend uses MQTT for real-time updates:
@@ -498,28 +585,262 @@ logger.auth("User login", "user123");
 # Run all tests
 npm test
 
+# Run tests in watch mode
+npm run test:watch
+
 # Run tests with coverage
-npm test -- --coverage
+npm run test:coverage
+
+# Run tests for CI/CD
+npm run test:ci
 
 # Run specific test file
 npm test -- --grep "Employee"
+
+# Run tests for specific module
+npm test -- tests/routes/employeeRoutes.test.js
 ```
 
 ### Test Structure
 
 ```
 tests/
-├── unit/
-│   ├── models/
-│   ├── routes/
-│   └── middleware/
-├── integration/
-│   ├── api/
-│   └── database/
-└── fixtures/
-    ├── users.json
-    └── employees.json
+├── database/
+│   └── atlas-connection.test.js    # Database connection tests
+├── middleware/
+│   ├── auth.test.js                # Authentication middleware tests
+│   └── errorHandler.test.js        # Error handling tests
+├── routes/
+│   ├── assignmentRoutes.test.js     # Assignment API tests
+│   ├── authRoutes.test.js          # Authentication API tests
+│   ├── dashboardRoutes.test.js     # Dashboard API tests
+│   ├── employeeRoutes.test.js      # Employee API tests
+│   ├── qualificationRoutes.test.js # Qualification API tests
+│   ├── reportRoutes.test.js        # Report API tests
+│   ├── stationRoutes.test.js       # Station API tests
+│   └── userRoutes.test.js          # User API tests
+├── services/
+│   └── mqttService.test.js         # MQTT service tests
+├── helpers/
+│   ├── databaseMock.js             # Database mocking utilities
+│   └── testUtils.js                # Test helper functions
+├── geneticAlgorithm.test.js        # Genetic algorithm tests
+└── setupTests.js                   # Test setup configuration
 ```
+
+### Testing Technologies
+
+- **Jest** - Testing framework
+- **Supertest** - HTTP assertion library
+- **MongoDB Memory Server** - In-memory MongoDB for testing
+- **Jest Mock** - Mocking utilities
+
+### Writing Tests
+
+#### API Route Tests Example
+
+```javascript
+// tests/routes/employeeRoutes.test.js
+const request = require("supertest");
+const app = require("../../server");
+const { setupTestDB, teardownTestDB } = require("../helpers/testUtils");
+
+describe("Employee Routes", () => {
+  beforeAll(async () => {
+    await setupTestDB();
+  });
+
+  afterAll(async () => {
+    await teardownTestDB();
+  });
+
+  describe("GET /api/employees", () => {
+    it("should return all employees", async () => {
+      const response = await request(app).get("/api/employees").expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
+    });
+
+    it("should filter employees by department", async () => {
+      const response = await request(app)
+        .get("/api/employees?department=Production")
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      response.body.data.forEach((employee) => {
+        expect(employee.department).toBe("Production");
+      });
+    });
+  });
+
+  describe("POST /api/employees", () => {
+    it("should create a new employee", async () => {
+      const newEmployee = {
+        person_id: "EMP001",
+        first_name: "John",
+        last_name: "Doe",
+        email: "john.doe@example.com",
+        phone: "123-456-7890",
+        department: "Production",
+        role: "Operator",
+        status: "Active",
+      };
+
+      const response = await request(app)
+        .post("/api/employees")
+        .send(newEmployee)
+        .expect(201);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.first_name).toBe("John");
+    });
+  });
+});
+```
+
+#### Middleware Tests Example
+
+```javascript
+// tests/middleware/auth.test.js
+const jwt = require("jsonwebtoken");
+const { requireAuth, requireAdmin } = require("../../middleware/auth");
+
+describe("Auth Middleware", () => {
+  const mockReq = {
+    headers: {},
+    user: null,
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+  const mockNext = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe("requireAuth", () => {
+    it("should call next() with valid token", () => {
+      const token = jwt.sign(
+        { userId: "123", username: "testuser" },
+        process.env.JWT_SECRET
+      );
+
+      mockReq.headers.authorization = `Bearer ${token}`;
+
+      requireAuth(mockReq, mockRes, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+      expect(mockReq.user).toBeDefined();
+    });
+
+    it("should return 401 with invalid token", () => {
+      mockReq.headers.authorization = "Bearer invalid-token";
+
+      requireAuth(mockReq, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        success: false,
+        message: "Access denied. No token provided.",
+      });
+    });
+  });
+});
+```
+
+#### Database Tests Example
+
+```javascript
+// tests/database/atlas-connection.test.js
+const mongoose = require("mongoose");
+const { connectToDatabase } = require("../../database/atlas-connection");
+
+describe("Database Connection", () => {
+  afterEach(async () => {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+  });
+
+  it("should connect to MongoDB successfully", async () => {
+    await expect(connectToDatabase()).resolves.not.toThrow();
+    expect(mongoose.connection.readyState).toBe(1);
+  });
+
+  it("should handle connection errors gracefully", async () => {
+    const originalUri = process.env.MONGODB_URI;
+    process.env.MONGODB_URI = "mongodb://invalid-uri";
+
+    await expect(connectToDatabase()).rejects.toThrow();
+
+    process.env.MONGODB_URI = originalUri;
+  });
+});
+```
+
+### Test Configuration
+
+The test setup is configured in `tests/setupTests.js`:
+
+```javascript
+// tests/setupTests.js
+const { MongoMemoryServer } = require("mongodb-memory-server");
+const mongoose = require("mongoose");
+
+let mongoServer;
+
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  const mongoUri = mongoServer.getUri();
+
+  await mongoose.connect(mongoUri);
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});
+
+afterEach(async () => {
+  const collections = mongoose.connection.collections;
+  for (const key in collections) {
+    const collection = collections[key];
+    await collection.deleteMany({});
+  }
+});
+```
+
+### Test Coverage
+
+Run tests with coverage to see which parts of your code are tested:
+
+```bash
+npm run test:coverage
+```
+
+This will generate a coverage report showing:
+
+- Statement coverage
+- Branch coverage
+- Function coverage
+- Line coverage
+
+### Continuous Integration
+
+For CI/CD pipelines, use:
+
+```bash
+npm run test:ci
+```
+
+This command:
+
+- Runs tests without watch mode
+- Generates coverage reports
+- Exits with appropriate code for CI systems
 
 ## 🔧 Configuration
 
@@ -575,9 +896,36 @@ const connectToDatabase = async () => {
 1. **Set environment variables:**
 
    ```env
+   # Database Configuration
+   MONGODB_URI=mongodb+srv://mahersal001:z06Nhoer5y5oIMJ8@migdalor-cluster.kqyqqvh.mongodb.net/migdalor?retryWrites=true&w=majority&appName=migdalor-cluster
+
+   # Server Configuration
+   PORT=8080
    NODE_ENV=production
-   MONGODB_URI=your_production_mongodb_uri
-   JWT_SECRET=your_production_jwt_secret
+
+   # Frontend URL for CORS
+   FRONTEND_URL=https://your-frontend-domain.com
+
+   # JWT Configuration
+   JWT_SECRET=jwtsecret
+   JWT_EXPIRES_IN=24h
+
+   # MQTT Configuration
+   MQTT_BROKER=mqtt://broker.hivemq.com
+   MQTT_CLIENT_ID=migdalor_backend
+   MQTT_USERNAME=
+   MQTT_PASSWORD=
+
+   # Logging Configuration
+   LOG_LEVEL=info
+   LOG_FILE=logs/app.log
+
+   # Rate Limiting
+   RATE_LIMIT_WINDOW_MS=900000
+   RATE_LIMIT_MAX_REQUESTS=1000
+
+   # Security
+   BCRYPT_ROUNDS=12
    ```
 
 2. **Install production dependencies:**
