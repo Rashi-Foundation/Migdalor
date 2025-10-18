@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { http } from "../api/http";
+import { http, setAuthToken } from "../api/http";
 import { AuthContext } from "./AuthContextContext";
 
 export const AuthProvider = ({ children }) => {
@@ -60,6 +60,8 @@ export const AuthProvider = ({ children }) => {
       // Even if logout fails, we should still clear the user state
       console.error("Logout error:", error);
     }
+    // Clear any persisted Authorization header fallback
+    setAuthToken(null);
     setUser(null);
     navigate("/", { replace: true });
   };

@@ -90,6 +90,8 @@ router.post(
       logger.auth("Login successful", username);
       res.json({
         success: true,
+        // return token as well to support Authorization header fallback on clients that block third-party cookies
+        token,
         user: {
           id: user._id,
           username: user.username,

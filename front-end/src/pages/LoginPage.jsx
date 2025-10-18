@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { http } from "../api/http";
+import { http, setAuthToken } from "../api/http";
 import { useAuth } from "../hooks/useAuth";
 import ErrorMessage, {
   useErrorHandler,
@@ -50,6 +50,10 @@ const LoginPage = () => {
       const { data } = await http.post("/login", { username, password });
 
       if (data?.success && data?.user) {
+        // If backend returned a token, persist and set Authorization header as a fallback
+        if (data.token) {
+          setAuthToken(data.token);
+        }
         // Only call login if successful - this prevents unwanted redirects
         login(data.user);
       } else {
