@@ -239,7 +239,7 @@ The backend service is deployed on AWS App Runner.
    Set the following environment variables for the backend service:
 
    ```env
-   MONGODB_URI=mongodb+srv://mahersal001:z06Nhoer5y5oIMJ8@migdalor-cluster.kqyqqvh.mongodb.net/migdalor?retryWrites=true&w=majority&appName=migdalor-cluster
+   MONGODB_URI=
    PORT=8080
    MQTT_BROKER=mqtt://broker.hivemq.com
    JWT_SECRET=jwtsecret
