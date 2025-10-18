@@ -55,6 +55,7 @@ const ProductionPage = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [productionData, setProductionData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchTimeout, setFetchTimeout] = useState(null);
 
   const { error, errorType, clearError, setNetworkError, setServerError } =
     useErrorHandler();
@@ -89,7 +90,7 @@ const ProductionPage = () => {
     }
   }, [dateFilter, startDate, endDate]);
 
-  // Fetch production data
+  // Fetch production data with debouncing
   useEffect(() => {
     const fetchProductionData = async () => {
       try {
@@ -126,8 +127,26 @@ const ProductionPage = () => {
       }
     };
 
-    fetchProductionData();
-  }, [clearError, dateFilter, dateRange, setNetworkError, setServerError, t]);
+    // Clear existing timeout
+    if (fetchTimeout) {
+      clearTimeout(fetchTimeout);
+    }
+
+    // Set new timeout for debounced fetch
+    const timeout = setTimeout(() => {
+      fetchProductionData();
+    }, 300); // 300ms debounce
+
+    setFetchTimeout(timeout);
+
+    // Cleanup timeout on unmount or dependency change
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateFilter, startDate, endDate]);
 
   // Calculate statistics
   const stats = useMemo(() => {
